@@ -13,35 +13,11 @@
         </div>
 
         <div v-if="hasAccess" class="devices-config-panel__selects">
-            <div class="device-group">
-                <label for="microphone-select">Microphone:</label>
-                <select id="microphone-select" v-model="selectedMicrophone" @change="onMicrophoneChange">
-                    <option value="">Select Microphone</option>
-                    <option v-for="device in microphones" :key="device.deviceId" :value="device.deviceId">
-                        {{ device.label || `Microphone ${device.deviceId.slice(0, 8)}` }}
-                    </option>
-                </select>
-            </div>
+            <microphone-select v-model="selectedMicrophone" :devices="microphones" @change="onMicrophoneChange" />
 
-            <div class="device-group">
-                <label for="speaker-select">Speaker:</label>
-                <select id="speaker-select" v-model="selectedSpeaker" @change="onSpeakerChange">
-                    <option value="">Select Speaker</option>
-                    <option v-for="device in speakers" :key="device.deviceId" :value="device.deviceId">
-                        {{ device.label || `Speaker ${device.deviceId.slice(0, 8)}` }}
-                    </option>
-                </select>
-            </div>
+            <speaker-select v-model="selectedSpeaker" :devices="speakers" @change="onSpeakerChange" />
 
-            <div class="device-group">
-                <label for="camera-select">Camera:</label>
-                <select id="camera-select" v-model="selectedCamera" @change="onCameraChange">
-                    <option value="">Select Camera</option>
-                    <option v-for="device in cameras" :key="device.deviceId" :value="device.deviceId">
-                        {{ device.label || `Camera ${device.deviceId.slice(0, 8)}` }}
-                    </option>
-                </select>
-            </div>
+            <camera-select v-model="selectedCamera" :devices="cameras" @change="onCameraChange" />
         </div>
     </section>
 </template>
@@ -49,6 +25,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import MicrophoneSelect from './microphone-select.vue';
+import SpeakerSelect from './speaker-select.vue';
+import CameraSelect from './camera-select.vue';
 
 // Device lists
 const microphones = ref<MediaDeviceInfo[]>([]);
@@ -205,31 +184,5 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 16px;
-}
-
-.device-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.device-group label {
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.device-group select {
-    padding: 8px 12px;
-    font-size: 14px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    background-color: white;
-    cursor: pointer;
-}
-
-.device-group select:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 </style>
