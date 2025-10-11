@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import DevicesConfigPanel from '../devices-config-panel/components/devices-config-panel.vue';
+import DevicesConfigPanel from '../../devices/components/devices-config-panel.vue';
 </script>
 
 <style scoped>

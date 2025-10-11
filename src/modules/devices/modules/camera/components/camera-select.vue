@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from 'vue';
+import { useCameraStore } from '../stores/camera';
 
 interface Props {
     devices: MediaDeviceInfo[];
@@ -33,8 +34,9 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const cameraStore = useCameraStore();
+
 const videoElement = ref<HTMLVideoElement | null>(null);
-let stream: MediaStream | null = null;
 
 function handleChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
@@ -48,10 +50,9 @@ async function startCameraPreview(deviceId: string): Promise<void> {
         // Stop any existing stream
         stopCameraPreview();
 
-        // Get camera stream
-        stream = await navigator.mediaDevices.getUserMedia({
-            video: { deviceId: { exact: deviceId } }
-        });
+        // Get camera stream from store
+        const stream = await cameraStore.getStream(deviceId);
+        if (!stream) return;
 
         // Attach stream to video element
         if (videoElement.value) {
@@ -63,10 +64,8 @@ async function startCameraPreview(deviceId: string): Promise<void> {
 }
 
 function stopCameraPreview(): void {
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        stream = null;
-    }
+    // Stop stream via store
+    cameraStore.stopStream();
 
     if (videoElement.value) {
         videoElement.value.srcObject = null;

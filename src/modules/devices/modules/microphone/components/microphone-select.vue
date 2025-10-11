@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from 'vue';
+import { useMicrophoneStore } from '../stores/microphone';
 
 interface Props {
     devices: MediaDeviceInfo[];
@@ -34,11 +35,12 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const microphoneStore = useMicrophoneStore();
+
 const volumeLevel = ref<number>(0);
 let audioContext: AudioContext | null = null;
 let analyser: AnalyserNode | null = null;
 let microphone: MediaStreamAudioSourceNode | null = null;
-let stream: MediaStream | null = null;
 let animationId: number | null = null;
 
 function handleChange(event: Event): void {
@@ -53,10 +55,9 @@ async function startMicrophoneTest(deviceId: string): Promise<void> {
         // Stop any existing stream
         stopMicrophoneTest();
 
-        // Get microphone stream
-        stream = await navigator.mediaDevices.getUserMedia({
-            audio: { deviceId: { exact: deviceId } }
-        });
+        // Get microphone stream from store
+        const stream = await microphoneStore.getStream(deviceId);
+        if (!stream) return;
 
         // Create audio context and analyser
         audioContext = new AudioContext();
@@ -108,10 +109,8 @@ function stopMicrophoneTest(): void {
         audioContext = null;
     }
 
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        stream = null;
-    }
+    // Stop stream via store
+    microphoneStore.stopStream();
 
     volumeLevel.value = 0;
 }
