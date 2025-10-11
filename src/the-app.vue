@@ -1,11 +1,16 @@
-<script setup lang="ts"></script>
-
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <main-scene>
+    <router-view />
+  </main-scene>
 </template>
 
-<style scoped></style>
+<script lang="ts" setup>
+import MainScene from './modules/main-scene/components/main-scene.vue';
+</script>
+
+<style>
+#app {
+  width: 100%;
+  height: 100%;
+}
+</style>

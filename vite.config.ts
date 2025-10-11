@@ -9,8 +9,14 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [
     vue(),
-    vueDevTools(),
+    vueDevTools({
+      launchEditor: 'cursor',
+    }),
   ],
+  server: {
+    port: 8080,
+    // https: true,
+  },
   resolve: {
     alias: {
       '@aliasedDeps/api-services/axios': resolve(
@@ -18,5 +24,6 @@ export default defineConfig({
         'src/app/api/instance',
       ),
     },
+    dedupe: ['vue'],
   },
 })
