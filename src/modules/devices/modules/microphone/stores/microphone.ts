@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
-export const useMicrophoneStore = defineStore('microphone', () => {
+export const useMicrophoneStore = defineStore('devices/microphone', () => {
     // Device list
     const devices = ref<MediaDeviceInfo[]>([]);
 

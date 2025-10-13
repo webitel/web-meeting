@@ -12,12 +12,15 @@
             </div>
         </div>
 
-        <div v-if="hasAccess" class="devices-config-panel__selects">
-            <microphone-select v-model="selectedMicrophoneId" :devices="microphones" @change="setSelectedMicrophone" />
+        <div class="devices-config-panel__selects">
+            <microphone-select v-if="hasMicrophoneAccess" v-model="selectedMicrophoneId" :devices="microphones"
+                @change="setSelectedMicrophone" />
 
-            <speaker-select v-model="selectedSpeakerId" :devices="speakers" @change="setSelectedSpeaker" />
+            <speaker-select v-if="hasMicrophoneAccess" v-model="selectedSpeakerId" :devices="speakers"
+                @change="setSelectedSpeaker" />
 
-            <camera-select v-model="selectedCameraId" :devices="cameras" @change="setSelectedCamera" />
+            <camera-select v-if="hasCameraAccess" v-model="selectedCameraId" :devices="cameras"
+                @change="setSelectedCamera" />
         </div>
     </section>
 </template>
@@ -29,7 +32,7 @@ import { storeToRefs } from 'pinia';
 import MicrophoneSelect from '../modules/microphone/components/microphone-select.vue';
 import SpeakerSelect from '../modules/speaker/components/speaker-select.vue';
 import CameraSelect from '../modules/camera/components/camera-select.vue';
-import { useDevicesStore } from '../../../app/stores/devices';
+import { useDevicesStore } from '../stores/devices';
 import { useMicrophoneStore } from '../modules/microphone/stores/microphone';
 import { useSpeakerStore } from '../modules/speaker/stores/speaker';
 import { useCameraStore } from '../modules/camera/stores/camera';
@@ -40,7 +43,7 @@ const speakerStore = useSpeakerStore();
 const cameraStore = useCameraStore();
 
 // Destructure state from general devices store
-const { hasAccess, isRequesting, error } = storeToRefs(devicesStore);
+const { hasMicrophoneAccess, hasCameraAccess, isRequesting, error } = storeToRefs(devicesStore);
 
 // Destructure state from individual device stores
 const { devices: microphones, selectedDeviceId: selectedMicrophoneId } = storeToRefs(microphoneStore);
@@ -67,6 +70,9 @@ onUnmounted(() => {
 
 <style scoped>
 .devices-config-panel {
+    --devices-config-panel-width: 320px;
+
+    width: var(--devices-config-panel-width);
     background: var(--wt-page-wrapper-content-wrapper-color);
     padding: 20px;
 }

@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
-export const useCameraStore = defineStore('camera', () => {
+export const useCameraStore = defineStore('devices/camera', () => {
     // Device list
     const devices = ref<MediaDeviceInfo[]>([]);
 
