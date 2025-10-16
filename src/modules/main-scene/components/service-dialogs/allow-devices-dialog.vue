@@ -19,7 +19,7 @@
 import { storeToRefs } from 'pinia';
 
 import ServiceDialog from './shared/service-dialog.vue';
-import { useDevicesStore } from '../../devices/stores/devices';
+import { useDevicesStore } from '../../../devices/stores/devices';
 
 const emit = defineEmits<{
     'settings:toggle': [];

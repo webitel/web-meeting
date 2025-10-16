@@ -27,7 +27,7 @@
 
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import MicrophoneSelect from '../modules/microphone/components/microphone-select.vue';
 import SpeakerSelect from '../modules/speaker/components/speaker-select.vue';
@@ -36,11 +36,14 @@ import { useDevicesStore } from '../stores/devices';
 import { useMicrophoneStore } from '../modules/microphone/stores/microphone';
 import { useSpeakerStore } from '../modules/speaker/stores/speaker';
 import { useCameraStore } from '../modules/camera/stores/camera';
+import { useMeetingStore } from '../../meeting/stores/meeting';
+import { SessionState } from '../../meeting/stores/meeting';
 
 const devicesStore = useDevicesStore();
 const microphoneStore = useMicrophoneStore();
 const speakerStore = useSpeakerStore();
 const cameraStore = useCameraStore();
+const meetingStore = useMeetingStore();
 
 // Destructure state from general devices store
 const { hasMicrophoneAccess, hasCameraAccess, isRequesting, error } = storeToRefs(devicesStore);
@@ -50,11 +53,48 @@ const { devices: microphones, selectedDeviceId: selectedMicrophoneId } = storeTo
 const { devices: speakers, selectedDeviceId: selectedSpeakerId } = storeToRefs(speakerStore);
 const { devices: cameras, selectedDeviceId: selectedCameraId } = storeToRefs(cameraStore);
 
+// Destructure meeting store state
+const { sessionState, videoEnabled } = storeToRefs(meetingStore);
+
 // Destructure actions
 const { requestDeviceAccess, initializeDeviceChangeListener, cleanup } = devicesStore;
 const { setSelectedDevice: setSelectedMicrophone } = microphoneStore;
 const { setSelectedDevice: setSelectedSpeaker } = speakerStore;
 const { setSelectedDevice: setSelectedCamera } = cameraStore;
+const { changeMicrophone, changeCamera, changeSpeaker } = meetingStore;
+
+// Watch for microphone changes and update active call
+watch(selectedMicrophoneId, async (newDeviceId) => {
+    if (newDeviceId && sessionState.value === SessionState.ACTIVE) {
+        try {
+            await changeMicrophone(newDeviceId);
+        } catch (error) {
+            console.error('Failed to apply microphone change to active call:', error);
+        }
+    }
+});
+
+// Watch for camera changes and update active call
+watch(selectedCameraId, async (newDeviceId) => {
+    if (newDeviceId && sessionState.value === SessionState.ACTIVE && videoEnabled.value) {
+        try {
+            await changeCamera(newDeviceId);
+        } catch (error) {
+            console.error('Failed to apply camera change to active call:', error);
+        }
+    }
+});
+
+// Watch for speaker changes and update active call
+watch(selectedSpeakerId, async (newDeviceId) => {
+    if (newDeviceId && sessionState.value === SessionState.ACTIVE) {
+        try {
+            await changeSpeaker(newDeviceId);
+        } catch (error) {
+            console.error('Failed to apply speaker change to active call:', error);
+        }
+    }
+});
 
 // Initialize device change listener on mount
 onMounted(() => {

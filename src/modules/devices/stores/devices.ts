@@ -30,8 +30,8 @@ export const useDevicesStore = defineStore('devices', () => {
             console.error('Error requesting microphone access:', err);
             if (err instanceof Error) {
                 const micError = `Failed to access microphone: ${err.message}`;
-                error.value = error.value 
-                    ? `${error.value}; ${micError}` 
+                error.value = error.value
+                    ? `${error.value}; ${micError}`
                     : micError;
             }
         }
@@ -52,8 +52,8 @@ export const useDevicesStore = defineStore('devices', () => {
             console.error('Error requesting camera access:', err);
             if (err instanceof Error) {
                 const cameraError = `Failed to access camera: ${err.message}`;
-                error.value = error.value 
-                    ? `${error.value}; ${cameraError}` 
+                error.value = error.value
+                    ? `${error.value}; ${cameraError}`
                     : cameraError;
             }
         }
@@ -107,21 +107,35 @@ export const useDevicesStore = defineStore('devices', () => {
     }
 
     /**
+     * Device change event handler
+     */
+    const handleDeviceChange = () => {
+        if (hasMicrophoneAccess.value || hasCameraAccess.value) {
+            enumerateDevices();
+        }
+    };
+
+    /**
      * Initialize device change listener
      * Automatically re-enumerates devices when they are plugged/unplugged
      */
     function initializeDeviceChangeListener(): void {
         if (navigator.mediaDevices) {
-            navigator.mediaDevices.addEventListener('devicechange', () => {
-                if (hasMicrophoneAccess.value || hasCameraAccess.value) {
-                    enumerateDevices();
-                }
-            });
+            navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange);
         }
     }
 
     /**
-     * Cleanup all device streams
+     * Remove device change listener
+     */
+    function removeDeviceChangeListener(): void {
+        if (navigator.mediaDevices) {
+            navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange);
+        }
+    }
+
+    /**
+     * Cleanup all device streams and listeners
      */
     function cleanup(): void {
         const microphoneStore = useMicrophoneStore();
@@ -129,6 +143,7 @@ export const useDevicesStore = defineStore('devices', () => {
 
         microphoneStore.cleanup();
         cameraStore.cleanup();
+        removeDeviceChangeListener();
     }
 
     return {

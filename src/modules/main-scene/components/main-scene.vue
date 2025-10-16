@@ -2,6 +2,7 @@
     <main class="main-scene">
         <!-- <router-view /> -->
         <!-- <div>main</div> -->
+        <call-controls />
         <allow-devices-dialog
             @settings:toggle="toggleSettings"
         />
@@ -12,7 +13,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-import AllowDevicesDialog from '../../service-dialogs/components/allow-devices-dialog.vue';
+import CallControls from '../../meeting/components/call-controls.vue';
+import AllowDevicesDialog from './service-dialogs/allow-devices-dialog.vue';
 import DevicesConfigPanel from '../../devices/components/devices-config-panel.vue';
 
 const settings = ref(true);
