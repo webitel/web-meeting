@@ -1,14 +1,14 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { defineStore } from 'pinia';
+import { useDevicesList } from '@vueuse/core';
 
 export const useSpeakerStore = defineStore('devices/speaker', () => {
-    // Device list
-    const devices = ref<MediaDeviceInfo[]>([]);
+    const { audioOutputs: devices } = useDevicesList({
+        constraints: { audio: true },
+    });
 
-    // Selected device
     const selectedDeviceId = ref<string>('');
 
-    // Computed properties
     const selectedDevice = computed(() =>
         devices.value.find((device) => device.deviceId === selectedDeviceId.value)
     );
@@ -16,21 +16,17 @@ export const useSpeakerStore = defineStore('devices/speaker', () => {
     /**
      * Set speaker devices list
      */
-    function setDevices(deviceList: MediaDeviceInfo[]): void {
-        devices.value = deviceList;
-
-        // Auto-select first device if available and none selected
-        if (devices.value.length > 0 && !selectedDeviceId.value) {
-            selectedDeviceId.value = devices.value[0].deviceId;
+    watch(devices, (devices) => {
+        if (devices.length > 0 && !selectedDeviceId.value) {
+            selectedDeviceId.value = devices[0]?.deviceId ?? '';
         }
-    }
+    });
 
     /**
      * Set selected speaker
      */
     function setSelectedDevice(deviceId: string): void {
         selectedDeviceId.value = deviceId;
-        console.log('Speaker changed to:', deviceId);
     }
 
     /**
@@ -88,7 +84,6 @@ export const useSpeakerStore = defineStore('devices/speaker', () => {
         selectedDevice,
 
         // Actions
-        setDevices,
         setSelectedDevice,
         playTestBeep,
     };

@@ -1,89 +1,59 @@
 <template>
     <div class="device-group">
         <label for="camera-select">Camera:</label>
-        <select id="camera-select" :value="modelValue" @change="handleChange">
+        <select id="camera-select" :value="selectedDeviceId" @change="setSelectedDevice(($event.target as HTMLSelectElement).value)">
             <option value="">Select Camera</option>
             <option v-for="device in devices" :key="device.deviceId" :value="device.deviceId">
                 {{ device.label || `Camera ${device.deviceId.slice(0, 8)}` }}
             </option>
         </select>
 
-        <div v-if="modelValue" class="test-section">
+        <div class="test-section">
             <label class="test-label">Camera Preview:</label>
             <div class="video-container">
-                <video ref="videoElement" autoplay playsinline muted class="video-preview" />
+                <video
+                 :srcObject="stream" ref="cameraPreviewElement" autoplay playsinline muted class="video-preview" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onUnmounted } from 'vue';
+import { onUnmounted, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+
 import { useCameraStore } from '../stores/camera';
-
-interface Props {
-    devices: MediaDeviceInfo[];
-    modelValue: string;
-}
-
-interface Emits {
-    (e: 'update:modelValue', value: string): void;
-    (e: 'change', value: string): void;
-}
-
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
 
 const cameraStore = useCameraStore();
 
-const videoElement = ref<HTMLVideoElement | null>(null);
+const { 
+    devices, 
+    selectedDeviceId, 
+    stream,
+} = storeToRefs(cameraStore);
 
-function handleChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const value = target.value;
-    emit('update:modelValue', value);
-    emit('change', value);
-}
+const { 
+    startStream, 
+    stopStream, 
+    setSelectedDevice,
+    cleanup,
+ } = cameraStore;
 
-async function startCameraPreview(deviceId: string): Promise<void> {
-    try {
-        // Stop any existing stream
-        stopCameraPreview();
-
-        // Get camera stream from store
-        const stream = await cameraStore.getStream(deviceId);
-        if (!stream) return;
-
-        // Attach stream to video element
-        if (videoElement.value) {
-            videoElement.value.srcObject = stream;
-        }
-    } catch (error) {
-        console.error('Error starting camera preview:', error);
+watch(selectedDeviceId, async (newDeviceId) => {
+    if (stream.value) {
+        stopStream();
     }
-}
 
-function stopCameraPreview(): void {
-    // Stop stream via store
-    cameraStore.stopStream();
+    if (!newDeviceId) return;
 
-    if (videoElement.value) {
-        videoElement.value.srcObject = null;
-    }
-}
+    await startStream();
+    
+    if (!stream.value) return;
+    
+}, { immediate: true });
 
-// Watch for device changes
-watch(() => props.modelValue, (newValue) => {
-    if (newValue) {
-        startCameraPreview(newValue);
-    } else {
-        stopCameraPreview();
-    }
-});
-
-// Cleanup on unmount
 onUnmounted(() => {
-    stopCameraPreview();
+    cleanup();
 });
 </script>
 

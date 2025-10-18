@@ -1,14 +1,18 @@
 <template>
     <div class="device-group">
         <label for="speaker-select">Speaker:</label>
-        <select id="speaker-select" :value="modelValue" @change="handleChange">
+        <select
+            id="speaker-select"
+            :value="selectedDeviceId"
+            @change="setSelectedDevice(($event.target as HTMLSelectElement).value)"
+        >
             <option value="">Select Speaker</option>
             <option v-for="device in devices" :key="device.deviceId" :value="device.deviceId">
                 {{ device.label || `Speaker ${device.deviceId.slice(0, 8)}` }}
             </option>
         </select>
 
-        <div v-if="modelValue" class="test-section">
+        <div class="test-section">
             <button @click="playBeep" :disabled="isPlaying" class="test-button">
                 {{ isPlaying ? 'Playing...' : '🔊 Test Speaker' }}
             </button>
@@ -18,38 +22,28 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useSpeakerStore } from '../stores/speaker';
-
-interface Props {
-    devices: MediaDeviceInfo[];
-    modelValue: string;
-}
-
-interface Emits {
-    (e: 'update:modelValue', value: string): void;
-    (e: 'change', value: string): void;
-}
-
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
-
 const speakerStore = useSpeakerStore();
 
-const isPlaying = ref<boolean>(false);
+const { 
+    devices, 
+    selectedDeviceId, 
+} = storeToRefs(speakerStore);
 
-function handleChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const value = target.value;
-    emit('update:modelValue', value);
-    emit('change', value);
-}
+const { 
+    setSelectedDevice,
+    playTestBeep,
+ } = speakerStore;
+
+const isPlaying = ref(false);
 
 async function playBeep(): Promise<void> {
-    if (isPlaying.value || !props.modelValue) return;
+    if (isPlaying.value || !selectedDeviceId.value) return;
 
     try {
         isPlaying.value = true;
-        await speakerStore.playTestBeep(props.modelValue);
+        await playTestBeep(selectedDeviceId.value);
     } catch (error) {
         console.error('Error playing beep:', error);
     } finally {

@@ -9,6 +9,12 @@
             <h2>Camera</h2>
             <p>{{ hasCameraAccess }}</p>
         </div>
+        <wt-button
+            :loading="isRequesting"
+            color="success"
+           @click="requestDeviceAccess">
+            Request Device Access
+        </wt-button>
         <wt-button @click="emit('settings:toggle')">
             Toggle Settings
         </wt-button>
@@ -26,7 +32,15 @@ const emit = defineEmits<{
 }>();
 
 const devicesStore = useDevicesStore();
-const { hasMicrophoneAccess, hasCameraAccess } = storeToRefs(devicesStore);
+const { 
+    isRequesting, 
+    hasMicrophoneAccess,
+    hasCameraAccess,
+ } = storeToRefs(devicesStore);
+
+const { 
+    requestDeviceAccess,
+ } = devicesStore;
 
 
 </script>

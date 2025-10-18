@@ -1,48 +1,42 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { defineStore } from 'pinia';
+import { useDevicesList } from '@vueuse/core';
 
 export const useCameraStore = defineStore('devices/camera', () => {
-    // Device list
-    const devices = ref<MediaDeviceInfo[]>([]);
+    
+    const { videoInputs: devices } = useDevicesList({
+        constraints: { video: true },
+    });
 
-    // Selected device
     const selectedDeviceId = ref<string>('');
 
-    // Testing state
     const stream = ref<MediaStream | null>(null);
 
-    // Computed properties
     const selectedDevice = computed(() =>
         devices.value.find((device) => device.deviceId === selectedDeviceId.value)
     );
 
-    /**
-     * Set camera devices list
-     */
-    function setDevices(deviceList: MediaDeviceInfo[]): void {
-        devices.value = deviceList;
-
-        // Auto-select first device if available and none selected
-        if (devices.value.length > 0 && !selectedDeviceId.value) {
-            selectedDeviceId.value = devices.value[0].deviceId;
+    watch(devices, (devices) => {
+        if (devices?.length > 0 && !selectedDeviceId.value) {
+            selectedDeviceId.value = devices[0]?.deviceId ?? '';
         }
-    }
+    });
 
     /**
      * Set selected camera
      */
     function setSelectedDevice(deviceId: string): void {
         selectedDeviceId.value = deviceId;
-        console.log('Camera changed to:', deviceId);
     }
 
     /**
-     * Get camera stream for testing
+     * Start camera stream for testing
      */
-    async function getStream(deviceId: string): Promise<MediaStream | null> {
-        try {
+    async function startStream(deviceId: string = selectedDeviceId.value): Promise<MediaStream | null> {
             // Stop any existing stream
             stopStream();
+
+            if (!deviceId) return null;
 
             // Get camera stream
             const newStream = await navigator.mediaDevices.getUserMedia({
@@ -51,10 +45,7 @@ export const useCameraStore = defineStore('devices/camera', () => {
 
             stream.value = newStream;
             return newStream;
-        } catch (error) {
-            console.error('Error getting camera stream:', error);
-            return null;
-        }
+        
     }
 
     /**
@@ -84,9 +75,8 @@ export const useCameraStore = defineStore('devices/camera', () => {
         selectedDevice,
 
         // Actions
-        setDevices,
         setSelectedDevice,
-        getStream,
+        startStream,
         stopStream,
         cleanup,
     };

@@ -1,48 +1,39 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { defineStore } from 'pinia';
+import { useDevicesList } from '@vueuse/core';
 
 export const useMicrophoneStore = defineStore('devices/microphone', () => {
-    // Device list
-    const devices = ref<MediaDeviceInfo[]>([]);
 
-    // Selected device
+    const { audioInputs: devices } = useDevicesList({
+        constraints: { audio: true },
+    });
+
     const selectedDeviceId = ref<string>('');
 
-    // Testing state
     const stream = ref<MediaStream | null>(null);
 
-    // Computed properties
     const selectedDevice = computed(() =>
         devices.value.find((device) => device.deviceId === selectedDeviceId.value)
     );
 
-    /**
-     * Set microphone devices list
-     */
-    function setDevices(deviceList: MediaDeviceInfo[]): void {
-        devices.value = deviceList;
-
-        // Auto-select first device if available and none selected
-        if (devices.value.length > 0 && !selectedDeviceId.value) {
-            selectedDeviceId.value = devices.value[0].deviceId;
+    watch(devices, (devices) => {
+        if (devices?.length > 0 && !selectedDeviceId.value) {
+            selectedDeviceId.value = devices[0]?.deviceId ?? '';
         }
-    }
+    });
 
-    /**
-     * Set selected microphone
-     */
     function setSelectedDevice(deviceId: string): void {
         selectedDeviceId.value = deviceId;
-        console.log('Microphone changed to:', deviceId);
     }
 
     /**
-     * Get microphone stream for testing
+     * Start microphone stream for testing
      */
-    async function getStream(deviceId: string): Promise<MediaStream | null> {
-        try {
+    async function startStream(deviceId: string = selectedDeviceId.value): Promise<MediaStream | null> {
             // Stop any existing stream
             stopStream();
+
+            if (!deviceId) return null;
 
             // Get microphone stream
             const newStream = await navigator.mediaDevices.getUserMedia({
@@ -51,20 +42,16 @@ export const useMicrophoneStore = defineStore('devices/microphone', () => {
 
             stream.value = newStream;
             return newStream;
-        } catch (error) {
-            console.error('Error getting microphone stream:', error);
-            return null;
-        }
     }
 
     /**
      * Stop microphone stream
      */
     function stopStream(): void {
-        if (stream.value) {
-            stream.value.getTracks().forEach((track) => track.stop());
-            stream.value = null;
-        }
+        if (!stream.value) return;
+
+        stream.value.getTracks().forEach((track) => track.stop());
+        stream.value = null;
     }
 
     /**
@@ -84,9 +71,8 @@ export const useMicrophoneStore = defineStore('devices/microphone', () => {
         selectedDevice,
 
         // Actions
-        setDevices,
         setSelectedDevice,
-        getStream,
+        startStream,
         stopStream,
         cleanup,
     };
