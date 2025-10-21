@@ -9,10 +9,7 @@
             <h2>Camera</h2>
             <p>{{ hasCameraAccess }}</p>
         </div>
-        <wt-button
-            :loading="isRequesting"
-            color="success"
-           @click="requestDeviceAccess">
+        <wt-button :loading="isRequesting" color="success" @click="requestDeviceAccess">
             Request Device Access
         </wt-button>
         <wt-button @click="emit('settings:toggle')">
@@ -24,27 +21,25 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 
-import ServiceDialog from './shared/service-dialog.vue';
-import { useDevicesStore } from '../../../devices/stores/devices';
+import ServiceDialog from '../../main-scene/components/shared/service-dialog.vue';
+import { useDevicesStore } from '../../devices/stores/devices';
 
 const emit = defineEmits<{
     'settings:toggle': [];
 }>();
 
 const devicesStore = useDevicesStore();
-const { 
-    isRequesting, 
+const {
+    isRequesting,
     hasMicrophoneAccess,
     hasCameraAccess,
- } = storeToRefs(devicesStore);
+} = storeToRefs(devicesStore);
 
-const { 
+const {
     requestDeviceAccess,
- } = devicesStore;
+} = devicesStore;
 
 
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

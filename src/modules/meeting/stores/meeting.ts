@@ -1,8 +1,9 @@
-import { ref, computed, markRaw } from 'vue';
+import { ref, computed, markRaw, watch } from 'vue';
 import { defineStore } from 'pinia';
 import JsSIP from 'jssip';
 import type { UA, WebSocketInterface } from 'jssip/lib/JsSIP';
 import type { RTCSession } from 'jssip/lib/RTCSession';
+import { useTimeAgo, type UseTimeAgoOptions } from '@vueuse/core';
 
 /**
  * Session states for the call
@@ -46,6 +47,13 @@ export const useMeetingStore = defineStore('meeting', () => {
         return duration < 0 ? 0 : duration;
     });
 
+    const timeAgo = useTimeAgo(Date.now(), {
+        updateInterval: 1,
+    });
+    watch(timeAgo, (newTimeAgo) => {
+        console.log('timeAgo', newTimeAgo);
+    });
+
     /**
      * Initialize the JsSIP User Agent
      */
@@ -71,7 +79,6 @@ export const useMeetingStore = defineStore('meeting', () => {
                     register_expires: 90,
                     session_timers: true,
                 };
-                console.log('configuration', configuration);
 
                 const ua = new JsSIP.UA(configuration);
                 ua.start();

@@ -50,8 +50,8 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useMeetingStore } from '../stores/meeting';
-import { SessionState } from '../stores/meeting';
+import { useMeetingStore } from '../../../stores/meeting';
+import { SessionState } from '../../../stores/meeting';
 
 const meeting = useMeetingStore();
 const callTarget = ref('00');

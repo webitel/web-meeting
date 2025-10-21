@@ -1,27 +1,40 @@
 <template>
     <main class="main-scene">
-        <!-- <router-view /> -->
-        <!-- <div>main</div> -->
-        <call-controls />
-        <allow-devices-dialog
-            @settings:toggle="toggleSettings"
-        />
-        <devices-config-panel v-if="settings" />
+        <component :is="sceneComponent" />
+        <devices-config-panel v-if="openedDevicesSettingsPanel" />
     </main>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
-import CallControls from '../../meeting/components/call-controls.vue';
-import AllowDevicesDialog from './service-dialogs/allow-devices-dialog.vue';
-import DevicesConfigPanel from '../../devices/components/devices-config-panel.vue';
+import MeetingContainer from '../../meeting/components/meeting-container.vue';
+import AllowDevicesDialog from '../../service-dialogs/components/allow-devices-dialog.vue';
+import JoinDialog from '../../service-dialogs/components/join-dialog.vue';
+import DevicesConfigPanel from '../../devices/components/devices-settings-panel.vue';
+import { useMainSceneStore } from '../stores/mainScene';
+import { SceneState } from '../enums/SceneState';
 
-const settings = ref(true);
+const mainSceneStore = useMainSceneStore();
+const { 
+    sceneState, 
+    openedDevicesSettingsPanel,
+ } = storeToRefs(mainSceneStore);
 
-function toggleSettings() {
-    settings.value = !settings.value;
-}
+const sceneComponent = computed(() => {
+    switch (sceneState.value) {
+        case SceneState.AllowDevicesDialog:
+            return AllowDevicesDialog;
+        case SceneState.JoinDialog:
+            return JoinDialog;
+        case SceneState.ActiveMeeting:
+            return MeetingContainer;
+        default:
+            return null;
+    }
+});
+
 </script>
 
 <style scoped>
@@ -37,5 +50,4 @@ function toggleSettings() {
     min-height: 100%;
     background: var(--brand-gradient-45);
 }
-
 </style>
