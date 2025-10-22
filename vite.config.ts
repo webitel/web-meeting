@@ -26,4 +26,8 @@ export default defineConfig({
     },
     dedupe: ['vue'],
   },
+  // fixes "has no export named "default" (or not default)
+  // optimizeDeps: {
+  //   include: ['ee-ts', 'webitel-sdk', 'deepmerge', 'deep-copy', 'lodash-es', 'lodash', '@webitel/ui-sdk'],
+  // },
 })
