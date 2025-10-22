@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import MeetingContainer from '../../meeting/components/meeting-container.vue';

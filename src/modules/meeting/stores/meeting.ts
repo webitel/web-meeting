@@ -238,7 +238,7 @@ export const useMeetingStore = defineStore('meeting', () => {
             sessionState.value = SessionState.CONNECTING;
 
             // Set video enabled state
-            videoEnabled.value = options?.withVideo ?? false;
+            videoEnabled.value = options?.withVideo ?? true;
 
             // Start user agent if not already started
             if (!userAgent.value) {

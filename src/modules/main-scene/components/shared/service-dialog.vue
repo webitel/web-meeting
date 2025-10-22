@@ -8,7 +8,7 @@
             </slot> 
         </header>
         <main class="service-dialog__main">
-            <slot />
+            <slot name="main" />
         </main>
         <footer class="service-dialog__footer">
             <slot name="footer">
