@@ -23,11 +23,12 @@ export default defineConfig({
         __dirname,
         'src/app/api/instance',
       ),
+      'lodash': 'lodash-es',
     },
     dedupe: ['vue'],
   },
   // fixes "has no export named "default" (or not default)
-  // optimizeDeps: {
-  //   include: ['ee-ts', 'webitel-sdk', 'deepmerge', 'deep-copy', 'lodash-es', 'lodash', '@webitel/ui-sdk'],
-  // },
+  optimizeDeps: {
+    include: ['ee-ts', 'webitel-sdk', 'deepmerge', 'deep-copy', 'deep-equal', 'clipboard-copy', 'lodash-es'],
+  },
 })
