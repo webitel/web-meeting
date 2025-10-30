@@ -1,9 +1,5 @@
 <template>
-    <wt-rounded-action
-        :icon="props.state ? 'mic' : 'mic-muted'"
-        :disabled="!allowed"
-        @click="onToggle"
-    />
+    <wt-rounded-action :icon="props.state ? 'mic' : 'mic-muted'" :disabled="!allowed" @click="onToggle" />
 </template>
 
 <script setup lang="ts">
@@ -22,11 +18,11 @@ const emit = defineEmits<{
 
 const devicesStore = useDevicesStore();
 const { hasMicrophoneAccess: allowed } = storeToRefs(devicesStore);
-const { requestDeviceAccess } = devicesStore;
+const { requestAudioAccess } = devicesStore;
 
 function onToggle() {
     if (!allowed.value) {
-        requestDeviceAccess();
+        requestAudioAccess();
     } else {
         emit('toggle');
     }

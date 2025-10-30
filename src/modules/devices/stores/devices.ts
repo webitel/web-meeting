@@ -10,12 +10,27 @@ import { useCameraStore } from '../modules/camera/stores/camera';
  * Handles device enumeration, permissions, and coordination between individual device stores
  */
 export const useDevicesStore = defineStore('devices', () => {
-    // Use VueUse's device management
+    // 1. Audio only
     const {
-        ensurePermissions,
-        permissionGranted,
+        ensurePermissions: ensureAudioPermissions,
+        permissionGranted: audioPermissionGranted,
     } = useDevicesList({
-        // requestPermissions: true, // if true, watchers below should be immediate!!
+        constraints: { audio: true, video: false },
+    });
+
+    // 2. Video only
+    const {
+        ensurePermissions: ensureVideoPermissions,
+        permissionGranted: videoPermissionGranted,
+    } = useDevicesList({
+        constraints: { audio: false, video: true },
+    });
+
+    // 3. All together (audio + video)
+    const {
+        ensurePermissions: ensureAllPermissions,
+        permissionGranted: allPermissionsGranted,
+    } = useDevicesList({
         constraints: { audio: true, video: true },
     });
 
@@ -23,30 +38,67 @@ export const useDevicesStore = defineStore('devices', () => {
     const error = ref<string>('');
 
     /**
-     * Request browser access to media devices (microphone, camera)
+     * Request browser access to audio device (microphone)
      */
-    async function requestDeviceAccess(): Promise<void> {
+    async function requestAudioAccess(): Promise<void> {
         isRequesting.value = true;
         error.value = '';
 
         try {
-            await ensurePermissions();
+            await ensureAudioPermissions();
         } catch (err) {
             error.value = err instanceof Error ? err.message : String(err);
             throw err;
         } finally {
             isRequesting.value = false;
         }
-    }   
+    }
+
+    /**
+     * Request browser access to video device (camera)
+     */
+    async function requestVideoAccess(): Promise<void> {
+        isRequesting.value = true;
+        error.value = '';
+
+        try {
+            await ensureVideoPermissions();
+        } catch (err) {
+            error.value = err instanceof Error ? err.message : String(err);
+            throw err;
+        } finally {
+            isRequesting.value = false;
+        }
+    }
+
+    /**
+     * Request browser access to all devices (audio and video)
+     */
+    async function requestDeviceAccess(): Promise<void> {
+        isRequesting.value = true;
+        error.value = '';
+
+        try {
+            await ensureAllPermissions();
+        } catch (err) {
+            error.value = err instanceof Error ? err.message : String(err);
+            throw err;
+        } finally {
+            isRequesting.value = false;
+        }
+    }
 
     return {
         // State
-        hasMicrophoneAccess: permissionGranted,
-        hasCameraAccess: permissionGranted,
+        hasMicrophoneAccess: audioPermissionGranted,
+        hasCameraAccess: videoPermissionGranted,
+        hasAllAccess: allPermissionsGranted,
         isRequesting,
         error,
 
         // Actions
+        requestAudioAccess,
+        requestVideoAccess,
         requestDeviceAccess,
     };
 });

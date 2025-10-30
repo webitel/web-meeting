@@ -7,11 +7,11 @@
             </p>
         
 
-            <microphone-select />
+            <!-- <microphone-select />
 
             <speaker-select />
 
-            <camera-select />
+            <camera-select /> -->
         
     </section>
 </template>
@@ -71,7 +71,7 @@ watch(selectedSpeakerId, async (newDeviceId) => {
     }
 });
 
-onMounted(async () => {
+onMounted(() => {
     requestDeviceAccess();
 });
 
