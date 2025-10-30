@@ -1,12 +1,11 @@
 <template>
     <div class="meeting-call">
-        <call-controls />
+        <video-container />
     </div>
 </template>
 
 <script setup lang="ts">
-import CallControls from './call-controls.vue';
+import VideoContainer from './video/video-container.vue';
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

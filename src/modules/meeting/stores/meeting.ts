@@ -31,8 +31,8 @@ export const useMeetingStore = defineStore('meeting', () => {
 
     // Session state
     const sessionState = ref<SessionState | null>(null);
-    const sessionMute = ref<boolean>(false);
-    const videoEnabled = ref<boolean>(false);
+    const sessionMute = computed(() => session.value ? session.value.isMuted().audio : false);
+    const videoEnabled = computed(() => session.value ? !session.value.isMuted().video : false);
 
     // Session timing
     const sessionStartTime = ref<Date | null>(null);
@@ -216,8 +216,6 @@ export const useMeetingStore = defineStore('meeting', () => {
 
         // Reset state
         sessionState.value = null;
-        sessionMute.value = false;
-        videoEnabled.value = false;
         session.value = null;
         sessionStartTime.value = null;
 
@@ -229,15 +227,12 @@ export const useMeetingStore = defineStore('meeting', () => {
      * Make a call to a specific target
      */
     async function makeCall(target: string, options?: {
-        initWithMuted?: boolean;
+        withAudio?: boolean;
         withVideo?: boolean;
     }): Promise<void> {
         try {
             startNowWatcher();
             sessionState.value = SessionState.CONNECTING;
-
-            // Set video enabled state
-            videoEnabled.value = options?.withVideo ?? true;
 
             // Start user agent if not already started
             if (!userAgent.value) {
@@ -262,20 +257,14 @@ export const useMeetingStore = defineStore('meeting', () => {
                     }
 
                     // Initialize video streams if video is enabled
-                    if (videoEnabled.value) {
+                    if (options?.withVideo) {
                         initVideo();
                     }
 
                     // Apply initial mute if requested
-                    if (options?.initWithMuted) {
-                        toggleMute(true);
+                    if (options?.withAudio === false) {
+                        mute();
                     }
-                },
-                muted: () => {
-                    sessionMute.value = true;
-                },
-                unmuted: () => {
-                    sessionMute.value = false;
                 },
                 failed: (event: any) => {
                     console.error('Call failed:', event);
@@ -290,8 +279,8 @@ export const useMeetingStore = defineStore('meeting', () => {
             const callOptions = {
                 eventHandlers,
                 mediaConstraints: {
-                    audio: true,
-                    video: true || videoEnabled.value,
+                    audio: options?.withAudio ?? true,
+                    video: options?.withVideo ?? true,
                 },
                 sessionTimersExpires: 300,
             };
@@ -318,57 +307,46 @@ export const useMeetingStore = defineStore('meeting', () => {
         }
     }
 
+    window.addEventListener('beforeunload', () => {
+        hangup();
+    });
+
+    function mute(): void {
+        session.value!.mute({ audio: true });
+    }
+
+    function unmute(): void {
+        session.value!.unmute({ audio: true });
+    }
+
+    function disableVideo(): void {
+        session.value!.mute({ video: true });
+    }
+
+    function enableVideo(): void {
+        session.value!.unmute({ video: true });
+        initVideo();
+    }
+
     /**
      * Toggle mute state
      */
-    function toggleMute(value?: boolean): void {
-        if (!session.value) return;
-
-        // If explicit value is provided
-        if (value !== undefined && typeof value === 'boolean') {
-            if (value) {
-                session.value.mute({ audio: true });
-            } else {
-                session.value.unmute({ audio: true });
-            }
-            return;
-        }
-
-        // Toggle based on current state
-        if (session.value.isMuted().audio) {
-            session.value.unmute({ audio: true });
+    function toggleMute(): void {
+        if (sessionMute.value) {
+            unmute();
         } else {
-            session.value.mute({ audio: true });
+            mute();
         }
     }
 
     /**
      * Toggle video state
      */
-    function toggleVideo(value?: boolean): void {
-        if (!session.value) return;
-
-        // If explicit value is provided
-        if (value !== undefined && typeof value === 'boolean') {
-            if (value) {
-                session.value.unmute({ video: true });
-                videoEnabled.value = true;
-                initVideo();
-            } else {
-                session.value.mute({ video: true });
-                videoEnabled.value = false;
-            }
-            return;
-        }
-
-        // Toggle based on current state
-        if (session.value.isMuted().video) {
-            session.value.unmute({ video: true });
-            videoEnabled.value = true;
-            initVideo();
+    function toggleVideo(): void {
+        if (videoEnabled.value) {
+            disableVideo();
         } else {
-            session.value.mute({ video: true });
-            videoEnabled.value = false;
+            enableVideo();
         }
     }
 
@@ -509,6 +487,10 @@ export const useMeetingStore = defineStore('meeting', () => {
         closeUserAgent,
         makeCall,
         hangup,
+        mute,
+        unmute,
+        disableVideo,
+        enableVideo,
         toggleMute,
         toggleVideo,
         changeMicrophone,
