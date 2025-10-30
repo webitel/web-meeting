@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-// import { WtRoundedAction } from '@webitel/ui-sdk/components';
+import { WtRoundedAction } from '@webitel/ui-sdk/components';
 
 const props = defineProps<{
     state: boolean;

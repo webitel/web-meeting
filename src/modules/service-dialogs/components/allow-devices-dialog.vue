@@ -10,13 +10,14 @@
             </wt-button>
         </template>
         <template #actions>
-        <device-actions-bar />            
+        <device-actions-bar />
         </template>
     </service-dialog>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { WtButton } from '@webitel/ui-sdk/components';
 
 import { useDevicesStore } from '../../devices/stores/devices';
 import ServiceDialog from '../../main-scene/components/shared/service-dialog.vue';

@@ -9,7 +9,6 @@ import { useTimeAgo, type UseTimeAgoOptions } from '@vueuse/core';
  * Session states for the call
  */
 export enum SessionState {
-    IDLE = 'IDLE',
     CONNECTING = 'CONNECTING',
     RINGING = 'RINGING',
     ACTIVE = 'ACTIVE',
@@ -31,7 +30,7 @@ export const useMeetingStore = defineStore('meeting', () => {
     const remoteVideoStream = ref<MediaStream | null>(null);
 
     // Session state
-    const sessionState = ref<SessionState>(SessionState.IDLE);
+    const sessionState = ref<SessionState | null>(null);
     const sessionMute = ref<boolean>(false);
     const videoEnabled = ref<boolean>(false);
 
@@ -216,7 +215,7 @@ export const useMeetingStore = defineStore('meeting', () => {
         }
 
         // Reset state
-        sessionState.value = SessionState.IDLE;
+        sessionState.value = null;
         sessionMute.value = false;
         videoEnabled.value = false;
         session.value = null;
@@ -305,7 +304,7 @@ export const useMeetingStore = defineStore('meeting', () => {
 
         } catch (err) {
             console.error('Failed to make call:', err);
-            sessionState.value = SessionState.IDLE;
+            sessionState.value = null;
             throw err;
         }
     }

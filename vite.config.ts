@@ -1,5 +1,3 @@
-import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
@@ -7,6 +5,13 @@ import { resolve } from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  build: {
+    chunkSizeWarningLimit: 20000,
+    rolldownOptions: {
+      external: ['webitel-sdk'],
+      
+    },
+  },
   plugins: [
     vue(),
     vueDevTools({
@@ -29,6 +34,6 @@ export default defineConfig({
   },
   // fixes "has no export named "default" (or not default)
   optimizeDeps: {
-    include: ['ee-ts', 'webitel-sdk', 'deepmerge', 'deep-copy', 'deep-equal', 'clipboard-copy', 'lodash-es'],
+    include: ['ee-ts', 'deepmerge', 'deep-copy', 'deep-equal', 'clipboard-copy', 'webitel-sdk'],
   },
 })

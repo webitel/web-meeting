@@ -17,6 +17,8 @@
 </template>
 
 <script setup lang="ts">
+import { WtButton } from '@webitel/ui-sdk/components';
+
 import ServiceDialog from '../../main-scene/components/shared/service-dialog.vue';
 import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 import { useMeetingStore } from '../../meeting/stores/meeting';

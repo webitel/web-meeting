@@ -28,7 +28,8 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { watch, onUnmounted, onMounted } from 'vue';
+import { watch, onUnmounted } from 'vue';
+import { WtLoadBar } from '@webitel/ui-sdk/components';
 
 import { useMicrophoneStore } from '../stores/microphone';
 import { useMicrophoneVolume } from '../composables/useMicrophoneVolume';

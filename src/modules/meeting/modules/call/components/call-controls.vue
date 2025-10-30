@@ -1,35 +1,12 @@
 <template>
     <div class="call-controls">
-        <div v-if="meeting.sessionState === SessionState.IDLE" class="call-setup">
-            <input v-model="callTarget" type="text" placeholder="Enter SIP URI (e.g., sip:100@domain.com)" />
-            <div class="options">
-                <label>
-                    <input v-model="withVideo" type="checkbox" />
-                    Enable video
-                </label>
-            </div>
-            <button @click="handleMakeCall" class="call-button">Make Call</button>
-        </div>
-
-        <div v-else class="call-active">
+        <div class="call-active">
             <p class="status">Status: {{ meeting.sessionState }}</p>
             <p v-if="meeting.sessionDuration" class="duration">
                 Duration: {{ formatDuration(meeting.sessionDuration) }}
             </p>
             {{ meeting.remoteVideoStream }}
             {{ meeting.localVideoStream }}
-
-            <!-- Video containers -->
-            <div v-if="meeting.videoEnabled" class="video-container" style="width: 1000px;">
-                <div class="video-wrapper remote-video">
-                    <video ref="remoteVideoEl" :srcObject.prop="meeting.remoteVideoStream" autoplay playsinline />
-                    <span class="video-label">Remote</span>
-                </div>
-                <div class="video-wrapper local-video">
-                    <video ref="localVideoEl" :srcObject.prop="meeting.localVideoStream" autoplay playsinline muted />
-                    <span class="video-label">You</span>
-                </div>
-            </div>
 
             <!-- Call controls -->
             <div class="controls">
@@ -51,7 +28,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useMeetingStore } from '../../../stores/meeting';
-import { SessionState } from '../../../stores/meeting';
 
 const meeting = useMeetingStore();
 const callTarget = ref('00');
@@ -194,55 +170,6 @@ button.active:hover {
     font-weight: 700;
     margin: 15px 0;
     color: #333;
-}
-
-.video-container {
-    position: relative;
-    margin: 20px 0;
-    background-color: #000;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.video-wrapper {
-    position: relative;
-}
-
-.video-wrapper.remote-video {
-    width: 100%;
-    aspect-ratio: 16/9;
-    background-color: #1a1a1a;
-}
-
-.video-wrapper.local-video {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 200px;
-    aspect-ratio: 4/3;
-    background-color: #2a2a2a;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 2px solid #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.video-label {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
 }
 
 .controls {
