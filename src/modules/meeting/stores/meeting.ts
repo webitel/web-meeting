@@ -31,8 +31,6 @@ export const useMeetingStore = defineStore('meeting', () => {
 
     // Session state
     const sessionState = ref<SessionState | null>(null);
-    const sessionMute = computed(() => session.value ? session.value.isMuted().audio : false);
-    const videoEnabled = computed(() => session.value ? !session.value.isMuted().video : false);
 
     // Session timing
     const sessionStartTime = ref<Date | null>(null);
@@ -46,12 +44,8 @@ export const useMeetingStore = defineStore('meeting', () => {
         return duration < 0 ? 0 : duration;
     });
 
-    const timeAgo = useTimeAgo(Date.now(), {
-        updateInterval: 1,
-    });
-    watch(timeAgo, (newTimeAgo) => {
-        console.log('timeAgo', newTimeAgo);
-    });
+    const microphoneEnabled = computed(() => session.value ? session.value.isMuted().audio : false);
+    const videoEnabled = computed(() => session.value ? !session.value.isMuted().video : false);
 
     /**
      * Initialize the JsSIP User Agent
@@ -332,7 +326,7 @@ export const useMeetingStore = defineStore('meeting', () => {
      * Toggle mute state
      */
     function toggleMute(): void {
-        if (sessionMute.value) {
+        if (microphoneEnabled.value) {
             unmute();
         } else {
             mute();
@@ -353,107 +347,74 @@ export const useMeetingStore = defineStore('meeting', () => {
     /**
      * Change microphone during active call
      */
-    async function changeMicrophone(deviceId: string): Promise<void> {
-        if (!session.value || !session.value.connection) {
-            console.warn('No active session to change microphone');
-            return;
-        }
+    async function changeMicrophone(deviceId: string) {
 
-        try {
-            // Get new audio stream with selected device
-            const newStream = await navigator.mediaDevices.getUserMedia({
-                audio: { deviceId: { exact: deviceId } }
-            });
+        // Get new audio stream with selected device
+        const newStream = await navigator.mediaDevices.getUserMedia({
+            audio: { deviceId: { exact: deviceId } }
+        });
 
-            const newAudioTrack = newStream.getAudioTracks()[0];
+        const newAudioTrack = newStream.getAudioTracks()[0];
 
-            // Find the audio sender in the peer connection
-            const audioSender = session.value.connection
-                .getSenders()
-                .find(sender => sender.track?.kind === 'audio');
+        // Find the audio sender in the peer connection
+        const audioSender = session.value!.connection
+            .getSenders()
+            .find(sender => sender.track?.kind === 'audio');
 
-            if (audioSender && newAudioTrack) {
-                // Replace the old track with the new one
-                await audioSender.replaceTrack(newAudioTrack);
+        const oldTrack = audioSender?.track;
 
-                // Stop the old track
-                const oldTrack = audioSender.track;
-                if (oldTrack) {
-                    oldTrack.stop();
-                }
+        if (audioSender && newAudioTrack) {
+            // Replace the old track with the new one
+            await audioSender.replaceTrack(newAudioTrack);
 
-                console.log('Microphone changed successfully to:', deviceId);
-            }
-        } catch (error) {
-            console.error('Failed to change microphone:', error);
-            throw error;
+            // Stop the old track
+            oldTrack?.stop();
         }
     }
 
     /**
      * Change camera during active call
      */
-    async function changeCamera(deviceId: string): Promise<void> {
-        if (!session.value || !session.value.connection) {
-            console.warn('No active session to change camera');
-            return;
-        }
+    async function changeCamera(deviceId: string) {
 
-        try {
-            // Get new video stream with selected device
-            const newStream = await navigator.mediaDevices.getUserMedia({
-                video: { deviceId: { exact: deviceId } }
-            });
+        // Get new video stream with selected device
+        const newStream = await navigator.mediaDevices.getUserMedia({
+            video: { deviceId: { exact: deviceId } }
+        });
 
-            const newVideoTrack = newStream.getVideoTracks()[0];
+        const newVideoTrack = newStream.getVideoTracks()[0];
 
-            // Find the video sender in the peer connection
-            const videoSender = session.value.connection
-                .getSenders()
-                .find(sender => sender.track?.kind === 'video');
+        // Find the video sender in the peer connection
+        const videoSender = session.value!.connection
+            .getSenders()
+            .find(sender => sender.track?.kind === 'video');
 
-            if (videoSender && newVideoTrack) {
-                // Replace the old track with the new one
-                await videoSender.replaceTrack(newVideoTrack);
+        const oldTrack = videoSender?.track;
 
-                // Stop the old track
-                const oldTrack = videoSender.track;
-                if (oldTrack) {
-                    oldTrack.stop();
-                }
+        if (videoSender && newVideoTrack) {
+            // Replace the old track with the new one
+            await videoSender.replaceTrack(newVideoTrack);
 
-                // Update local video stream
-                localVideoStream.value = newStream;
 
-                console.log('Camera changed successfully to:', deviceId);
-            }
-        } catch (error) {
-            console.error('Failed to change camera:', error);
-            throw error;
+            // Update local video stream
+            localVideoStream.value = newStream;
+
+            // Stop the old track
+            oldTrack?.stop();
         }
     }
 
     /**
      * Change speaker (audio output)
      */
-    async function changeSpeaker(deviceId: string): Promise<void> {
-        if (!sessionAudio.value) {
-            console.warn('No audio element to change speaker');
-            return;
-        }
-
-        try {
+    async function changeSpeaker(deviceId: string) {
             // Use setSinkId to change the audio output device
             if ('setSinkId' in sessionAudio.value) {
                 await (sessionAudio.value as any).setSinkId(deviceId);
-                console.log('Speaker changed successfully to:', deviceId);
             } else {
                 console.warn('setSinkId is not supported in this browser');
             }
-        } catch (error) {
-            console.error('Failed to change speaker:', error);
-            throw error;
-        }
+
     }
 
     /**
@@ -475,7 +436,7 @@ export const useMeetingStore = defineStore('meeting', () => {
         localVideoStream,
         remoteVideoStream,
         sessionState,
-        sessionMute,
+        microphoneEnabled,
         videoEnabled,
         sessionStartTime,
 

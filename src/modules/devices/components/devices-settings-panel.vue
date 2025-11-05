@@ -7,11 +7,11 @@
             </p>
         
 
-            <!-- <microphone-select />
+            <microphone-select />
 
-            <speaker-select />
+            <!-- <speaker-select /> -->
 
-            <camera-select /> -->
+            <camera-select />
         
     </section>
 </template>
@@ -37,7 +37,7 @@ const speakerStore = useSpeakerStore();
 const cameraStore = useCameraStore();
 const meetingStore = useMeetingStore();
 
-const { hasMicrophoneAccess, hasCameraAccess, isRequesting, error } = storeToRefs(devicesStore);
+const { permissionGranted, error } = storeToRefs(devicesStore);
 const { requestDeviceAccess } = devicesStore;
 
 // Destructure state from individual device stores
@@ -46,33 +46,35 @@ const { devices: speakers, selectedDeviceId: selectedSpeakerId } = storeToRefs(s
 const { devices: cameras, selectedDeviceId: selectedCameraId } = storeToRefs(cameraStore);
 
 // Destructure meeting store state
-const { sessionState, videoEnabled } = storeToRefs(meetingStore);
+const { sessionState, videoEnabled, microphoneEnabled } = storeToRefs(meetingStore);
 
 const { changeMicrophone, changeCamera, changeSpeaker } = meetingStore;
 
 // Watch for microphone changes and update active call
 watch(selectedMicrophoneId, async (newDeviceId) => {
-    if (newDeviceId && sessionState.value === SessionState.ACTIVE) {
+    if (newDeviceId && sessionState.value === SessionState.ACTIVE && microphoneEnabled.value) {
         await changeMicrophone(newDeviceId);
     }
 });
 
-// Watch for camera changes and update active call
+// // Watch for camera changes and update active call
 watch(selectedCameraId, async (newDeviceId) => {
     if (newDeviceId && sessionState.value === SessionState.ACTIVE && videoEnabled.value) {
         await changeCamera(newDeviceId);
     }
 });
 
-// Watch for speaker changes and update active call
-watch(selectedSpeakerId, async (newDeviceId) => {
-    if (newDeviceId && sessionState.value === SessionState.ACTIVE) {
-        await changeSpeaker(newDeviceId);
-    }
-});
+// // Watch for speaker changes and update active call
+// watch(selectedSpeakerId, async (newDeviceId) => {
+//     if (newDeviceId && sessionState.value === SessionState.ACTIVE) {
+//         await changeSpeaker(newDeviceId);
+//     }
+// });
 
-onMounted(() => {
-    requestDeviceAccess();
+onMounted(async () => {
+    if (!permissionGranted.value) {
+        await requestDeviceAccess();
+    }
 });
 
 onUnmounted(() => {

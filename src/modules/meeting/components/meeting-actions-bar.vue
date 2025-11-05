@@ -1,7 +1,7 @@
 <template>
     <meeting-actions-bar>
-        <microphone-toggle-action :state="sessionMute" allowed="true" @toggle="toggleMute" />
-        <video-toggle-action :state="videoEnabled" allowed="true" @toggle="toggleVideo" />
+        <microphone-toggle-action :state="sessionMute" @toggle="toggleMute" />
+        <video-toggle-action :state="videoEnabled" @toggle="toggleVideo" />
         <settings-toggle-action :state="openedDevicesSettingsPanel" @toggle="toggleDevicesSettingsPanel" />
         <handup-action @click="hangup" />
     </meeting-actions-bar>

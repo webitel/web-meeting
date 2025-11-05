@@ -1,11 +1,11 @@
 <template>
     <meeting-actions-bar>
         <microphone-toggle-action
-         :state="microphoneState" 
+         :state="microphoneState ?? false" 
          @toggle="microphoneState = !microphoneState" 
         />
         <video-toggle-action
-         :state="videoState"
+         :state="videoState ?? false"
          @toggle="videoState = !videoState" 
         />
         <settings-toggle-action
@@ -24,8 +24,8 @@ import VideoToggleAction from '../../actions/components/actions/video-toggle-act
 import SettingsToggleAction from '../../actions/components/actions/settings-toggle-action.vue';
 import { useMainSceneStore } from '../../main-scene/stores/mainScene';
 
-const microphoneState = defineModel<boolean>('with-audio', { required: true });
-const videoState = defineModel<boolean>('with-video', { required: true });
+const microphoneState = defineModel<boolean>('with-audio');
+const videoState = defineModel<boolean>('with-video');
 
 const mainSceneStore = useMainSceneStore();
 const { openedDevicesSettingsPanel } = storeToRefs(mainSceneStore);

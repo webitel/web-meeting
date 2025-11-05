@@ -9,13 +9,13 @@ export const useMainSceneStore = defineStore('mainScene', () => {
     const openedDevicesSettingsPanel = ref<boolean>(false);
 
     const devicesStore = useDevicesStore();
-    const { hasMicrophoneAccess, hasCameraAccess } = storeToRefs(devicesStore);
+    const { permissionGranted } = storeToRefs(devicesStore);
     
     const meetingStore = useMeetingStore();
     const { session } = storeToRefs(meetingStore);
 
     const shouldShowAllowDevicesDialog = computed(() => {
-        return !hasMicrophoneAccess.value || !hasCameraAccess.value;
+        return !permissionGranted.value;
     });
 
     const sceneState = computed<SceneState>(() => {

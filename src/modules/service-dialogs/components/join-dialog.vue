@@ -29,7 +29,7 @@ import { useMeetingStore } from '../../meeting/stores/meeting';
 
 const number = import.meta.env.DEV ? '00' : '';
 
-const withAudio = ref<boolean>(true);
+const withAudio = ref<boolean>(false);
 const withVideo = ref<boolean>(true);
 
 

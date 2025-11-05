@@ -17,12 +17,12 @@ const emit = defineEmits<{
 }>();
 
 const devicesStore = useDevicesStore();
-const { hasCameraAccess: allowed } = storeToRefs(devicesStore);
-const { requestVideoAccess } = devicesStore;
+const { hasAnyCameras: allowed } = storeToRefs(devicesStore);
+const { requestDeviceAccess } = devicesStore;
 
 function onToggle() {
     if (!allowed.value) {
-        requestVideoAccess();
+        requestDeviceAccess();
     } else {
         emit('toggle');
     }

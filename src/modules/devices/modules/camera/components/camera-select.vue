@@ -47,9 +47,6 @@ watch(selectedDeviceId, async (newDeviceId) => {
     if (!newDeviceId) return;
 
     await startStream();
-    
-    if (!stream.value) return;
-    
 }, { immediate: true });
 
 onUnmounted(() => {

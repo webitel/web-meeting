@@ -17,12 +17,12 @@ const emit = defineEmits<{
 }>();
 
 const devicesStore = useDevicesStore();
-const { hasMicrophoneAccess: allowed } = storeToRefs(devicesStore);
-const { requestAudioAccess } = devicesStore;
+const { hasAnyMicrophones: allowed } = storeToRefs(devicesStore);
+const { requestDeviceAccess } = devicesStore;
 
 function onToggle() {
     if (!allowed.value) {
-        requestAudioAccess();
+        requestDeviceAccess();
     } else {
         emit('toggle');
     }
