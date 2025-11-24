@@ -4,13 +4,16 @@ import { defineStore, storeToRefs } from 'pinia';
 import { SceneState } from '../enums/SceneState';
 import { useDevicesStore } from '../../devices/stores/devices';
 import { useMeetingStore } from '../../meeting/stores/meeting';
+import { PortalAPI } from '../api/portal';
+import websocketController from '../../../app/websocket/websocketController';
 
 export const useMainSceneStore = defineStore('mainScene', () => {
     const openedDevicesSettingsPanel = ref<boolean>(false);
+    const { send } = websocketController();
 
     const devicesStore = useDevicesStore();
     const { permissionGranted } = storeToRefs(devicesStore);
-    
+
     const meetingStore = useMeetingStore();
     const { session } = storeToRefs(meetingStore);
 
@@ -32,11 +35,19 @@ export const useMainSceneStore = defineStore('mainScene', () => {
         openedDevicesSettingsPanel.value = !openedDevicesSettingsPanel.value;
     }
 
-    
+    const initialize = async () => {
+      const url = new URL(window.location.href);
+      const params = url.searchParams;
+
+      const { token } = PortalAPI.postPortalToken(...params);
+      send({ payload: { token }})
+    }
+
     return {
         sceneState,
         openedDevicesSettingsPanel,
-    
+
+        initialize,
         toggleDevicesSettingsPanel,
     };
 });

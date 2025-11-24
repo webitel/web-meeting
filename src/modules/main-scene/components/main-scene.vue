@@ -17,8 +17,8 @@ import { useMainSceneStore } from '../stores/mainScene';
 import { SceneState } from '../enums/SceneState';
 
 const mainSceneStore = useMainSceneStore();
-const { 
-    sceneState, 
+const {
+    sceneState,
     openedDevicesSettingsPanel,
  } = storeToRefs(mainSceneStore);
 
@@ -34,6 +34,8 @@ const sceneComponent = computed(() => {
             return null;
     }
 });
+
+// initialize();
 
 </script>
 
