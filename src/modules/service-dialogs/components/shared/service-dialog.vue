@@ -5,7 +5,7 @@
                 <h2 class="service-dialog__title">
                     <slot name="title" />
                 </h2>
-            </slot> 
+            </slot>
         </header>
         <main class="service-dialog__main">
             <slot name="main" />
@@ -26,13 +26,14 @@
 
 <style scoped>
 .service-dialog {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    width: 100%;
-    padding: var(--spacing-sm);
-    background: var(--wt-page-wrapper-content-wrapper-color);
+  display: flex;
+  width: 400px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--wt-page-wrapper-content-wrapper-color);
+  margin: auto;
 }
 </style>

@@ -20,7 +20,7 @@ import { storeToRefs } from 'pinia';
 import { WtButton } from '@webitel/ui-sdk/components';
 
 import { useDevicesStore } from '../../devices/stores/devices';
-import ServiceDialog from '../../main-scene/components/shared/service-dialog.vue';
+import ServiceDialog from './shared/service-dialog.vue';
 import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 
 const emit = defineEmits<{
