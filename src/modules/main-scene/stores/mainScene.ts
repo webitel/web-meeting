@@ -9,7 +9,7 @@ import websocketController from '../../../app/websocket/websocketController';
 
 export const useMainSceneStore = defineStore('mainScene', () => {
     const openedDevicesSettingsPanel = ref<boolean>(false);
-    const { send } = websocketController();
+    const { open } = websocketController();
 
     const devicesStore = useDevicesStore();
     const { permissionGranted } = storeToRefs(devicesStore);
@@ -40,7 +40,7 @@ export const useMainSceneStore = defineStore('mainScene', () => {
       const params = url.searchParams;
 
       const { token } = PortalAPI.postPortalToken(...params);
-      send({ payload: { token }})
+      open({ payload: { token }})
     }
 
     return {

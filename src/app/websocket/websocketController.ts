@@ -1,45 +1,39 @@
-import { inject } from 'vue'
+import { useWebSocket } from '@vueuse/core';
 
 
-const websocketController = () => {
-  const $config = inject('$config');
-  const ws = new WebSocket($config.call.host);
-
-  ws.addEventListener('open', () => {
-
-    ws.send(JSON.stringify({
-      type: 'WSState', /// заюзать енуму з віджета?
-    }));
-  });
-
-  ws.addEventListener('message', (event) => {
-    try {
-      const data = JSON.parse(event.data);
-    } catch (e) {
-      throw e;
+export const websocketController = ({url}) => {
+  const { status, data, send, open, close } = useWebSocket(url, {
+    immediate: true,
+    onConnected(ws) {
+      send(JSON.stringify({ type: 'WSState' }))
+    },
+    onMessage(event) {
+      try {
+        const data = JSON.parse(event.data);
+      } catch (e) {
+        throw e;
+      }
+    },
+    onError(error) {
+      console.error('[WS] error:', error);
+    },
+    onDisconnected(event) {
+      console.log('[WS] disconnected:', event);
     }
   });
 
-  ws.addEventListener('error', (err) => {
-    console.error('[WS] error:', err);
-  });
+  const sendMessage = (payload: any) => {
+    send(JSON.stringify(payload))
+  }
 
-  ws.addEventListener('close', (event) => {
-    console.log('[WS] closed', event.code, event.reason);
-  });
-
-  const send = (data: any) => {
-    ws.send(JSON.stringify(data));
-  };
-
-  const close = () => {
-    ws.close(1000, 'client closed connection');
-  };
+  const closeConnection = () => close(1000, 'client closed connection')
 
   return {
-    ws,
-    send,
-    close,
-  };
-};
+    status,
+    data,
+    sendMessage,
+    open,
+    closeConnection,
+  }
+}
 
