@@ -1,5 +1,5 @@
 <template>
-  <main class="main-scene" :style="{ backgroundImage: `url(${mainBackground})` }">
+  <main class="main-scene">
     <logo />
     <component :is="sceneComponent" />
     <devices-config-panel v-if="openedDevicesSettingsPanel" />
@@ -19,7 +19,7 @@ import { SceneState } from '../enums/SceneState'
 import Logo from './shared/logo.vue'
 
 const $config = inject('$config');
-const mainBackground = new URL($config.style.mainBackground, import.meta.url).href;
+const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
 
 const mainSceneStore = useMainSceneStore()
 const { sceneState, openedDevicesSettingsPanel } = storeToRefs(mainSceneStore)
@@ -45,6 +45,7 @@ const sceneComponent = computed(() => {
   min-height: 100%;
   background-size: cover;
   background-position: center;
+  background-image: v-bind(mainBackground);
   z-index: 0;
   display: flex;
 }

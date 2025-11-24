@@ -1,5 +1,5 @@
 <template>
-  <img :src="$config.style.logoPicture" class="logo"/>
+  <img :src="$config.assets.logoPicture" class="logo"/>
 </template>
 
 <script setup lang="ts">
