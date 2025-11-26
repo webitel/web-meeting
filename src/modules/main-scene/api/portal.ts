@@ -1,4 +1,4 @@
-import { instance } from '../../../app/api/instance.ts'
+import { instance } from '../../../app/api/instance'
 
 const postPortalToken = async (credentials) => {
 

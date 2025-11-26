@@ -1,11 +1,14 @@
 import { useWebSocket } from '@vueuse/core';
 
+// @Lera24
+// delete at the end if not using
 
-export const websocketController = ({url}) => {
+export const useWebsocketController = ({url}) => {
   const { status, data, send, open, close } = useWebSocket(url, {
-    immediate: true,
+    immediate: false,
     onConnected(ws) {
-      send(JSON.stringify({ type: 'WSState' }))
+      // reserved for future
+      // send(JSON.stringify({ type: 'WSState' }))
     },
     onMessage(event) {
       try {
@@ -22,11 +25,13 @@ export const websocketController = ({url}) => {
     }
   });
 
-  const sendMessage = (payload: any) => {
-    send(JSON.stringify(payload))
+  function sendMessage (payload: any) {
+    return send(JSON.stringify(payload))
   }
 
-  const closeConnection = () => close(1000, 'client closed connection')
+  function closeConnection () {
+    return close(1000, 'client closed connection')
+  }
 
   return {
     status,
