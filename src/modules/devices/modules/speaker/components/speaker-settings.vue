@@ -8,7 +8,7 @@
       track-by="deviceId"
       :label="t('devices.speaker')"
       :value="selectedDevice?.label"
-      @update:model-value="setSelectedDevice($event)">
+      @update:model-value="setSelectedDevice">
     </wt-select>
 
     <wt-button
@@ -24,8 +24,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useSpeakerStore } from '../stores/speaker';
 import { useI18n } from 'vue-i18n'
+import { useSpeakerStore } from '../stores/speaker';
+
 const speakerStore = useSpeakerStore();
 
 const { t } = useI18n();

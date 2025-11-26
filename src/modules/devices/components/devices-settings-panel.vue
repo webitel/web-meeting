@@ -29,6 +29,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import MicrophoneSettings from '../modules/microphone/components/microphone-settings.vue';
 import SpeakerSettings from '../modules/speaker/components/speaker-settings.vue';
@@ -39,11 +40,13 @@ import { useSpeakerStore } from '../modules/speaker/stores/speaker';
 import { useCameraStore } from '../modules/camera/stores/camera';
 import { useMeetingStore } from '../../meeting/stores/meeting';
 import { SessionState } from '../../meeting/stores/meeting';
-import SidebarWrapper from '../../../app/component/sidebar-wrapper.vue';
-import { useI18n } from 'vue-i18n'
+import SidebarWrapper from '../../main-scene/components/shared/sidebar-wrapper.vue';
 
 const { t } = useI18n();
-const emit = defineEmits(['close']);
+
+const emit = defineEmits<{
+  'close': [];
+}>();
 
 const devicesStore = useDevicesStore();
 const microphoneStore = useMicrophoneStore();

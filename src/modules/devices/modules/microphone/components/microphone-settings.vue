@@ -8,7 +8,7 @@
         track-by="deviceId"
         :label="t('devices.microphone')"
         :value="selectedDevice?.label"
-        @update:model-value="setSelectedDevice($event)">
+        @update:model-value="setSelectedDevice">
       </wt-select>
 
       <div v-if="selectedDeviceId" class="microphone-settings__load-bar">
@@ -21,11 +21,11 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { watch, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n'
 import { WtLoadBar } from '@webitel/ui-sdk/components';
 
 import { useMicrophoneStore } from '../stores/microphone';
 import { useMicrophoneVolume } from '../composables/useMicrophoneVolume';
-import { useI18n } from 'vue-i18n'
 
 const microphoneStore = useMicrophoneStore();
 const { t } = useI18n();
@@ -72,6 +72,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+// After migrating primevue, change color to prop
 .microphone-settings {
   display: flex;
   flex-direction: column;

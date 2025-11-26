@@ -8,7 +8,7 @@
         track-by="deviceId"
         :label="t('devices.camera')"
         :value="selectedDevice?.label"
-        @update:model-value="setSelectedDevice($event)">
+        @update:model-value="setSelectedDevice">
       </wt-select>
 
       <video
@@ -24,9 +24,9 @@
 <script setup lang="ts">
 import { onUnmounted, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n'
 
 import { useCameraStore } from '../stores/camera';
-import { useI18n } from 'vue-i18n'
 
 const cameraStore = useCameraStore();
 const { t } = useI18n();
