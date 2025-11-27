@@ -5,7 +5,7 @@
         </template>
         <template #main>
             <wt-button
-             color="success" 
+             color="success"
              @click="makeCall(number, { withAudio, withVideo })"
              >Join Meeting
             </wt-button>
@@ -23,7 +23,7 @@
 import { ref } from 'vue';
 import { WtButton } from '@webitel/ui-sdk/components';
 
-import ServiceDialog from '../../main-scene/components/shared/service-dialog.vue';
+import ServiceDialog from './shared/service-dialog.vue';
 import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 import { useMeetingStore } from '../../meeting/stores/meeting';
 
