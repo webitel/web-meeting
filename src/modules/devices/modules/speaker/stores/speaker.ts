@@ -25,8 +25,8 @@ export const useSpeakerStore = defineStore('devices/speaker', () => {
     /**
      * Set selected speaker
      */
-    function setSelectedDevice(deviceId: string): void {
-        selectedDeviceId.value = deviceId;
+    function setSelectedDevice(device): void {
+        selectedDeviceId.value = device.deviceId ?? '';
     }
 
     /**

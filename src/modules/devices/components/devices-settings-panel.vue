@@ -1,35 +1,52 @@
 <template>
-    <section class="devices-config-panel">
-        <h1>Devices Config Panel</h1>
+  <!-- видалити в кінці-->
+  <!--            <p v-if="error" class="error-message">-->
+  <!--                {{ error }}-->
+  <!--            </p>-->
 
-            <p v-if="error" class="error-message">
-                {{ error }}
-            </p>
-        
+  <sidebar-wrapper
+    class="devices-settings-panel"
+    @close="emit('close')"
+  >
+    <template #title>
+        <wt-icon icon="settings" color="info"></wt-icon>
+        <p>{{ t('devices.settings')}}</p>
+    </template>
 
-            <microphone-select />
+    <template #main>
+      <div class="devices-settings-panel__content">
+        <microphone-settings />
 
-            <!-- <speaker-select /> -->
+        <speaker-settings />
 
-            <camera-select />
-        
-    </section>
+        <camera-settings />
+    </div>
+    </template>
+  </sidebar-wrapper>
 </template>
 
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
-import MicrophoneSelect from '../modules/microphone/components/microphone-select.vue';
-import SpeakerSelect from '../modules/speaker/components/speaker-select.vue';
-import CameraSelect from '../modules/camera/components/camera-select.vue';
+import MicrophoneSettings from '../modules/microphone/components/microphone-settings.vue';
+import SpeakerSettings from '../modules/speaker/components/speaker-settings.vue';
+import CameraSettings from '../modules/camera/components/camera-settings.vue';
 import { useDevicesStore } from '../stores/devices';
 import { useMicrophoneStore } from '../modules/microphone/stores/microphone';
 import { useSpeakerStore } from '../modules/speaker/stores/speaker';
 import { useCameraStore } from '../modules/camera/stores/camera';
 import { useMeetingStore } from '../../meeting/stores/meeting';
 import { SessionState } from '../../meeting/stores/meeting';
+import SidebarWrapper from '../../main-scene/components/shared/sidebar-wrapper.vue';
+
+const { t } = useI18n();
+
+const emit = defineEmits<{
+  'close': [];
+}>();
 
 const devicesStore = useDevicesStore();
 const microphoneStore = useMicrophoneStore();
@@ -65,11 +82,11 @@ watch(selectedCameraId, async (newDeviceId) => {
 });
 
 // // Watch for speaker changes and update active call
-// watch(selectedSpeakerId, async (newDeviceId) => {
-//     if (newDeviceId && sessionState.value === SessionState.ACTIVE) {
-//         await changeSpeaker(newDeviceId);
-//     }
-// });
+watch(selectedSpeakerId, async (newDeviceId) => {
+    if (newDeviceId && sessionState.value === SessionState.ACTIVE && videoEnabled.value) {
+        await changeSpeaker(newDeviceId);
+    }
+});
 
 onMounted(async () => {
     if (!permissionGranted.value) {
@@ -83,18 +100,6 @@ onUnmounted(() => {
 
 
 <style scoped>
-.devices-config-panel {
-    --devices-config-panel-width: 320px;
-
-    width: var(--devices-config-panel-width);
-    background: var(--wt-page-wrapper-content-wrapper-color);
-    
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 20px;
-}
-
 .error-message {
     margin-top: 10px;
     padding: 10px;
@@ -102,5 +107,11 @@ onUnmounted(() => {
     color: #721c24;
     border: 1px solid #f5c6cb;
     border-radius: 4px;
+}
+
+.devices-settings-panel__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
 }
 </style>

@@ -22,8 +22,8 @@ export const useMicrophoneStore = defineStore('devices/microphone', () => {
         }
     });
 
-    function setSelectedDevice(deviceId: string): void {
-        selectedDeviceId.value = deviceId;
+    function setSelectedDevice(device): void {
+        selectedDeviceId.value = device.deviceId ?? '';
     }
 
     /**

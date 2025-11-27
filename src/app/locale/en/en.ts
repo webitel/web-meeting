@@ -13,4 +13,11 @@ export default {
       message: 'Something went wrong',
     } },
   errorLinkMessage: 'Unfortunately, the link is incorrect',
+  devices: {
+    microphone: 'Microphone',
+    camera: 'Camera',
+    speaker: 'Speaker',
+    check: 'Check',
+    settings: 'Settings',
+  }
 }
