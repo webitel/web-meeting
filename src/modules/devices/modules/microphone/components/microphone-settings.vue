@@ -12,7 +12,7 @@
       </wt-select>
 
       <div v-if="selectedDeviceId" class="microphone-settings__load-bar">
-        <wt-load-bar max="100" :value="volumeLevel" />
+        <wt-load-bar max="100" :value="volumeLevel" color="info"/>
       </div>
 
     </div>
@@ -72,20 +72,9 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-// After migrating primevue, change color to prop
 .microphone-settings {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-}
-
-.microphone-settings__load-bar {
-  :deep(.wt-load-bar) {
-    border-color: var(--info-color);
-  }
-
-  :deep(.wt-load-bar__progress) {
-      background-color: var(--info-color);
-  }
 }
 </style>
