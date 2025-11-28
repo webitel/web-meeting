@@ -4,19 +4,17 @@
 
 export interface AppConfig {
     token: {
+        iss: string;
         endpointUrl: string;
         appToken: string;
     };
     call: {
         host: string;
+        target: string;
     };
-    temp: {
-        device_id: string;
-        tokenResponse: {
-            access_token: string;
-            user_id: string;
-            realm: string;
-        };
+    assets: {
+        logoPicture: string;
+        mainBackground: string;
     };
 }
 

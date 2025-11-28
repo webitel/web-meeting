@@ -1,4 +1,5 @@
 import jsoncParser from 'tiny-jsonc';
+import merge from 'lodash/merge';
 import type { AppConfig } from '../../types/config';
 
 export const fetchConfig = async (): Promise<AppConfig> => {
@@ -7,10 +8,8 @@ export const fetchConfig = async (): Promise<AppConfig> => {
 
 async function fetchWithLocalConfigPriority() {
     const localConfig = await fetchSupportedExtConfig('config.local');
-    if (localConfig) return localConfig;
-
     const config = await fetchSupportedExtConfig('config');
-    return config;
+    return merge(config ?? {}, localConfig ?? {});
   }
 
 async function fetchSupportedExtConfig(fileName: string = 'config') {

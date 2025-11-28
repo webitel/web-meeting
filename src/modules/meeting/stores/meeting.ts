@@ -1,10 +1,11 @@
 import { ref, computed, markRaw, inject } from 'vue';
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
 import JsSIP from 'jssip';
 import type { UA, WebSocketInterface } from 'jssip/lib/JsSIP';
 import type { RTCSession } from 'jssip/lib/RTCSession';
 import { useTimeAgo, type UseTimeAgoOptions } from '@vueuse/core';
 import type { AppConfig } from '../../../types/config';
+import { useAuthStore } from '../../auth/stores/auth';
 
 /**
  * Session states for the call
@@ -20,7 +21,14 @@ export enum SessionState {
  */
 export const useMeetingStore = defineStore('meeting', () => {
     const appConfig = inject<AppConfig>('$config')!;
-    
+
+    const authStore = useAuthStore();
+    const { 
+        xPortalDevice,
+        accessToken,
+        callAccount,
+     } = storeToRefs(authStore);
+
     // User Agent
     const userAgent = ref<UA | null>(null);
 
@@ -56,25 +64,9 @@ export const useMeetingStore = defineStore('meeting', () => {
     function startUserAgent(): Promise<void> {
         return new Promise((resolve, reject) => {
             try {
-                // const socket: WebSocketInterface = new JsSIP.WebSocketInterface(
-                //     import.meta.env.VITE_JSSIP_SERVER
-                // );
 
                 // // Uncomment for debugging:
                 // JsSIP.debug.enable('JsSIP:*');
-
-                // const configuration = {
-                //     sockets: [socket],
-                //     uri: import.meta.env.VITE_JSSIP_URI,
-                //     authorization_user: import.meta.env.VITE_JSSIP_AUTHORIZATION_USER,
-                //     // password: import.meta.env.VITE_JSSIP_HA1,
-                //     realm: import.meta.env.VITE_JSSIP_REALM,
-                //     ha1: import.meta.env.VITE_JSSIP_HA1,
-                //     display_name: import.meta.env.VITE_JSSIP_DISPLAY_NAME,
-                //     register: false,
-                //     register_expires: 90,
-                //     session_timers: true,
-                // };
 
                 const socket: WebSocketInterface = new JsSIP.WebSocketInterface(
                     appConfig.call.host
@@ -82,10 +74,10 @@ export const useMeetingStore = defineStore('meeting', () => {
 
                 const configuration = {
                     sockets: [socket],
-                    authorization_user: appConfig.temp.device_id,
-                    uri: `sip:${appConfig.temp.tokenResponse.user_id}@${appConfig.temp.tokenResponse.realm}`,
-                    realm: appConfig.temp.tokenResponse.realm,
-                    password: appConfig.temp.tokenResponse.access_token,
+                    authorization_user: xPortalDevice.value,
+                    uri: `sip:${callAccount.value!.userId}@${callAccount.value!.realm}`,
+                    realm: callAccount.value!.realm,
+                    password: accessToken.value!,
                     register: false,
                 };
 
@@ -296,7 +288,7 @@ export const useMeetingStore = defineStore('meeting', () => {
             };
 
             // const rtcSession = userAgent.value!.call('00', callOptions);
-            const rtcSession = userAgent.value!.call('service', callOptions);
+            const rtcSession = userAgent.value!.call(appConfig.call.target, callOptions);
             session.value = rtcSession;
 
             // For debugging
