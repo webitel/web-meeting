@@ -1,10 +1,11 @@
 import { ref, computed, markRaw, inject } from 'vue';
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
 import JsSIP from 'jssip';
 import type { UA, WebSocketInterface } from 'jssip/lib/JsSIP';
 import type { RTCSession } from 'jssip/lib/RTCSession';
 import { useTimeAgo, type UseTimeAgoOptions } from '@vueuse/core';
 import type { AppConfig } from '../../../types/config';
+import { useAuthStore } from '@/modules/auth/stores/auth';
 
 /**
  * Session states for the call
@@ -20,7 +21,14 @@ export enum SessionState {
  */
 export const useMeetingStore = defineStore('meeting', () => {
     const appConfig = inject<AppConfig>('$config')!;
-    
+
+    const authStore = useAuthStore();
+    const { 
+        xPortalDevice,
+        accessToken,
+        callAccount,
+     } = storeToRefs(authStore);
+
     // User Agent
     const userAgent = ref<UA | null>(null);
 
@@ -82,10 +90,10 @@ export const useMeetingStore = defineStore('meeting', () => {
 
                 const configuration = {
                     sockets: [socket],
-                    authorization_user: appConfig.temp.device_id,
-                    uri: `sip:${appConfig.temp.tokenResponse.user_id}@${appConfig.temp.tokenResponse.realm}`,
-                    realm: appConfig.temp.tokenResponse.realm,
-                    password: appConfig.temp.tokenResponse.access_token,
+                    authorization_user: xPortalDevice.value,
+                    uri: `sip:${callAccount.value!.userId}@${callAccount.value!.realm}`,
+                    realm: callAccount.value!.realm,
+                    password: accessToken.value!,
                     register: false,
                 };
 
