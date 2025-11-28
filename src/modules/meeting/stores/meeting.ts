@@ -5,7 +5,7 @@ import type { UA, WebSocketInterface } from 'jssip/lib/JsSIP';
 import type { RTCSession } from 'jssip/lib/RTCSession';
 import { useTimeAgo, type UseTimeAgoOptions } from '@vueuse/core';
 import type { AppConfig } from '../../../types/config';
-import { useAuthStore } from '@/modules/auth/stores/auth';
+import { useAuthStore } from '../../auth/stores/auth';
 
 /**
  * Session states for the call
@@ -64,25 +64,9 @@ export const useMeetingStore = defineStore('meeting', () => {
     function startUserAgent(): Promise<void> {
         return new Promise((resolve, reject) => {
             try {
-                // const socket: WebSocketInterface = new JsSIP.WebSocketInterface(
-                //     import.meta.env.VITE_JSSIP_SERVER
-                // );
 
                 // // Uncomment for debugging:
                 // JsSIP.debug.enable('JsSIP:*');
-
-                // const configuration = {
-                //     sockets: [socket],
-                //     uri: import.meta.env.VITE_JSSIP_URI,
-                //     authorization_user: import.meta.env.VITE_JSSIP_AUTHORIZATION_USER,
-                //     // password: import.meta.env.VITE_JSSIP_HA1,
-                //     realm: import.meta.env.VITE_JSSIP_REALM,
-                //     ha1: import.meta.env.VITE_JSSIP_HA1,
-                //     display_name: import.meta.env.VITE_JSSIP_DISPLAY_NAME,
-                //     register: false,
-                //     register_expires: 90,
-                //     session_timers: true,
-                // };
 
                 const socket: WebSocketInterface = new JsSIP.WebSocketInterface(
                     appConfig.call.host
@@ -304,7 +288,7 @@ export const useMeetingStore = defineStore('meeting', () => {
             };
 
             // const rtcSession = userAgent.value!.call('00', callOptions);
-            const rtcSession = userAgent.value!.call('service', callOptions);
+            const rtcSession = userAgent.value!.call(appConfig.call.target, callOptions);
             session.value = rtcSession;
 
             // For debugging

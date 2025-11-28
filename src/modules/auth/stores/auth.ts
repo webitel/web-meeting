@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
     
   const userinfo = ref<AccessToken>();
 
-  const xPortalDevice = uuidv4();
+  const xPortalDevice = ref<string>(uuidv4());
 
   const accessToken = computed<string | null>(() => userinfo.value?.accessToken ?? null);
   
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
     const response: AccessToken = await PortalAPI.postPortalToken({
       url: config.token.endpointUrl,
       headers: {
-        'X-Portal-Device': xPortalDevice,
+        'X-Portal-Device': xPortalDevice.value,
       },
     }, {
       appToken: config.token.appToken,
@@ -44,6 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     // state
+    userinfo,
     xPortalDevice,
     
     // computed

@@ -10,6 +10,11 @@ export interface AppConfig {
     };
     call: {
         host: string;
+        target: string;
+    };
+    assets: {
+        logoPicture: string;
+        mainBackground: string;
     };
 }
 
