@@ -1,11 +1,11 @@
 <template>
-    <meeting-actions-bar>
-        <microphone-toggle-action :state="sessionMute" @toggle="toggleMute" />
-        <video-toggle-action :state="videoEnabled" @toggle="toggleVideo" />
-        <settings-toggle-action :state="isSettingOpened" @toggle="toggleSidebar" />
-        <handup-action  @click="hangup" />
-        <chat-action :state="isChatOpened" @toggle="toggleSidebar('chat')" />
-    </meeting-actions-bar>
+  <meeting-actions-bar>
+    <microphone-toggle-action :state="sessionMute" @toggle="toggleMute" />
+    <video-toggle-action :state="videoEnabled" @toggle="toggleVideo" />
+    <settings-toggle-action :state="isSettingsOpened" @toggle="toggleSettingsPanel" />
+    <handup-action @click="hangup" />
+    <chat-action :state="isChatOpened" @toggle="toggleChatPanel" />
+  </meeting-actions-bar>
 </template>
 
 <script setup lang="ts">
@@ -20,21 +20,41 @@ import VideoToggleAction from '../../actions/components/actions/video-toggle-act
 import SettingsToggleAction from '../../actions/components/actions/settings-toggle-action.vue';
 import ChatAction from '../../actions/components/actions/chat-action.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
+import { SidebarMode } from '../../sidebar/enums/SidebarMode';
 
 const meeting = useMeetingStore();
 const { sessionMute, videoEnabled } = storeToRefs(meeting);
 const { toggleMute, toggleVideo, hangup } = meeting;
 
-const { toggle: toggleSidebar } = useSidebarStore();
-const { opened: openedSidebar, mode: modeSidebar } = storeToRefs(useSidebarStore);
+const sidebarStore = useSidebarStore();
+const { toggle: toggleSidebarPanel, changeMode: changeSidebarMode } = sidebarStore();
+const { opened: sidebarPanelOpened, mode: sidebarPanelMode } = storeToRefs(sidebarStore);
 
-const isSettingOpened = computed(() => {
-    return openedSidebar.value && modeSidebar.value === 'settings';
+const isSettingsOpened = computed(() => {
+    return sidebarPanelMode.value === SidebarMode.Settings && sidebarPanelOpened.value;
 });
 
 const isChatOpened = computed(() => {
-  return openedSidebar.value && modeSidebar.value === 'chat';
-})
+  return sidebarPanelMode.value === SidebarMode.Chat && sidebarPanelOpened.value;
+});
+
+const toggleSettingsPanel = () => {
+  if(isSettingsOpened.value) {
+    toggleSidebarPanel()
+  } else {
+    changeSidebarMode(SidebarMode.Settings);
+    toggleSidebarPanel();
+  }
+}
+
+const toggleChatPanel = () => {
+  if(isChatOpened.value) {
+    toggleSidebarPanel()
+  } else {
+    changeSidebarMode(SidebarMode.Chat);
+    toggleSidebarPanel();
+  }
+}
 </script>
 
 <style scoped></style>

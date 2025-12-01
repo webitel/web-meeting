@@ -3,8 +3,9 @@ import { useWebSocket } from '@vueuse/core';
 // @Lera24
 // delete at the end if not using
 
-export const useWebsocketController = ({url}) => {
+export const useWebsocketController = ({url, protocols}) => {
   const { status, data, send, open, close } = useWebSocket(url, {
+    protocols,
     immediate: false,
     onConnected(ws) {
       // reserved for future

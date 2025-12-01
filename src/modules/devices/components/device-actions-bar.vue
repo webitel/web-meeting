@@ -9,8 +9,8 @@
          @toggle="videoState = !videoState"
         />
         <settings-toggle-action
-         :state="openedSidebar"
-         @toggle="toggleSidebar"
+         :state="sidebarPanelOpened"
+         @toggle="toggleSidebarPanel"
         />
 
     </meeting-actions-bar>
@@ -28,8 +28,8 @@ import { useSidebarStore } from '../../sidebar/store/sidebar'
 const microphoneState = defineModel<boolean>('with-audio');
 const videoState = defineModel<boolean>('with-video');
 
-const { opened: openedSidebar } = storeToRefs(useSidebarStore);
-const { toggle: toggleSidebar } = useSidebarStore();
+const { opened: sidebarPanelOpened } = storeToRefs(useSidebarStore);
+const { toggle: toggleSidebarPanel } = useSidebarStore();
 </script>
 
 <style scoped></style>

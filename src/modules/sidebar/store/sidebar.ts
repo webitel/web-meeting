@@ -1,15 +1,18 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia';
+import { SidebarMode } from '../enums/SidebarMode';
+import type { SidebarModeType } from '../enums/SidebarMode';
 
 export const useSidebarStore = defineStore('sidebar', () => {
   const opened = ref<boolean>(false);
-  const mode: "settings" | "chat" = ref("settings");
+  const mode = ref<SidebarModeType>(SidebarMode.Settings);
 
-
-  const toggle = (mode: 'settings') => {
-    if (mode) mode.value = mode;
-    opened.value = !opened.value;
-    if (!opened.value) mode.value = 'settings';
+  const changeMode = (mode: SidebarModeType) => {
+    if(mode.value !== mode) mode.value = mode;
   }
-  return { opened, mode, toggle }
+
+  const toggle = () => {
+    opened.value = !opened.value;
+  }
+  return { opened, mode, toggle, changeMode }
 })

@@ -1,15 +1,22 @@
 import { ref, watch, inject } from 'vue';
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { useWebsocketController } from '../../../../../app/websocket/composables/useWebsocketController'
 import { AppConfig } from '../../../../../types/AppConfig';
+import { useAuthStore } from '../../../../auth/stores/auth'
 
 export const useChatStore = defineStore('chat', (url: string) => {
   const messages = ref<any[]>([]);
   const newMessage = ref<string | null>(null);
-  const config = inject<AppConfig>('$config')!;
+  const config = inject<AppConfig>('$config');
+  const { accessToken } = storeToRefs(useAuthStore);
 
   const controller = useWebsocketController({
     url: config.chat.host,
+    protocols: [
+      `x-portal-access.${accessToken.value}`,
+      `x-device-id:${config.deviceId}`,
+      `x-portal-client.${config.token.appToken}`,
+    ],
   });
 
   watch(
@@ -22,6 +29,10 @@ export const useChatStore = defineStore('chat', (url: string) => {
   );
 
   function connect() {
+    if (controller.ws?.readyState === WebSocket.OPEN
+      || controller.ws?.readyState === WebSocket.CONNECTING) {
+      return;
+    }
     controller.open();
   }
 

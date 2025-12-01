@@ -1,7 +1,7 @@
 <template>
   <component
     v-if="opened"
-    :is="sidebarComponent"
+    :is="sidebarPanelComponent"
     @close="toggle"/>
 </template>
 
@@ -10,13 +10,14 @@ import { computed } from 'vue';
 import { storeToRefs } from 'pinia'
 import DevicesSettingsPanel from '../../devices/components/devices-settings-panel.vue';
 import ChatPanel from '../../meeting/components/meeting-actions-bar.vue';
-import { useSidebarStore } from '../store/sidebar.ts'
+import { useSidebarStore } from '../store/sidebar'
 
-const { toggle } = useSidebarStore();
-const { opened, status } = storeToRefs(useSidebarStore);
+const sidebarPanel = useSidebarStore();
+const { toggle } = sidebarPanel;
+const { opened, mode } = storeToRefs(sidebarPanel);
 
-const sidebarComponent = computed(() => {
-  switch (status.value) {
+const sidebarPanelComponent = computed(() => {
+  switch (mode.value) {
     case 'chat': return ChatPanel;
     default: return DevicesSettingsPanel;
   }

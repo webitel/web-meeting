@@ -2,7 +2,7 @@
   <main class="main-scene">
     <logo />
     <component :is="sceneComponent" />
-    <sidebar v-if="openedSidebarPanel"/>
+    <sidebar-panel v-if="sidebarPanelOpened"/>
   </main>
 </template>
 
@@ -16,7 +16,7 @@ import JoinDialog from '../../service-dialogs/components/join-dialog.vue'
 import { useMainSceneStore } from '../stores/mainScene'
 import { SceneState } from '../enums/SceneState'
 import Logo from './shared/logo.vue'
-import Sidebar from '../../sidebar/components/sidebar.vue'
+import SidebarPanel from '../../sidebar/components/sidebar-panel.vue'
 import { useSidebarStore } from '../../sidebar/store/sidebar'
 
 const $config = inject('$config');
@@ -24,7 +24,9 @@ const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta
 
 const mainSceneStore = useMainSceneStore()
 const { sceneState } = storeToRefs(mainSceneStore);
-const { opened: openedSidebarPanel } = storeToRefs(useSidebarStore);
+
+const sidebarStore = useSidebarStore();
+const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
 const sceneComponent = computed(() => {
   switch (sceneState.value) {
