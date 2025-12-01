@@ -3,7 +3,7 @@
     "target": "service"
   },
   "assets": {
-    "logoPicture": "/assets/web-logo.svg",
-    "mainBackground": "/assets/web-background.svg"
+    "logoPicture": "/meet/assets/web-logo.svg",
+    "mainBackground": "/meet/assets/web-background.svg"
   }
 }

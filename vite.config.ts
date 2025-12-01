@@ -8,10 +8,9 @@ export default defineConfig({
   base: '/meet',
   build: {
     chunkSizeWarningLimit: 20000,
-    rolldownOptions: {
-      external: ['webitel-sdk'],
-      
-    },
+    // rolldownOptions: {
+    //   external: ['webitel-sdk'],
+    // },
   },
   plugins: [
     vue(),
