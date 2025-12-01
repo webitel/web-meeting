@@ -27,8 +27,8 @@ const { sessionMute, videoEnabled } = storeToRefs(meeting);
 const { toggleMute, toggleVideo, hangup } = meeting;
 
 const sidebarStore = useSidebarStore();
-const { toggle: toggleSidebarPanel, changeMode: changeSidebarMode } = sidebarStore();
 const { opened: sidebarPanelOpened, mode: sidebarPanelMode } = storeToRefs(sidebarStore);
+const { toggle: toggleSidebarPanel, changeMode: changeSidebarMode } = sidebarStore;
 
 const isSettingsOpened = computed(() => {
     return sidebarPanelMode.value === SidebarMode.Settings && sidebarPanelOpened.value;

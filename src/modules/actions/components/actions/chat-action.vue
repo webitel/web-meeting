@@ -12,6 +12,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'toggle': []
-}
+}>();
 
 </script>
