@@ -19,5 +19,6 @@ export default {
     speaker: 'Speaker',
     check: 'Check',
     settings: 'Settings',
-  }
+  },
+  chat: 'Meeting chat',
 }

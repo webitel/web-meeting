@@ -12,6 +12,9 @@ export interface AppConfig {
         host: string;
         target: string;
     };
+    chat: {
+        host: string;
+    };
     assets: {
         logoPicture: string;
         mainBackground: string;

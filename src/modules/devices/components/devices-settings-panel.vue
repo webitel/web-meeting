@@ -40,7 +40,7 @@ import { useSpeakerStore } from '../modules/speaker/stores/speaker';
 import { useCameraStore } from '../modules/camera/stores/camera';
 import { useMeetingStore } from '../../meeting/stores/meeting';
 import { SessionState } from '../../meeting/stores/meeting';
-import SidebarWrapper from '../../main-scene/components/shared/sidebar-wrapper.vue';
+import SidebarWrapper from '../../sidebar/components/sidebar-wrapper.vue';
 
 const { t } = useI18n();
 

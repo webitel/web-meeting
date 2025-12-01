@@ -2,10 +2,7 @@
   <main class="main-scene">
     <logo />
     <component :is="sceneComponent" />
-    <devices-settings-panel
-      v-if="openedDevicesSettingsPanel"
-      @close="toggleDevicesSettingsPanel"
-    />
+    <sidebar-panel v-if="sidebarPanelOpened"/>
   </main>
 </template>
 
@@ -16,17 +13,20 @@ import { storeToRefs } from 'pinia'
 import MeetingContainer from '../../meeting/components/meeting-container.vue'
 import AllowDevicesDialog from '../../service-dialogs/components/allow-devices-dialog.vue'
 import JoinDialog from '../../service-dialogs/components/join-dialog.vue'
-import DevicesSettingsPanel from '../../devices/components/devices-settings-panel.vue'
 import { useMainSceneStore } from '../stores/mainScene'
 import { SceneState } from '../enums/SceneState'
 import Logo from './shared/logo.vue'
+import SidebarPanel from '../../sidebar/components/sidebar-panel.vue'
+import { useSidebarStore } from '../../sidebar/store/sidebar'
 
 const $config = inject('$config');
 const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
 
 const mainSceneStore = useMainSceneStore()
-const { sceneState, openedDevicesSettingsPanel } = storeToRefs(mainSceneStore);
-const { toggleDevicesSettingsPanel } = mainSceneStore;
+const { sceneState } = storeToRefs(mainSceneStore);
+
+const sidebarStore = useSidebarStore();
+const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
 const sceneComponent = computed(() => {
   switch (sceneState.value) {
