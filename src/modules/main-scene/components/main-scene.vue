@@ -1,8 +1,13 @@
 <template>
   <main class="main-scene">
-    <logo />
-    <component :is="sceneComponent" />
-    <sidebar-panel v-if="sidebarPanelOpened"/>
+    <brand-logo />
+    <component
+     :is="sceneComponent"
+     class="scene-component"
+     />
+    <sidebar-panel
+     v-if="sidebarPanelOpened"
+     />
   </main>
 </template>
 
@@ -15,11 +20,13 @@ import AllowDevicesDialog from '../../service-dialogs/components/allow-devices-d
 import JoinDialog from '../../service-dialogs/components/join-dialog.vue'
 import { useMainSceneStore } from '../stores/mainScene'
 import { SceneState } from '../enums/SceneState'
-import Logo from './shared/logo.vue'
+import BrandLogo from './shared/brand-logo.vue'
 import SidebarPanel from '../../sidebar/components/sidebar-panel.vue'
-import { useSidebarStore } from '../../sidebar/store/sidebar'
+import { useSidebarStore } from '../../sidebar/store/sidebar';
+import type { AppConfig } from '../../../types/config';
 
-const $config = inject('$config');
+const $config = inject<AppConfig>('$config')!;
+
 const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
 
 const mainSceneStore = useMainSceneStore()
@@ -29,6 +36,8 @@ const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
 const sceneComponent = computed(() => {
+  return MeetingContainer
+
   switch (sceneState.value) {
     case SceneState.AllowDevicesDialog:
       return AllowDevicesDialog
@@ -44,13 +53,25 @@ const sceneComponent = computed(() => {
 
 <style scoped>
 .main-scene {
+  display: flex;
   position: relative;
-  min-width: 100%;
-  min-height: 100%;
+  width: 100%;
+  height: 100%;
+  padding: var(--spacing-sm);
   background-size: cover;
   background-position: center;
   background-image: v-bind(mainBackground);
+}
+
+.brand-logo {
   z-index: 0;
-  display: flex;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.scene-component {
+  z-index: 1;
+  margin: auto;
 }
 </style>

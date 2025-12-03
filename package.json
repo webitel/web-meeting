@@ -15,7 +15,9 @@
     "lint:oxlint": "oxlint . --fix -D correctness --ignore-path .gitignore",
     "lint:eslint": "eslint . --fix",
     "lint": "run-s lint:*",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "up:libs": "npm up @webitel/ui-sdk && npm ls @webitel/ui-sdk",
+    "link:libs": "npm link @webitel/ui-sdk && npm ls @webitel/ui-sdk"
   },
   "dependencies": {
     "@buf/webitel_portal.community_timostamm-protobuf-ts": "^2.11.1-20251111115532-8ccb3d9865c1.1",

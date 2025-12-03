@@ -1,5 +1,8 @@
 <template>
-    <section class="service-dialog">
+    <section
+     :class="[`service-dialog--size-${size}`]"
+     class="service-dialog"
+     >
         <header class="service-dialog__header">
             <slot name="header">
                 <h2 class="service-dialog__title">
@@ -21,6 +24,13 @@
 </template>
 
 <script setup lang="ts">
+import { ComponentSize } from '@webitel/ui-sdk/enums';
+
+const props = withDefaults(defineProps<{
+    size?: ComponentSize;
+}>(), {
+    size: ComponentSize.MD,
+});
 
 </script>
 
@@ -34,6 +44,17 @@
   gap: var(--spacing-sm);
   padding: var(--spacing-sm);
   background: var(--wt-page-wrapper-content-wrapper-color);
-  margin: auto;
+  border-radius: var(--border-radius);
+}
+
+.service-dialog--size-sm,
+.service-dialog--size-md {
+  width: 400px;
+  height: 400px;
+}
+
+.service-dialog--size-lg {
+  width: 100%;
+  height: 100%;
 }
 </style>

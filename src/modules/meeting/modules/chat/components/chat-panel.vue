@@ -1,5 +1,5 @@
 <template>
-  <sidebar-wrapper class="chat-panel" @close="emit('close')">
+  <sidebar-content-wrapper class="chat-panel" @close="emit('close')">
     <template #title>
       <wt-icon icon="chat--filled" color="info"></wt-icon>
       <p>{{ t('chat') }}</p>
@@ -13,7 +13,7 @@
         </ul>
       </div>
     </template>
-  </sidebar-wrapper>
+  </sidebar-content-wrapper>
 </template>
 
 <script setup lang="ts">
@@ -21,7 +21,7 @@ import { useI18n } from 'vue-i18n';
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useChatStore } from '../../chat/store/chat';
-import SidebarWrapper from '../../../../sidebar/components/sidebar-wrapper.vue'
+import SidebarContentWrapper from '../../../../sidebar/components/shared/sidebar-content-wrapper.vue'
 
 const { connect, send } = useChatStore()
 const { messages } = storeToRefs(useChatStore)

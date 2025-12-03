@@ -1,8 +1,8 @@
 <template>
-  <div class="sidebar-wrapper">
-    <div class="sidebar-wrapper__header">
+  <div class="sidebar-content-wrapper">
+    <div class="sidebar-content-wrapper__header">
 
-      <div class="sidebar-wrapper__title">
+      <div class="sidebar-content-wrapper__title">
         <slot name="title"/>
       </div>
 
@@ -14,7 +14,7 @@
     </div>
 
 
-    <div class="sidebar-wrapper__main">
+    <div class="sidebar-content-wrapper__main">
       <slot name="main"/>
     </div>
   </div>
@@ -27,23 +27,19 @@ const emit = defineEmits<{
 </script>
 
 <style scoped>
-.sidebar-wrapper {
-  background: var(--wt-page-wrapper-content-wrapper-color);
-  width: 320px;
-  padding: var(--spacing-sm);
-  gap: var(--spacing-sm);
-  margin: var(--spacing-sm);
-  border-radius: var(--spacing-sm);
+.sidebar-content-wrapper {
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-sm);
 }
-.sidebar-wrapper__header {
+
+.sidebar-content-wrapper__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.sidebar-wrapper__title {
+.sidebar-content-wrapper__title {
   display: flex;
   gap: var(--spacing-xs);
 }

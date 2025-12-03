@@ -1,10 +1,5 @@
 <template>
-  <!-- видалити в кінці-->
-  <!--            <p v-if="error" class="error-message">-->
-  <!--                {{ error }}-->
-  <!--            </p>-->
-
-  <sidebar-wrapper
+  <sidebar-content-wrapper
     class="devices-settings-panel"
     @close="emit('close')"
   >
@@ -22,7 +17,7 @@
         <camera-settings />
     </div>
     </template>
-  </sidebar-wrapper>
+  </sidebar-content-wrapper>
 </template>
 
 
@@ -40,7 +35,7 @@ import { useSpeakerStore } from '../modules/speaker/stores/speaker';
 import { useCameraStore } from '../modules/camera/stores/camera';
 import { useMeetingStore } from '../../meeting/stores/meeting';
 import { SessionState } from '../../meeting/stores/meeting';
-import SidebarWrapper from '../../sidebar/components/sidebar-wrapper.vue';
+import SidebarContentWrapper from '../../sidebar/components/shared/sidebar-content-wrapper.vue';
 
 const { t } = useI18n();
 

@@ -1,7 +1,14 @@
 <template>
-  <service-dialog class="meeting-container">
+  <service-dialog
+  class="meeting-container"
+   size="lg"
+   >
+    
+    <template #main>
     <meeting-call />
     <meeting-actions-bar />
+    </template>
+    
   </service-dialog>
 </template>
 
