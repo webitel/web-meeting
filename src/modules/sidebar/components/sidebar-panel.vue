@@ -11,7 +11,7 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia'
 import DevicesSettingsPanel from '../../devices/components/devices-settings-panel.vue';
-import ChatPanel from '../../meeting/components/meeting-actions-bar.vue';
+import {WtButton as ChatPanel} from '@webitel/ui-sdk/components';
 import { useSidebarStore } from '../store/sidebar'
 import { SidebarMode } from '../../sidebar/enums/SidebarMode'
 

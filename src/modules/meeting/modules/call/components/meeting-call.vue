@@ -2,10 +2,15 @@
     <video-call
       :sender:stream="localVideoStream"
       :receiver:stream="remoteVideoStream"
-
+      
       :sender:mic:enabled="microphoneEnabled"
       :sender:video:enabled="videoEnabled"
+      :sender:mic:accessed="microphoneAccessed"
+      :sender:video:accessed="videoAccessed"
       
+      :receiver:video:enabled="!!remoteVideoStream"
+      :receiver:mic:enabled="!!remoteVideoStream"
+
       :actions="[
         VideoCallAction.Mic, 
         VideoCallAction.Video, 
@@ -30,7 +35,7 @@ import { VideoCall, VideoCallAction } from '@webitel/ui-sdk/modules/CallSession'
 import { useSidebarStore } from '../../../../sidebar/store/sidebar';
 import { useMeetingStore } from '../../../stores/meeting';
 import { SidebarMode } from '../../../../sidebar/enums/SidebarMode';
-import VideoContainer from './video/video-container.vue';
+import { useDevicesStore } from '../../../../devices/stores/devices';
 
 const meetingStore = useMeetingStore();
 
@@ -61,6 +66,13 @@ const toggleChatPanel = () => {
   changeSidebarMode(SidebarMode.Chat);
 }
 
+const devicesStore = useDevicesStore();
+const { 
+  hasAnyMicrophones: microphoneAccessed,
+  hasAnyCameras: videoAccessed,
+ } = storeToRefs(devicesStore);
+
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>
