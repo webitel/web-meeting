@@ -5,11 +5,14 @@
         :is-mic-muted="microphoneEnabled"
         :is-video-muted="videoEnabled"
         static-position
+        :mic:enabled="true"
+        :video:enabled="true"
         :mic-callback="toggleMute"
         :video-callback="toggleVideo"
         :settings-callback="toggleSettingsPanel"
         :chat-callback="toggleChatPanel"
         :hang-over-callback="hangup"
+        @smth="() => {}"
         />
 </template>
 
