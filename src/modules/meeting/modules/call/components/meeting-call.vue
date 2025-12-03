@@ -1,24 +1,31 @@
 <template>
     <video-call
-        :sender="localVideoStream"
-        :receiver="remoteVideoStream"
-        :is-mic-muted="microphoneEnabled"
-        :is-video-muted="videoEnabled"
-        static-position
-        :mic:enabled="true"
-        :video:enabled="true"
-        :mic-callback="toggleMute"
-        :video-callback="toggleVideo"
-        :settings-callback="toggleSettingsPanel"
-        :chat-callback="toggleChatPanel"
-        :hang-over-callback="hangup"
-        @smth="() => {}"
-        />
+      :sender:stream="localVideoStream"
+      :receiver:stream="remoteVideoStream"
+
+      :sender:mic:enabled="microphoneEnabled"
+      :sender:video:enabled="videoEnabled"
+      
+      :actions="[
+        VideoCallAction.Mic, 
+        VideoCallAction.Video, 
+        VideoCallAction.Settings, 
+        VideoCallAction.Chat, 
+        VideoCallAction.Hangup,
+      ]"
+      
+      position="static"
+      @[`action:${VideoCallAction.Mic}`]="toggleMute"
+      @[`action:${VideoCallAction.Video}`]="toggleVideo"
+      @[`action:${VideoCallAction.Settings}`]="toggleSettingsPanel"
+      @[`action:${VideoCallAction.Chat}`]="toggleChatPanel"
+      @[`action:${VideoCallAction.Hangup}`]="hangup"
+    />
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { VideoCall } from '@webitel/ui-sdk/modules/CallSession';
+import { VideoCall, VideoCallAction } from '@webitel/ui-sdk/modules/CallSession';
 
 import { useSidebarStore } from '../../../../sidebar/store/sidebar';
 import { useMeetingStore } from '../../../stores/meeting';
