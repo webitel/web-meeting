@@ -25,6 +25,7 @@ export const useMeetingStore = defineStore('meeting', () => {
     const authStore = useAuthStore();
     const { 
         xPortalDevice,
+        meetingId,
         accessToken,
         callAccount,
      } = storeToRefs(authStore);
@@ -284,6 +285,9 @@ export const useMeetingStore = defineStore('meeting', () => {
                     audio: options?.withAudio ?? true,
                     video: options?.withVideo ?? true,
                 },
+                extraHeaders: [
+                    `X-Webitel-Meeting: ${meetingId.value}`,
+                ],
                 sessionTimersExpires: 300,
             };
 

@@ -4,6 +4,7 @@ import { Identity, CallAccount } from '@buf/webitel_portal.community_timostamm-p
 import { ChatAccount } from '@buf/webitel_portal.community_timostamm-protobuf-ts/data/messages_pb';
 import { ref, inject, computed } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
+import { useRoute } from 'vue-router';
 
 import { PortalAPI } from '../api/portal';
 import type { AppConfig } from '../../../types/config';
@@ -11,9 +12,13 @@ import type { AppConfig } from '../../../types/config';
 export const useAuthStore = defineStore('auth', () => {
   const config = inject<AppConfig>('$config')!;
     
+  const route = useRoute();
+
   const userinfo = ref<AccessToken>();
 
   const xPortalDevice = ref<string>(uuidv4());
+
+  const meetingId = computed<string>(() => route.params.meetingId! as string);
 
   const accessToken = computed<string | null>(() => userinfo.value?.accessToken ?? null);
   
@@ -48,6 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
     xPortalDevice,
     
     // computed
+    meetingId,
     accessToken,
     callAccount,
     chatAccount,
