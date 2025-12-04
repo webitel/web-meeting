@@ -36,7 +36,7 @@ const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
 const sceneComponent = computed(() => {
-  // return MeetingContainer
+  return MeetingContainer
 
   switch (sceneState.value) {
     case SceneState.AllowDevicesDialog:

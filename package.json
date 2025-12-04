@@ -16,13 +16,14 @@
     "lint:eslint": "eslint . --fix",
     "lint": "run-s lint:*",
     "format": "prettier --write src/",
-    "up:libs": "npm up @webitel/ui-sdk && npm ls @webitel/ui-sdk",
-    "link:libs": "npm link @webitel/ui-sdk && npm ls @webitel/ui-sdk"
+    "up:libs": "npm up @webitel/ui-sdk @webitel/ui-chats && npm ls @webitel/ui-sdk @webitel/ui-chats",
+    "link:libs": "npm link @webitel/ui-sdk @webitel/ui-chats && npm ls @webitel/ui-sdk @webitel/ui-chats"
   },
   "dependencies": {
     "@buf/webitel_portal.community_timostamm-protobuf-ts": "^2.11.1-20251111115532-8ccb3d9865c1.1",
     "@vueuse/core": "^13.9.0",
     "@webitel/api-services": "^0.0.61",
+    "@webitel/ui-chats": "^0.0.2",
     "@webitel/ui-sdk": "^25.12.27",
     "axios": "^1.13.1",
     "jssip": "^3.10.1",
