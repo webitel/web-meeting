@@ -24,6 +24,7 @@ import BrandLogo from './shared/brand-logo.vue'
 import SidebarPanel from '../../sidebar/components/sidebar-panel.vue'
 import { useSidebarStore } from '../../sidebar/store/sidebar';
 import type { AppConfig } from '../../../types/config';
+import MeetingChat from '../../meeting/modules/chat/components/meeting-chat.vue';
 
 const $config = inject<AppConfig>('$config')!;
 
@@ -37,6 +38,7 @@ const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
 const sceneComponent = computed(() => {
   // return MeetingContainer
+  return MeetingChat
 
   switch (sceneState.value) {
     case SceneState.AllowDevicesDialog:
