@@ -9,14 +9,15 @@
   "scripts": {
     "dev": "vite",
     "preview": "vite preview",
-    "test :unit": "vitest",
+    "test:unit": "vitest",
     "build": "vite build",
     "type-check": "vue-tsc --build",
     "lint:oxlint": "oxlint . --fix -D correctness --ignore-path .gitignore",
     "lint:oxlint:format": "oxfmt",
     "lint": "run-s lint:*",
     "up:libs": "npm up @webitel/ui-sdk @webitel/ui-chats && npm ls @webitel/ui-sdk @webitel/ui-chats",
-    "link:libs": "npm link @webitel/ui-sdk @webitel/ui-chats && npm ls @webitel/ui-sdk @webitel/ui-chats"
+    "link:libs": "npm link @webitel/ui-sdk @webitel/ui-chats && npm ls @webitel/ui-sdk @webitel/ui-chats",
+    "prepare": "husky"
   },
   "dependencies": {
     "@buf/webitel_portal.community_timostamm-protobuf-ts": "^2.11.1-20251111115532-8ccb3d9865c1.1",
@@ -43,8 +44,10 @@
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
+    "husky": "^9.1.7",
     "jiti": "^2.5.1",
     "jsdom": "^27.0.0",
+    "lint-staged": "^16.2.7",
     "npm-run-all2": "^8.0.4",
     "oxfmt": "^0.16.0",
     "oxlint": "~1.11.0",
