@@ -6,12 +6,13 @@ export default {
     bad: 'Bad',
     success: {
       title: 'Thanks you!',
-      message: 'We’ve saved you response successfully'
+      message: 'We’ve saved you response successfully',
     },
     error: {
       title: 'Oops!',
       message: 'Something went wrong',
-    } },
+    },
+  },
   errorLinkMessage: 'Unfortunately, the link is incorrect',
   devices: {
     microphone: 'Microphone',
@@ -21,4 +22,4 @@ export default {
     settings: 'Settings',
   },
   chat: 'Meeting chat',
-}
+};

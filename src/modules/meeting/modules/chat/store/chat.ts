@@ -1,8 +1,8 @@
 import { ref, watch, inject } from 'vue';
-import { defineStore, storeToRefs } from 'pinia'
-import { useWebsocketController } from '../../../../../app/websocket/composables/useWebsocketController'
+import { defineStore, storeToRefs } from 'pinia';
+import { useWebsocketController } from '../../../../../app/websocket/composables/useWebsocketController';
 import { AppConfig } from '../../../../../types/AppConfig';
-import { useAuthStore } from '../../../../auth/stores/auth'
+import { useAuthStore } from '../../../../auth/stores/auth';
 
 export const useChatStore = defineStore('chat', (url: string) => {
   const messages = ref<any[]>([]);
@@ -29,8 +29,10 @@ export const useChatStore = defineStore('chat', (url: string) => {
   );
 
   function connect() {
-    if (controller.ws?.readyState === WebSocket.OPEN
-      || controller.ws?.readyState === WebSocket.CONNECTING) {
+    if (
+      controller.ws?.readyState === WebSocket.OPEN ||
+      controller.ws?.readyState === WebSocket.CONNECTING
+    ) {
       return;
     }
     controller.open();
@@ -44,10 +46,9 @@ export const useChatStore = defineStore('chat', (url: string) => {
     controller.sendMessage(payload);
   }
 
-
   return {
     connect,
     disconnect,
     send,
-  }
+  };
 });

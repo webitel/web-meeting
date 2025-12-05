@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import vueDevTools from 'vite-plugin-vue-devtools';
+import { resolve } from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -24,11 +24,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@aliasedDeps/api-services/axios': resolve(
-        __dirname,
-        'src/app/api/instance',
-      ),
-      'lodash': 'lodash-es',
+      '@aliasedDeps/api-services/axios': resolve(__dirname, 'src/app/api/instance'),
+      lodash: 'lodash-es',
     },
     dedupe: ['vue'],
   },
@@ -36,4 +33,4 @@ export default defineConfig({
   optimizeDeps: {
     include: ['ee-ts', 'deepmerge', 'deep-copy', 'deep-equal', 'clipboard-copy', 'webitel-sdk'],
   },
-})
+});

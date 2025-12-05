@@ -3,28 +3,27 @@
  */
 
 export interface AppConfig {
-    token: {
-        iss: string;
-        endpointUrl: string;
-        appToken: string;
-    };
-    call: {
-        host: string;
-        target: string;
-    };
-    chat: {
-        host: string;
-    };
-    assets: {
-        logoPicture: string;
-        mainBackground: string;
-    };
+  token: {
+    iss: string;
+    endpointUrl: string;
+    appToken: string;
+  };
+  call: {
+    host: string;
+    target: string;
+  };
+  chat: {
+    host: string;
+  };
+  assets: {
+    logoPicture: string;
+    mainBackground: string;
+  };
 }
 
 // Make it available globally for Vue's inject system
 declare module '@vue/runtime-core' {
-    interface ComponentCustomProperties {
-        $config: AppConfig;
-    }
+  interface ComponentCustomProperties {
+    $config: AppConfig;
+  }
 }
-

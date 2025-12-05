@@ -3,4 +3,4 @@ export const SidebarMode = {
   Chat: 'chat',
 } as const;
 
-export type SidebarModeType = typeof SidebarMode[keyof typeof SidebarMode];
+export type SidebarModeType = (typeof SidebarMode)[keyof typeof SidebarMode];

@@ -3,78 +3,78 @@ import { defineStore } from 'pinia';
 import { useDevicesList } from '@vueuse/core';
 
 export const useMicrophoneStore = defineStore('devices/microphone', () => {
+  const { audioInputs: devices } = useDevicesList({
+    constraints: { audio: true },
+  });
 
-    const { audioInputs: devices } = useDevicesList({
-        constraints: { audio: true },
+  const selectedDeviceId = ref<string>('');
+
+  const stream = ref<MediaStream | null>(null);
+
+  const selectedDevice = computed(() =>
+    devices.value.find((device) => device.deviceId === selectedDeviceId.value),
+  );
+
+  watch(devices, (devices) => {
+    if (devices?.length > 0 && !selectedDeviceId.value) {
+      selectedDeviceId.value = devices[0]?.deviceId ?? '';
+    }
+  });
+
+  function setSelectedDevice(device): void {
+    selectedDeviceId.value = device.deviceId ?? '';
+  }
+
+  /**
+   * Start microphone stream for testing
+   */
+  async function startStream(
+    deviceId: string = selectedDeviceId.value,
+  ): Promise<MediaStream | null> {
+    // Stop any existing stream
+    stopStream();
+
+    if (!deviceId) return null;
+
+    // Get microphone stream
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      audio: { deviceId: { exact: deviceId } },
     });
 
-    const selectedDeviceId = ref<string>('');
+    stream.value = newStream;
+    return newStream;
+  }
 
-    const stream = ref<MediaStream | null>(null);
+  /**
+   * Stop microphone stream
+   */
+  function stopStream(): void {
+    if (!stream.value) return;
 
-    const selectedDevice = computed(() =>
-        devices.value.find((device) => device.deviceId === selectedDeviceId.value)
-    );
+    stream.value.getTracks().forEach((track) => track.stop());
+    stream.value = null;
+  }
 
-    watch(devices, (devices) => {
-        if (devices?.length > 0 && !selectedDeviceId.value) {
-            selectedDeviceId.value = devices[0]?.deviceId ?? '';
-        }
-    });
+  /**
+   * Cleanup
+   */
+  function cleanup(): void {
+    stopStream();
+  }
 
-    function setSelectedDevice(device): void {
-        selectedDeviceId.value = device.deviceId ?? '';
-    }
+  return {
+    // State
+    devices,
+    selectedDeviceId,
+    stream,
 
-    /**
-     * Start microphone stream for testing
-     */
-    async function startStream(deviceId: string = selectedDeviceId.value): Promise<MediaStream | null> {
-            // Stop any existing stream
-            stopStream();
+    // Computed
+    selectedDevice,
 
-            if (!deviceId) return null;
-
-            // Get microphone stream
-            const newStream = await navigator.mediaDevices.getUserMedia({
-                audio: { deviceId: { exact: deviceId } },
-            });
-
-            stream.value = newStream;
-            return newStream;
-    }
-
-    /**
-     * Stop microphone stream
-     */
-    function stopStream(): void {
-        if (!stream.value) return;
-
-        stream.value.getTracks().forEach((track) => track.stop());
-        stream.value = null;
-    }
-
-    /**
-     * Cleanup
-     */
-    function cleanup(): void {
-        stopStream();
-    }
-
-    return {
-        // State
-        devices,
-        selectedDeviceId,
-        stream,
-
-        // Computed
-        selectedDevice,
-
-        // Actions
-        setSelectedDevice,
-        startStream,
-        stopStream,
-        cleanup,
-    };
+    // Actions
+    setSelectedDevice,
+    startStream,
+    stopStream,
+    cleanup,
+  };
 });
-

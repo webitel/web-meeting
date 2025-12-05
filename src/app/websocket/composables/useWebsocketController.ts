@@ -3,7 +3,7 @@ import { useWebSocket } from '@vueuse/core';
 // @Lera24
 // delete at the end if not using
 
-export const useWebsocketController = ({url, protocols}) => {
+export const useWebsocketController = ({ url, protocols }) => {
   const { status, data, send, open, close } = useWebSocket(url, {
     protocols,
     immediate: false,
@@ -23,15 +23,15 @@ export const useWebsocketController = ({url, protocols}) => {
     },
     onDisconnected(event) {
       console.log('[WS] disconnected:', event);
-    }
+    },
   });
 
-  function sendMessage (payload: any) {
-    return send(JSON.stringify(payload))
+  function sendMessage(payload: any) {
+    return send(JSON.stringify(payload));
   }
 
-  function closeConnection () {
-    return close(1000, 'client closed connection')
+  function closeConnection() {
+    return close(1000, 'client closed connection');
   }
 
   return {
@@ -40,6 +40,5 @@ export const useWebsocketController = ({url, protocols}) => {
     sendMessage,
     open,
     closeConnection,
-  }
-}
-
+  };
+};
