@@ -23,8 +23,9 @@ import { storeToRefs } from 'pinia'
 import { useChatStore } from '../../chat/store/chat';
 import SidebarContentWrapper from '../../../../sidebar/components/shared/sidebar-content-wrapper.vue'
 
-const { connect, send } = useChatStore()
-const { messages } = storeToRefs(useChatStore)
+const chatStore = useChatStore()
+const { connect, sendMessage } = chatStore;
+// const { messages } = storeToRefs(chatStore)
 
 const { t } = useI18n()
 const text = ref('')
@@ -33,12 +34,14 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const sendText = () => {
-  send({ text: text.value, peer: { type: "chat" } });
-  text.value = '';
-}
+connect();
+setTimeout(() => sendMessage('mama'), 3000)
 
-onMounted(() => {
-  connect()
-})
+// onMounted( () => {
+//   ///await test();
+//   connect();
+//   sendHeaders();
+//   ///sendMessage();
+//   setTimeout(() => sendMessage('mama'), 3000)
+// })
 </script>

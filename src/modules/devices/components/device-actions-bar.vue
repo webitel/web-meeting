@@ -10,7 +10,7 @@
         />
         <settings-toggle-action
          :state="sidebarPanelOpened"
-         @toggle="toggleSidebarPanel"
+         @toggle="toggleSidebarPanel('chat')"
         />
 
     </meeting-actions-bar>
@@ -28,8 +28,9 @@ import { useSidebarStore } from '../../sidebar/store/sidebar'
 const microphoneState = defineModel<boolean>('with-audio');
 const videoState = defineModel<boolean>('with-video');
 
-const { opened: sidebarPanelOpened } = storeToRefs(useSidebarStore);
-const { toggle: toggleSidebarPanel } = useSidebarStore();
+const sidebarStore = useSidebarStore();
+const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
+const { changeMode: toggleSidebarPanel } = sidebarStore;
 </script>
 
 <style scoped></style>

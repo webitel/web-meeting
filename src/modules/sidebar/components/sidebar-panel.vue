@@ -11,7 +11,7 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia'
 import DevicesSettingsPanel from '../../devices/components/devices-settings-panel.vue';
-import ChatPanel from '../../meeting/components/meeting-actions-bar.vue';
+import ChatPanel from '../../meeting/modules/chat/components/chat-panel.vue';
 import { useSidebarStore } from '../store/sidebar'
 import { SidebarMode } from '../../sidebar/enums/SidebarMode'
 
@@ -21,9 +21,9 @@ const { mode } = storeToRefs(sidebarPanel);
 
 const sidebarPanelComponent = computed(() => {
   switch (mode.value) {
-    case SidebarMode.Chat: return ChatPanel;
-    case SidebarMode.Settings: return DevicesSettingsPanel;
-    default: return null;
+    // case SidebarMode.Chat: return ChatPanel;
+    // case SidebarMode.Settings: return DevicesSettingsPanel;
+    default: return ChatPanel;
   }
 })
 </script>
