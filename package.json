@@ -36,7 +36,6 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@prettier/plugin-oxc": "^0.0.4",
     "@tsconfig/node22": "^22.0.2",
     "@types/jsdom": "^21.1.7",
     "@types/lodash": "^4.17.21",
