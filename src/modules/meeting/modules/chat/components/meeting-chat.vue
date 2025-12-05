@@ -41,7 +41,7 @@ const chatStore = useChatStore();
 const { messages } = storeToRefs(chatStore);
 const { connect, sendMessage, sendFile } = chatStore;
 
-connect();
+// connect();
 
 const uiMessages = computed<UiChatMessageType[]>(() => {
 
