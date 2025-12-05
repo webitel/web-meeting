@@ -1,9 +1,9 @@
 {
-  "call": {
-    "target": "service"
-  },
-  "assets": {
-    "logoPicture": "/meet/assets/web-logo.svg",
-    "mainBackground": "/meet/assets/web-background.svg"
-  }
+	"call": {
+		"target": "service"
+	},
+	"assets": {
+		"logoPicture": "/meet/assets/web-logo.svg",
+		"mainBackground": "/meet/assets/web-background.svg"
+	}
 }

@@ -21,19 +21,17 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
-import { ChatAction, ChatContainerComponent, type ChatMessageType as UiChatMessageType } from '@webitel/ui-chats/ui';
 import type { Message as PortalChatMessageType } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
+import type { ChatMessageType as UiChatMessageType } from '@webitel/ui-chats/ui';
 import type { ResultCallbacks } from '@webitel/ui-sdk/src/types';
-
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useChatStore } from '../store/chat';
-import SidebarContentWrapper from '../../../../sidebar/components/shared/sidebar-content-wrapper.vue';
 
-const emit = defineEmits<{
-  close: []
-}>()
+const _emit = defineEmits<{
+	close: [];
+}>();
 
 const { t } = useI18n();
 
@@ -43,22 +41,21 @@ const { connect, sendMessage, sendFile } = chatStore;
 
 connect();
 
-const uiMessages = computed<UiChatMessageType[]>(() => {
+const _uiMessages = computed<UiChatMessageType[]>(() => {
+	const portalMessages: PortalChatMessageType[] = messages?.value ?? [];
 
-  const portalMessages: PortalChatMessageType[] = messages?.value ?? [];
+	const uiMsgs: UiChatMessageType[] = portalMessages.map((msg) => msg);
 
-  const uiMsgs: UiChatMessageType[] = portalMessages.map((msg) => msg);
-
-  return uiMsgs;
+	return uiMsgs;
 });
 
-async function localSendMessage(text: string, options?: ResultCallbacks) {
-  await sendMessage(text);
-  options?.onSuccess?.();
-} 
+async function _localSendMessage(text: string, options?: ResultCallbacks) {
+	await sendMessage(text);
+	options?.onSuccess?.();
+}
 
-async function localSendFile(files: File[], options?: ResultCallbacks) {
-  await sendFile(files);
-  options?.onSuccess?.();
+async function _localSendFile(files: File[], options?: ResultCallbacks) {
+	await sendFile(files);
+	options?.onSuccess?.();
 }
 </script>
