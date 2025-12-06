@@ -28,6 +28,7 @@
     "axios": "^1.13.1",
     "jssip": "^3.10.1",
     "lodash": "npm:lodash-es@latest",
+    "nanoid": "^5.1.6",
     "pinia": "^3.0.3",
     "tiny-jsonc": "^1.0.2",
     "uuid": "^13.0.0",

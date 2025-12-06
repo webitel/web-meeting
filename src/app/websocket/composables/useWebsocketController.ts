@@ -1,57 +1,83 @@
 import { useWebSocket } from '@vueuse/core';
+import { nanoid } from 'nanoid';
+import { ref } from 'vue';
+import type { ControllerParams, WSMessage, SendMessagePayload, WebSocketController } from '../../../types/webSocket';
 
-// @Lera24
-// delete at the end if not using
+// в кінці прибрати консоль логи
 
-export const useWebsocketController = ({url, authData}) => {
-  const { status, data, send, open, close } = useWebSocket(url, {
+export const useWebsocketController = ({url, authData}: ControllerParams):WebSocketController => {
+  const messageHandlers = ref<WSMessage[]>([]);
+  const isConnected = ref(false);
+
+  const {
+    send,
+    open,
+    close } = useWebSocket(url, {
     immediate: false,
-    onConnected(ws) {
-      // reserved for future
-      send(JSON.stringify({ 
-meta: {
-  ...authData,
-},
-      }))
+    autoReconnect: {
+      retries: Infinity,
+      delay: 1000,
     },
-    onMessage(event) {
+    heartbeat: {
+      message: 'pong',
+      responseMessage: 'pong',
+      interval: 30000,
+      pongTimeout: 5000,
+    },
+    onConnected() {
       try {
-        const data = JSON.parse(event.data);
+        send(JSON.stringify({
+          meta: {
+            ...authData,
+          },
+        }));
+        isConnected.value = true;
       } catch (e) {
-        throw e;
+        console.error('WS send auth error', e);
+      }
+    },
+    onMessage(ws: WebSocket, event: MessageEvent<string>) {
+      if (!event.data ||
+        event.data === 'undefined' ||
+        event.data === 'null') return;
+
+      try {
+        const parsed: WSMessage = JSON.parse(event.data);
+        messageHandlers.value.push(parsed);
+
+      } catch (e) {
+        console.error('WS parse error', e);
       }
     },
     onError(error) {
       console.error('[WS] error:', error);
     },
     onDisconnected(event) {
+      isConnected.value = false;
       console.log('[WS] disconnected:', event);
-    }
-  });
 
-  function sendMessage (text: string) {
-
-    const payload = { id: Math.random().toString(36).substring(2, 15),
-    path: 'webitel.portal.ChatMessages/SendMessage', //webitel.portal.ChatMessages/
-    data: {
-      '@type': 'type.googleapis.com/webitel.portal.SendMessageRequest',
-      text,
     }
+  })
+
+  function sendMessage ({path, data}: SendMessagePayload):boolean {
+    const payload = {
+      id: nanoid(),
+      path: `webitel.portal.ChatMessages/${path}`,
+      data: {
+        '@type': 'type.googleapis.com/webitel.portal.SendMessageRequest',       // поміняти на тип
+        ...data,
+      }
   }
-
     return send(JSON.stringify(payload))
   }
 
-  function closeConnection () {
-    return close(1000, 'client closed connection')
-  }
-
   return {
-    status,
-    data,
+    messageHandlers,
+    isConnected,
+
     sendMessage,
     open,
-    closeConnection,
+    close,
   }
 }
 

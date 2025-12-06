@@ -9,8 +9,8 @@
       <chat-container-component
         :messages="uiMessages"
         :chat-actions="[
-          ChatAction.SendMessage, 
-          ChatAction.AttachFiles, 
+          ChatAction.SendMessage,
+          ChatAction.AttachFiles,
           ChatAction.EmojiPicker,
           ]"
         @[`action:${ChatAction.SendMessage}`]="localSendMessage"
@@ -39,9 +39,7 @@ const { t } = useI18n();
 
 const chatStore = useChatStore();
 const { messages } = storeToRefs(chatStore);
-const { connect, sendMessage, sendFile } = chatStore;
-
-// connect();
+const { sendTextMessage, sendFiles } = chatStore;
 
 const uiMessages = computed<UiChatMessageType[]>(() => {
 
@@ -53,12 +51,12 @@ const uiMessages = computed<UiChatMessageType[]>(() => {
 });
 
 async function localSendMessage(text: string, options?: ResultCallbacks) {
-  await sendMessage(text);
+  await sendTextMessage(text);
   options?.onSuccess?.();
-} 
+}
 
 async function localSendFile(files: File[], options?: ResultCallbacks) {
-  await sendFile(files);
+  await sendFiles(files);
   options?.onSuccess?.();
 }
 </script>
