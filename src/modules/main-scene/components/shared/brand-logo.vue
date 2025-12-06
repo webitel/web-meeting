@@ -10,8 +10,7 @@ import { inject } from 'vue';
 
 import type { AppConfig } from '../../../../types/config';
 
-const $config = inject<AppConfig>('$config')!;
-
+const _$config = inject<AppConfig>('$config')!;
 </script>
 
 <style scoped>

@@ -22,39 +22,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue-i18n'
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSpeakerStore } from '../stores/speaker';
 
 const speakerStore = useSpeakerStore();
 
 const { t } = useI18n();
 
-const {
-    devices,
-    selectedDevice,
-    selectedDeviceId,
-} = storeToRefs(speakerStore);
+const { devices, selectedDevice, selectedDeviceId } = storeToRefs(speakerStore);
 
-const {
-    setSelectedDevice,
-    playTestBeep,
- } = speakerStore;
+const { setSelectedDevice, playTestBeep } = speakerStore;
 
 const isPlaying = ref(false);
 
-async function playBeep(): Promise<void> {
-    if (isPlaying.value || !selectedDeviceId.value) return;
+async function _playBeep(): Promise<void> {
+	if (isPlaying.value || !selectedDeviceId.value) return;
 
-    try {
-        isPlaying.value = true;
-        await playTestBeep(selectedDeviceId.value);
-    } catch (error) {
-        console.error('Error playing beep:', error);
-    } finally {
-        isPlaying.value = false;
-    }
+	try {
+		isPlaying.value = true;
+		await playTestBeep(selectedDeviceId.value);
+	} catch (error) {
+		console.error('Error playing beep:', error);
+	} finally {
+		isPlaying.value = false;
+	}
 }
 </script>
 
