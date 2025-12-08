@@ -4,12 +4,12 @@ import type { WebSocketStatus } from '@vueuse/core';
 import { SendMessageRequest } from '@buf/webitel_portal.community_timostamm-protobuf-ts';
 
 export interface AuthData {
-	'X-Portal-Access': string | null;
+	'X-Portal-Access': string;
 	'X-Portal-Device': string;
 	'X-Portal-Client': string;
 }
 
-export interface ControllerParams {
+export interface ChatWebSocketParams {
 	url: string;
 	authData: AuthData;
 }
@@ -26,7 +26,7 @@ export interface SendMessagePayload {
 	data: SendMessageRequest;
 }
 
-export interface ChatWebSocket {
+export interface ChatWebSocketApi {
 	status: WebSocketStatus;
 	data: string | null;
 	sendMessage: (payload: SendMessagePayload) => boolean;

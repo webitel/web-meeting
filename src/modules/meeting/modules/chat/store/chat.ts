@@ -6,8 +6,9 @@ import { useAuthStore } from '../../../../auth/stores/auth';
 import { PortalFilesAPI } from '../../chat/api/portalFiles';
 import type { AuthData, ChatWebSocket } from '../types/chat';
 import { WebsocketPayloadType } from '../enums/WebsocketPayloadType';
-import { WebsocketPortalType } from '../enums/WebsocketPortalType';
-import { useGenerateProto } from './useGenerateProto';
+import { WebsocketMessageType } from '../enums/WebsocketMessageType';
+import { generateProtoType, generateMessage } from '../scripts/generateProto';
+import { useSafeChatMessaging } from '../composables/useSafeChatMessaging';
 
 // Відкриті питання
 // чи треба статус завантаження кожного файлу?
@@ -16,17 +17,10 @@ import { useGenerateProto } from './useGenerateProto';
 
 export const useChatStore = defineStore('chat', () => {
 	const config = inject<AppConfig>('$config')!;
-	// массив повідомлень для відображення в чаті
 	const messages = ref([]); // дописати тип   // дописати тип
-	// екземпляр веб сокета
 	const controller: ChatWebSocket = ref(null);
 
-	const offlineMessageQueue = ref([]);
-
-	const generateProto = useGenerateProto();
-	const { generateProtoType, generateMessage } = generateProto;
-
-	// ініціалізація authStore
+	//
 	const authStore = useAuthStore();
 	const { accessToken, xPortalDevice } = storeToRefs(authStore);
 
@@ -63,34 +57,18 @@ export const useChatStore = defineStore('chat', () => {
 		},
 	);
 
-	// saveSendingMessage - перевірка чи є підключення
-	// якщо ні - пушимо в offlineMessageQueue
-
-	function saveSendingMessage(payload) {
-		if (!controller.value.isConnected.value) {
-			offlineMessageQueue.value.push(payload);
-			return;
-		}
-		controller.value.sendMessage(payload);
-	}
-
-	// sendOfflineMessages - відправка збереженної черги повідомлень після реконекта
-
-	function sendOfflineMessages() {
-		if (!controller.value.isConnected.value) return;
-
-		while (offlineMessageQueue.value.length > 0) {
-			const msg = offlineMessageQueue.value.shift();
-			controller.value.sendMessage(msg);
-		}
-		offlineMessageQueue.value = [];
-	}
+	const { dispatchMessage, sendPendingMessages } = useSafeChatMessaging(
+		(payload) => {
+			if (!controller.value?.isConnected.value) return false;
+			return controller.value.sendMessage(payload);
+		},
+	);
 
 	watch(
 		() => controller.value.isConnected.value,
 		(value) => {
 			if (value) {
-				sendOfflineMessages();
+				sendPendingMessages();
 				if (lastMessage.value) reloadHistory();
 			}
 		},
@@ -102,7 +80,7 @@ export const useChatStore = defineStore('chat', () => {
 		const message = generateMessage(WebsocketPayloadType.SendMessage, {
 			text,
 		});
-		saveSendingMessage(message);
+		dispatchMessage(message);
 	}
 
 	// завантаження файлу
@@ -140,7 +118,7 @@ export const useChatStore = defineStore('chat', () => {
 		const message = generateMessage(WebsocketPayloadType.SendMessage, {
 			file: uploadedIds,
 		});
-		saveSendingMessage(message);
+		dispatchMessage(message);
 	}
 
 	// дозавантаження історії повідомлень
@@ -150,7 +128,7 @@ export const useChatStore = defineStore('chat', () => {
 		const message = generateMessage(WebsocketPayloadType.ChatUpdates, {
 			offset: lastMessage.value?.id,
 		});
-		saveSendingMessage(message);
+		dispatchMessage(message);
 	}
 
 	// відключення вебсокета
@@ -162,37 +140,24 @@ export const useChatStore = defineStore('chat', () => {
 
 	// обробка вхідних повідомлень
 
-	watch(
-		() => controller.value?.socketMessages.value,
-		(newMessages) => {
-			if (!newMessages || newMessages.length === 0) return;
+	controller.value.onMessage((wsMessage) => {
+		const rootType = wsMessage.data?.['@type'];
 
-			const last = newMessages[newMessages.length - 1];
-			if (!last) return;
+		if (
+			rootType === generateProtoType(WebsocketMessageType.Response) &&
+			wsMessage.data?.data?.['@type'] ===
+				generateProtoType(WebsocketMessageType.UpdateNewMessage)
+		) {
+			messages.value.push(wsMessage.data.data);
+		}
 
-			const rootType = last.data?.['@type'];
-
-			if (
-				rootType === generateProtoType(WebsocketPortalType.Response) &&
-				last.data?.data?.['@type'] ===
-					generateProtoType(WebsocketPortalType.UpdateNewMessage)
-			) {
-				messages.value.push(last.data.data);
-			} else if (
-				rootType === generateProtoType(WebsocketPortalType.UpdateNewMessage) &&
-				last.data?.dispo === 'Incoming'
-			) {
-				messages.value.push(last.data);
-			}
-
-			if (controller.value) {
-				controller.value.socketMessages.value = [];
-			}
-		},
-		{
-			deep: true,
-		},
-	);
+		if (
+			rootType === generateProtoType(WebsocketMessageType.UpdateNewMessage) &&
+			wsMessage.data?.dispo === 'Incoming'
+		) {
+			messages.value.push(wsMessage.data);
+		}
+	});
 
 	return {
 		messages,

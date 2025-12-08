@@ -1,9 +1,9 @@
-export const WebsocketPortalType = {
+export const WebsocketMessageType = {
 	SendMessageRequest: 'SendMessageRequest',
 	ChatMessages: 'ChatMessages',
 	Response: 'Response',
 	UpdateNewMessage: 'UpdateNewMessage',
 } as const;
 
-export type WebsocketPortalType =
-	(typeof WebsocketPortalType)[keyof typeof WebsocketPortalType];
+export type WebsocketMessageType =
+	(typeof WebsocketMessageType)[keyof typeof WebsocketMessageType];

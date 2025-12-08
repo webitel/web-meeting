@@ -2,10 +2,9 @@ import { useWebSocket } from '@vueuse/core';
 import { ref } from 'vue';
 import { isEmpty } from '@webitel/ui-sdk';
 import type {
-	ControllerParams,
-	WSMessage,
+	ChatWebSocketParams,
 	SendMessagePayload,
-	ChatWebSocket,
+	ChatWebSocketApi,
 } from '../types/chat';
 
 // в кінці прибрати консоль логи
@@ -13,8 +12,7 @@ import type {
 export const useChatWebSocket = ({
 	url,
 	authData,
-}: ControllerParams): ChatWebSocket => {
-	const socketMessages = ref<WSMessage[]>([]);
+}: ChatWebSocketParams): ChatWebSocketApi => {
 	const isConnected = ref(false);
 
 	const { send, open, close } = useWebSocket(url, {
@@ -33,9 +31,7 @@ export const useChatWebSocket = ({
 			try {
 				send(
 					JSON.stringify({
-						meta: {
-							authData,
-						},
+						meta: authData,
 					}),
 				);
 				isConnected.value = true;
@@ -47,8 +43,7 @@ export const useChatWebSocket = ({
 			if (isEmpty(event.data)) return;
 
 			try {
-				const parsed: WSMessage = JSON.parse(event.data);
-				socketMessages.value.push(parsed);
+				return JSON.parse(event.data);
 			} catch (e) {
 				console.error('WS parse error', e);
 			}
@@ -67,7 +62,6 @@ export const useChatWebSocket = ({
 	}
 
 	return {
-		socketMessages,
 		isConnected,
 
 		sendMessage,
