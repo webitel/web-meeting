@@ -10,7 +10,7 @@
 import { WtRoundedAction } from '@webitel/ui-sdk/components';
 
 const emit = defineEmits<{
-    'click': [];
+	click: [];
 }>();
 </script>
 

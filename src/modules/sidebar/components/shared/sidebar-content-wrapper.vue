@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 const emit = defineEmits<{
-  'close': [];
+	close: [];
 }>();
 </script>
 

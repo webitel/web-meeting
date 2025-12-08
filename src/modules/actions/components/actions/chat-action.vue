@@ -7,11 +7,10 @@
 import { WtRoundedAction } from '@webitel/ui-sdk/components';
 
 const props = defineProps<{
-  state: boolean;
+	state: boolean;
 }>();
 
 const emit = defineEmits<{
-  'toggle': []
+	toggle: [];
 }>();
-
 </script>

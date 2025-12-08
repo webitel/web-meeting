@@ -20,22 +20,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { WtButton } from '@webitel/ui-sdk/components';
-
-import ServiceDialog from './shared/service-dialog.vue';
+import { ref } from 'vue';
 import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 import { useMeetingStore } from '../../meeting/stores/meeting';
+import ServiceDialog from './shared/service-dialog.vue';
 
 const number = import.meta.env.DEV ? '00' : '';
 
 const withAudio = ref<boolean>(false);
 const withVideo = ref<boolean>(true);
 
-
 const meetingStore = useMeetingStore();
 const { makeCall } = meetingStore;
-
 </script>
 
 <style scoped></style>

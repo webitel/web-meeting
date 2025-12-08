@@ -22,25 +22,23 @@
 
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-
-import MicrophoneSettings from '../modules/microphone/components/microphone-settings.vue';
-import SpeakerSettings from '../modules/speaker/components/speaker-settings.vue';
-import CameraSettings from '../modules/camera/components/camera-settings.vue';
-import { useDevicesStore } from '../stores/devices';
-import { useMicrophoneStore } from '../modules/microphone/stores/microphone';
-import { useSpeakerStore } from '../modules/speaker/stores/speaker';
-import { useCameraStore } from '../modules/camera/stores/camera';
-import { useMeetingStore } from '../../meeting/stores/meeting';
-import { SessionState } from '../../meeting/stores/meeting';
+import { SessionState, useMeetingStore } from '../../meeting/stores/meeting';
 import SidebarContentWrapper from '../../sidebar/components/shared/sidebar-content-wrapper.vue';
+import CameraSettings from '../modules/camera/components/camera-settings.vue';
+import { useCameraStore } from '../modules/camera/stores/camera';
+import MicrophoneSettings from '../modules/microphone/components/microphone-settings.vue';
+import { useMicrophoneStore } from '../modules/microphone/stores/microphone';
+import SpeakerSettings from '../modules/speaker/components/speaker-settings.vue';
+import { useSpeakerStore } from '../modules/speaker/stores/speaker';
+import { useDevicesStore } from '../stores/devices';
 
 const { t } = useI18n();
 
 const emit = defineEmits<{
-  'close': [];
+	close: [];
 }>();
 
 const devicesStore = useDevicesStore();
@@ -53,44 +51,59 @@ const { permissionGranted, error } = storeToRefs(devicesStore);
 const { requestDeviceAccess } = devicesStore;
 
 // Destructure state from individual device stores
-const { devices: microphones, selectedDeviceId: selectedMicrophoneId } = storeToRefs(microphoneStore);
-const { devices: speakers, selectedDeviceId: selectedSpeakerId } = storeToRefs(speakerStore);
-const { devices: cameras, selectedDeviceId: selectedCameraId } = storeToRefs(cameraStore);
+const { devices: microphones, selectedDeviceId: selectedMicrophoneId } =
+	storeToRefs(microphoneStore);
+const { devices: speakers, selectedDeviceId: selectedSpeakerId } =
+	storeToRefs(speakerStore);
+const { devices: cameras, selectedDeviceId: selectedCameraId } =
+	storeToRefs(cameraStore);
 
 // Destructure meeting store state
-const { sessionState, videoEnabled, microphoneEnabled } = storeToRefs(meetingStore);
+const { sessionState, videoEnabled, microphoneEnabled } =
+	storeToRefs(meetingStore);
 
 const { changeMicrophone, changeCamera, changeSpeaker } = meetingStore;
 
 // Watch for microphone changes and update active call
 watch(selectedMicrophoneId, async (newDeviceId) => {
-    if (newDeviceId && sessionState.value === SessionState.ACTIVE && microphoneEnabled.value) {
-        await changeMicrophone(newDeviceId);
-    }
+	if (
+		newDeviceId &&
+		sessionState.value === SessionState.ACTIVE &&
+		microphoneEnabled.value
+	) {
+		await changeMicrophone(newDeviceId);
+	}
 });
 
 // // Watch for camera changes and update active call
 watch(selectedCameraId, async (newDeviceId) => {
-    if (newDeviceId && sessionState.value === SessionState.ACTIVE && videoEnabled.value) {
-        await changeCamera(newDeviceId);
-    }
+	if (
+		newDeviceId &&
+		sessionState.value === SessionState.ACTIVE &&
+		videoEnabled.value
+	) {
+		await changeCamera(newDeviceId);
+	}
 });
 
 // // Watch for speaker changes and update active call
 watch(selectedSpeakerId, async (newDeviceId) => {
-    if (newDeviceId && sessionState.value === SessionState.ACTIVE && videoEnabled.value) {
-        await changeSpeaker(newDeviceId);
-    }
+	if (
+		newDeviceId &&
+		sessionState.value === SessionState.ACTIVE &&
+		videoEnabled.value
+	) {
+		await changeSpeaker(newDeviceId);
+	}
 });
 
 onMounted(async () => {
-    if (!permissionGranted.value) {
-        await requestDeviceAccess();
-    }
+	if (!permissionGranted.value) {
+		await requestDeviceAccess();
+	}
 });
 
-onUnmounted(() => {
-});
+onUnmounted(() => {});
 </script>
 
 

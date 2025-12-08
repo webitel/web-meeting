@@ -16,27 +16,20 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import { WtButton } from '@webitel/ui-sdk/components';
-
+import { storeToRefs } from 'pinia';
+import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 import { useDevicesStore } from '../../devices/stores/devices';
 import ServiceDialog from './shared/service-dialog.vue';
-import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 
 const emit = defineEmits<{
-    'settings:toggle': [];
+	'settings:toggle': [];
 }>();
 
 const devicesStore = useDevicesStore();
-const {
-    isRequesting,
-} = storeToRefs(devicesStore);
+const { isRequesting } = storeToRefs(devicesStore);
 
-const {
-    requestDeviceAccess,
-} = devicesStore;
-
-
+const { requestDeviceAccess } = devicesStore;
 </script>
 
 <style scoped></style>

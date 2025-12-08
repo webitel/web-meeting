@@ -19,7 +19,6 @@ import { useMeetingStore } from '../../../../stores/meeting';
 const meetingStore = useMeetingStore();
 
 const { remoteVideoStream, localVideoStream } = storeToRefs(meetingStore);
-
 </script>
 
 <style scoped>
