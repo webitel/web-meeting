@@ -1,8 +1,8 @@
 <template>
-    <wt-rounded-action
-        icon="settings"
-       @click="emit('toggle')"
-    />
+  <wt-rounded-action
+    icon="settings"
+    @click="emit('toggle')"
+  />
 </template>
 
 <script setup lang="ts">
