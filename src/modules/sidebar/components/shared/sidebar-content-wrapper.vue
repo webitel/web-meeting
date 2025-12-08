@@ -21,8 +21,8 @@
 </template>
 
 <script setup lang="ts">
-const _emit = defineEmits<{
-	close: [];
+const emit = defineEmits<{
+  'close': [];
 }>();
 </script>
 

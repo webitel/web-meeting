@@ -4,27 +4,28 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { WtRoundedAction } from '@webitel/ui-sdk/components';
 
 import { useDevicesStore } from '../../../devices/stores/devices';
 
-const _props = defineProps<{
-	state: boolean;
+const props = defineProps<{
+    state: boolean;
 }>();
 
 const emit = defineEmits<{
-	toggle: [];
+    'toggle': [];
 }>();
 
 const devicesStore = useDevicesStore();
 const { hasAnyMicrophones: allowed } = storeToRefs(devicesStore);
 const { requestDeviceAccess } = devicesStore;
 
-function _onToggle() {
-	if (!allowed.value) {
-		requestDeviceAccess();
-	} else {
-		emit('toggle');
-	}
+function onToggle() {
+    if (!allowed.value) {
+        requestDeviceAccess();
+    } else {
+        emit('toggle');
+    }
 }
 </script>
 

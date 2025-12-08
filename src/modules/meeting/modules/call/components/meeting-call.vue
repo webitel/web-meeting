@@ -30,33 +30,48 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { useDevicesStore } from '../../../../devices/stores/devices';
-import { SidebarMode } from '../../../../sidebar/enums/SidebarMode';
+import { VideoCall, VideoCallAction } from '@webitel/ui-sdk/modules/CallSession';
+
 import { useSidebarStore } from '../../../../sidebar/store/sidebar';
 import { useMeetingStore } from '../../../stores/meeting';
+import { SidebarMode } from '../../../../sidebar/enums/SidebarMode';
+import { useDevicesStore } from '../../../../devices/stores/devices';
 
 const meetingStore = useMeetingStore();
 
-const { remoteVideoStream, localVideoStream, microphoneEnabled, videoEnabled } =
-	storeToRefs(meetingStore);
+const { 
+    remoteVideoStream, 
+    localVideoStream, 
+    microphoneEnabled, 
+    videoEnabled,
+ } = storeToRefs(meetingStore);
 
-const { toggleMute, toggleVideo, hangup } = meetingStore;
+const { 
+    toggleMute, 
+    toggleVideo, 
+    hangup,
+    } = meetingStore;
 
 const sidebarStore = useSidebarStore();
-const { mode: sidebarPanelMode } = storeToRefs(sidebarStore);
+const {
+  mode: sidebarPanelMode,
+ } = storeToRefs(sidebarStore);
 const { changeMode: changeSidebarMode } = sidebarStore;
 
-const _toggleSettingsPanel = () => {
-	changeSidebarMode(SidebarMode.Settings);
-};
+const toggleSettingsPanel = () => {
+  changeSidebarMode(SidebarMode.Settings);
+}
 
-const _toggleChatPanel = () => {
-	changeSidebarMode(SidebarMode.Chat);
-};
+const toggleChatPanel = () => {
+  changeSidebarMode(SidebarMode.Chat);
+}
 
 const devicesStore = useDevicesStore();
-const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
-	storeToRefs(devicesStore);
+const { 
+  hasAnyMicrophones: microphoneAccessed,
+  hasAnyCameras: videoAccessed,
+ } = storeToRefs(devicesStore);
+
 </script>
 
 <style scoped>

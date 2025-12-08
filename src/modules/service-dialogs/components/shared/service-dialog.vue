@@ -26,14 +26,12 @@
 <script setup lang="ts">
 import { ComponentSize } from '@webitel/ui-sdk/enums';
 
-const _props = withDefaults(
-	defineProps<{
-		size?: ComponentSize;
-	}>(),
-	{
-		size: ComponentSize.MD,
-	},
-);
+const props = withDefaults(defineProps<{
+    size?: ComponentSize;
+}>(), {
+    size: ComponentSize.MD,
+});
+
 </script>
 
 <style scoped>

@@ -22,38 +22,41 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import { onUnmounted, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n'
 
 import { useCameraStore } from '../stores/camera';
 
 const cameraStore = useCameraStore();
 const { t } = useI18n();
 
-const { devices, selectedDevice, selectedDeviceId, stream } =
-	storeToRefs(cameraStore);
+const {
+    devices,
+    selectedDevice,
+    selectedDeviceId,
+    stream,
+} = storeToRefs(cameraStore);
 
-const { startStream, stopStream, setSelectedDevice, cleanup } = cameraStore;
+const {
+    startStream,
+    stopStream,
+    setSelectedDevice,
+    cleanup,
+ } = cameraStore;
 
-watch(
-	selectedDeviceId,
-	async (newDeviceId) => {
-		if (stream.value) {
-			stopStream();
-		}
+watch(selectedDeviceId, async (newDeviceId) => {
+    if (stream.value) {
+        stopStream();
+    }
 
-		if (!newDeviceId) return;
+    if (!newDeviceId) return;
 
-		await startStream();
-	},
-	{
-		immediate: true,
-	},
-);
+    await startStream();
+}, { immediate: true });
 
 onUnmounted(() => {
-	cleanup();
+    cleanup();
 });
 </script>
 

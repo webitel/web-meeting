@@ -4,11 +4,14 @@
 </template>
 
 <script setup lang="ts">
-const _props = defineProps<{
-	state: boolean;
+import { WtRoundedAction } from '@webitel/ui-sdk/components';
+
+const props = defineProps<{
+  state: boolean;
 }>();
 
-const _emit = defineEmits<{
-	toggle: [];
+const emit = defineEmits<{
+  'toggle': []
 }>();
+
 </script>

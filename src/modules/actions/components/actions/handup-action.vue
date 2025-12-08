@@ -7,8 +7,10 @@
 </template>
 
 <script setup lang="ts">
-const _emit = defineEmits<{
-	click: [];
+import { WtRoundedAction } from '@webitel/ui-sdk/components';
+
+const emit = defineEmits<{
+    'click': [];
 }>();
 </script>
 

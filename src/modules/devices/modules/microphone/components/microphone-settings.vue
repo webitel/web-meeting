@@ -20,49 +20,54 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onUnmounted, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useMicrophoneVolume } from '../composables/useMicrophoneVolume';
+import { watch, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n'
+import { WtLoadBar } from '@webitel/ui-sdk/components';
+
 import { useMicrophoneStore } from '../stores/microphone';
+import { useMicrophoneVolume } from '../composables/useMicrophoneVolume';
 
 const microphoneStore = useMicrophoneStore();
 const { t } = useI18n();
 
-const { devices, selectedDeviceId, selectedDevice, stream } =
-	storeToRefs(microphoneStore);
-
-const { startStream, stopStream, setSelectedDevice, cleanup } = microphoneStore;
+const {
+    devices,
+    selectedDeviceId,
+    selectedDevice,
+    stream,
+} = storeToRefs(microphoneStore);
 
 const {
-	volumeLevel,
-	start: startVolumeMonitoring,
-	stop: stopVolumeMonitoring,
-} = useMicrophoneVolume();
+    startStream,
+    stopStream,
+    setSelectedDevice,
+    cleanup,
+ } = microphoneStore;
 
-watch(
-	selectedDeviceId,
-	async (newDeviceId) => {
-		if (stream.value) {
-			stopStream();
-			stopVolumeMonitoring();
-		}
+const {
+    volumeLevel,
+    start: startVolumeMonitoring,
+    stop: stopVolumeMonitoring,
+ } = useMicrophoneVolume();
 
-		if (!newDeviceId) return;
+watch(selectedDeviceId, async (newDeviceId) => {
+    if (stream.value) {
+        stopStream();
+        stopVolumeMonitoring();
+    }
 
-		await startStream();
+    if (!newDeviceId) return;
 
-		if (!stream.value) return;
+    await startStream();
 
-		startVolumeMonitoring(stream.value);
-	},
-	{
-		immediate: true,
-	},
-);
+    if (!stream.value) return;
+
+    startVolumeMonitoring(stream.value);
+}, { immediate: true });
 
 onUnmounted(() => {
-	stopVolumeMonitoring();
-	cleanup();
+    stopVolumeMonitoring();
+    cleanup();
 });
 </script>
 
