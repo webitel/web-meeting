@@ -29,6 +29,10 @@
 </template>
 
 <script setup lang="ts">
+import {
+	VideoCall,
+	VideoCallAction,
+} from '@webitel/ui-sdk/modules/CallSession';
 import { storeToRefs } from 'pinia';
 import { useDevicesStore } from '../../../../devices/stores/devices';
 import { SidebarMode } from '../../../../sidebar/enums/SidebarMode';
@@ -46,11 +50,11 @@ const sidebarStore = useSidebarStore();
 const { mode: sidebarPanelMode } = storeToRefs(sidebarStore);
 const { changeMode: changeSidebarMode } = sidebarStore;
 
-const _toggleSettingsPanel = () => {
+const toggleSettingsPanel = () => {
 	changeSidebarMode(SidebarMode.Settings);
 };
 
-const _toggleChatPanel = () => {
+const toggleChatPanel = () => {
 	changeSidebarMode(SidebarMode.Chat);
 };
 

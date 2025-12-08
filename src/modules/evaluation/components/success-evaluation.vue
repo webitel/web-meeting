@@ -13,6 +13,7 @@
 
   <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import MessageContainer from './shared/message-container.vue';
 
 const { t } = useI18n();
 </script>

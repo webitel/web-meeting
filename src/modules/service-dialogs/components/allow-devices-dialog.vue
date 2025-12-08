@@ -16,10 +16,13 @@
 </template>
 
 <script setup lang="ts">
+import { WtButton } from '@webitel/ui-sdk/components';
 import { storeToRefs } from 'pinia';
+import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 import { useDevicesStore } from '../../devices/stores/devices';
+import ServiceDialog from './shared/service-dialog.vue';
 
-const _emit = defineEmits<{
+const emit = defineEmits<{
 	'settings:toggle': [];
 }>();
 

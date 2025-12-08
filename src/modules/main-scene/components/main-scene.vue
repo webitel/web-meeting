@@ -18,13 +18,15 @@ import type { AppConfig } from '../../../types/config';
 import MeetingContainer from '../../meeting/components/meeting-container.vue';
 import AllowDevicesDialog from '../../service-dialogs/components/allow-devices-dialog.vue';
 import JoinDialog from '../../service-dialogs/components/join-dialog.vue';
+import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
 import { SceneState } from '../enums/SceneState';
 import { useMainSceneStore } from '../stores/mainScene';
+import BrandLogo from './shared/brand-logo.vue';
 
 const $config = inject<AppConfig>('$config')!;
 
-const _mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
+const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
 
 const mainSceneStore = useMainSceneStore();
 const { sceneState } = storeToRefs(mainSceneStore);
@@ -32,7 +34,7 @@ const { sceneState } = storeToRefs(mainSceneStore);
 const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
-const _sceneComponent = computed(() => {
+const sceneComponent = computed(() => {
 	// return MeetingContainer
 
 	switch (sceneState.value) {

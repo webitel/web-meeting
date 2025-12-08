@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useDevicesStore } from '../../devices/stores/devices';
 import { useMeetingStore } from '../../meeting/stores/meeting';
 import { SceneState } from '../enums/SceneState';

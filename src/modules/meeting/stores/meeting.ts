@@ -1,3 +1,4 @@
+import { type UseTimeAgoOptions, useTimeAgo } from '@vueuse/core';
 import JsSIP from 'jssip';
 import type { UA, WebSocketInterface } from 'jssip/lib/JsSIP';
 import type { RTCSession } from 'jssip/lib/RTCSession';
@@ -76,8 +77,8 @@ export const useMeetingStore = defineStore('meeting', () => {
 						socket,
 					],
 					authorization_user: xPortalDevice.value,
-					uri: `sip:${callAccount.value?.userId}@${callAccount.value?.realm}`,
-					realm: callAccount.value?.realm,
+					uri: `sip:${callAccount.value!.userId}@${callAccount.value!.realm}`,
+					realm: callAccount.value!.realm,
 					password: accessToken.value!,
 					register: false,
 				};
@@ -229,7 +230,7 @@ export const useMeetingStore = defineStore('meeting', () => {
 	 * Make a call to a specific target
 	 */
 	async function makeCall(
-		_target: string,
+		target: string,
 		options?: {
 			withAudio?: boolean;
 			withVideo?: boolean;
@@ -294,7 +295,7 @@ export const useMeetingStore = defineStore('meeting', () => {
 			};
 
 			// const rtcSession = userAgent.value!.call('00', callOptions);
-			const rtcSession = userAgent.value?.call(
+			const rtcSession = userAgent.value!.call(
 				appConfig.call.target,
 				callOptions,
 			);
@@ -323,25 +324,25 @@ export const useMeetingStore = defineStore('meeting', () => {
 	});
 
 	function mute(): void {
-		session.value?.mute({
+		session.value!.mute({
 			audio: true,
 		});
 	}
 
 	function unmute(): void {
-		session.value?.unmute({
+		session.value!.unmute({
 			audio: true,
 		});
 	}
 
 	function disableVideo(): void {
-		session.value?.mute({
+		session.value!.mute({
 			video: true,
 		});
 	}
 
 	function enableVideo(): void {
-		session.value?.unmute({
+		session.value!.unmute({
 			video: true,
 		});
 		initVideo();
@@ -385,8 +386,8 @@ export const useMeetingStore = defineStore('meeting', () => {
 		const newAudioTrack = newStream.getAudioTracks()[0];
 
 		// Find the audio sender in the peer connection
-		const audioSender = session.value?.connection
-			.getSenders()
+		const audioSender = session
+			.value!.connection.getSenders()
 			.find((sender) => sender.track?.kind === 'audio');
 
 		const oldTrack = audioSender?.track;
@@ -416,8 +417,8 @@ export const useMeetingStore = defineStore('meeting', () => {
 		const newVideoTrack = newStream.getVideoTracks()[0];
 
 		// Find the video sender in the peer connection
-		const videoSender = session.value?.connection
-			.getSenders()
+		const videoSender = session
+			.value!.connection.getSenders()
 			.find((sender) => sender.track?.kind === 'video');
 
 		const oldTrack = videoSender?.track;

@@ -37,7 +37,7 @@ const { setSelectedDevice, playTestBeep } = speakerStore;
 
 const isPlaying = ref(false);
 
-async function _playBeep(): Promise<void> {
+async function playBeep(): Promise<void> {
 	if (isPlaying.value || !selectedDeviceId.value) return;
 
 	try {

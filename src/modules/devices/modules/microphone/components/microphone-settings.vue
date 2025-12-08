@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import { WtLoadBar } from '@webitel/ui-sdk/components';
 import { storeToRefs } from 'pinia';
 import { onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';

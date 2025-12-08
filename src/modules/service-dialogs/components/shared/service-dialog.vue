@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { ComponentSize } from '@webitel/ui-sdk/enums';
 
-const _props = withDefaults(
+const props = withDefaults(
 	defineProps<{
 		size?: ComponentSize;
 	}>(),

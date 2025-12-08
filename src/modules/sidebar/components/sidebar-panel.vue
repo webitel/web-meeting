@@ -19,7 +19,7 @@ const sidebarPanel = useSidebarStore();
 const { close } = sidebarPanel;
 const { mode } = storeToRefs(sidebarPanel);
 
-const _sidebarPanelComponent = computed(() => {
+const sidebarPanelComponent = computed(() => {
 	switch (mode.value) {
 		case SidebarMode.Chat:
 			return ChatPanel;

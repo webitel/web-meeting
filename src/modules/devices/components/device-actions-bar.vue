@@ -18,10 +18,14 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import MicrophoneToggleAction from '../../actions/components/actions/microphone-toggle-action.vue';
+import SettingsToggleAction from '../../actions/components/actions/settings-toggle-action.vue';
+import VideoToggleAction from '../../actions/components/actions/video-toggle-action.vue';
+import MeetingActionsBar from '../../actions/components/meeting-actions-bar.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
 
-const _microphoneState = defineModel<boolean>('with-audio');
-const _videoState = defineModel<boolean>('with-video');
+const microphoneState = defineModel<boolean>('with-audio');
+const videoState = defineModel<boolean>('with-video');
 
 const { opened: sidebarPanelOpened } = storeToRefs(useSidebarStore);
 const { toggle: toggleSidebarPanel } = useSidebarStore();

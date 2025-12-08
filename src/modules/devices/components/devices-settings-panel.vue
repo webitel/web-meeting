@@ -26,14 +26,18 @@ import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { SessionState, useMeetingStore } from '../../meeting/stores/meeting';
+import SidebarContentWrapper from '../../sidebar/components/shared/sidebar-content-wrapper.vue';
+import CameraSettings from '../modules/camera/components/camera-settings.vue';
 import { useCameraStore } from '../modules/camera/stores/camera';
+import MicrophoneSettings from '../modules/microphone/components/microphone-settings.vue';
 import { useMicrophoneStore } from '../modules/microphone/stores/microphone';
+import SpeakerSettings from '../modules/speaker/components/speaker-settings.vue';
 import { useSpeakerStore } from '../modules/speaker/stores/speaker';
 import { useDevicesStore } from '../stores/devices';
 
 const { t } = useI18n();
 
-const _emit = defineEmits<{
+const emit = defineEmits<{
 	close: [];
 }>();
 
