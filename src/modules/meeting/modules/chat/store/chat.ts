@@ -1,198 +1,205 @@
 import { ref, watch, inject, computed } from 'vue';
-import { defineStore, storeToRefs } from 'pinia'
-import { useWebsocketController } from '../../../../../app/websocket/composables/useWebsocketController'
+import { defineStore, storeToRefs } from 'pinia';
+import { useChatWebSocket } from '../composables/useChatWebSocket.ts';
 import type { AppConfig } from '../../../../../types/config';
 import { useAuthStore } from '../../../../auth/stores/auth';
 import { PortalFilesAPI } from '../../chat/api/portalFiles';
-import type { AuthData } from '../../../../../types/chat';
+import type { AuthData, ChatWebSocket } from '../types/chat';
+import { WebsocketPayloadType } from '../enums/WebsocketPayloadType';
+import { WebsocketPortalType } from '../enums/WebsocketPortalType';
+import { useGenerateProto } from './useGenerateProto';
 
 // Відкриті питання
 // чи треба статус завантаження кожного файлу?
 // якщо коннект розірвано - треба якийсь лоадер намалювати?
 // формат messages не співпадає з воркспейсом, треба підігнати
-// типи для повідомлень - знайти і поміняти нижче
 
 export const useChatStore = defineStore('chat', () => {
-  const config = inject<AppConfig>('$config')!;
-  // массив повідомлень для відображення в чаті
-  const messages = ref([]);                     // дописати тип
-  // допоміжна черга повідомлень на відправку якщо підключення розєднано
-  const sendQueue = ref([]);                    // дописати тип
-  // екземпляр веб сокета
-  const controller: WebSocket = ref(null);
+	const config = inject<AppConfig>('$config')!;
+	// массив повідомлень для відображення в чаті
+	const messages = ref([]); // дописати тип   // дописати тип
+	// екземпляр веб сокета
+	const controller: ChatWebSocket = ref(null);
 
-  // ініціалізація authStore
-  const authStore = useAuthStore();
-  const { accessToken, xPortalDevice } = storeToRefs(authStore);
-  const authData = computed((): AuthData => {
-    return {
-      'X-Portal-Access': accessToken.value,
-      'X-Portal-Device': xPortalDevice.value,
-      'X-Portal-Client': config!.token.appToken,
-    }
-  });
+	const offlineMessageQueue = ref([]);
 
-  const lastMessage = computed(() => messages.value[messages.value.length - 1]);
+	const generateProto = useGenerateProto();
+	const { generateProtoType, generateMessage } = generateProto;
 
-  // connect
-  function connect() {
-    controller.value = useWebsocketController({
-      url: config.chat.host,                     // wss://dev.webitel.com/portal/ws
-      authData: authData.value,
-    });
+	// ініціалізація authStore
+	const authStore = useAuthStore();
+	const { accessToken, xPortalDevice } = storeToRefs(authStore);
 
-    controller.value?.open();
-  }
+	const authData = computed((): AuthData => {
+		return {
+			'X-Portal-Access': accessToken.value,
+			'X-Portal-Device': xPortalDevice.value,
+			'X-Portal-Client': config!.token.appToken,
+		};
+	});
 
-  watch(accessToken, (token) => {
-    if (token && !controller.value) {
-      connect();
-    }
+	const lastMessage = computed(() => messages.value.at(-1) || null);
 
-  }, { immediate: true });
+	function connect() {
+		controller.value = useChatWebSocket({
+			url: config.chat.host, // wss://dev.webitel.com/portal/ws
+			authData: authData.value,
+		});
 
-  // safeSendMessage - перевірка чи є підключення
-  // якщо ні - пушимо в sendQueue
+		controller.value.open();
+	}
 
-  function safeSendMessage(payload) {
-    if (!controller.value?.isConnected.value) {
-      sendQueue.value.push(payload);
-      return;
-    }
-    controller.value.sendMessage(payload);
-  }
+	// TODO - прибрати в кінці
+	// https://github.com/webitel/web-meeting/pull/11#discussion_r2598189230
+	watch(
+		accessToken,
+		(token) => {
+			if (token && !controller.value) {
+				connect();
+			}
+		},
+		{
+			immediate: true,
+		},
+	);
 
-  // sendSavingMessages - відправка збереженної черги повідомлень після реконекта
+	// saveSendingMessage - перевірка чи є підключення
+	// якщо ні - пушимо в offlineMessageQueue
 
-  function sendSavingMessages() {
-    if (!controller.value?.isConnected?.value) return;
+	function saveSendingMessage(payload) {
+		if (!controller.value.isConnected.value) {
+			offlineMessageQueue.value.push(payload);
+			return;
+		}
+		controller.value.sendMessage(payload);
+	}
 
-    while (sendQueue.value.length > 0) {
-      const msg = sendQueue.value.shift();
-      controller.value.sendMessage(msg);
-    }
-    sendQueue.value = [];
-  }
+	// sendOfflineMessages - відправка збереженної черги повідомлень після реконекта
 
-  watch(
-    () => controller.value?.isConnected?.value,
-    (value) => {
-      if (value) {
-        sendSavingMessages();
-        if (lastMessage.value) reloadHistory();
-      }
-    }
-  );
+	function sendOfflineMessages() {
+		if (!controller.value.isConnected.value) return;
 
-  // відправка текстового повідомлення
+		while (offlineMessageQueue.value.length > 0) {
+			const msg = offlineMessageQueue.value.shift();
+			controller.value.sendMessage(msg);
+		}
+		offlineMessageQueue.value = [];
+	}
 
-  function sendTextMessage(text: string = '') {
-    safeSendMessage({
-      path: 'SendMessage',
-      data: {
-        text,
-      }
-    })
-  }
+	watch(
+		() => controller.value.isConnected.value,
+		(value) => {
+			if (value) {
+				sendOfflineMessages();
+				if (lastMessage.value) reloadHistory();
+			}
+		},
+	);
 
-  // завантаження файлу
+	// відправка текстового повідомлення
 
-  async function uploadFile(file: File, retry = 3): Promise<string> {
-    try {
-      const { uploadId } = await PortalFilesAPI.post({
-        params: {
-          mimeType: file.type || 'application/octet-stream',
-          name: file.name,
-        },
-        headers: authData.value,
-      });
+	function sendTextMessage(text: string = '') {
+		const message = generateMessage(WebsocketPayloadType.SendMessage, {
+			text,
+		});
+		saveSendingMessage(message);
+	}
 
-      const { fileId } = await PortalFilesAPI.put({
-        file,
-        uploadId: uploadId,
-        headers: authData.value,
-      });
+	// завантаження файлу
 
-      return fileId;
-    } catch (e) {
-      if (retry > 0)
-        return uploadFile(file, retry - 1);
-      throw e;
-    }
-  }
+	async function uploadFile(file: File, retry = 3): Promise<string> {
+		try {
+			const { uploadId } = await PortalFilesAPI.post({
+				params: {
+					mimeType: file.type || 'application/octet-stream',
+					name: file.name,
+				},
+				headers: authData.value,
+			});
 
-  // відправка кожного файлу окремо
+			const { fileId } = await PortalFilesAPI.put({
+				file,
+				uploadId: uploadId,
+				headers: authData.value,
+			});
 
-  async function sendFiles(files: File[]) {
-    const uploadedIds = await Promise.all(
-      files.map(file => uploadFile(file))
-    );
+			return fileId;
+		} catch (e) {
+			if (retry > 0) return uploadFile(file, retry - 1);
+			throw e;
+		}
+	}
 
-    safeSendMessage({
-      path: 'SendMessage',
-      data: {
-        file: uploadedIds,
-      }
-    });
-  }
+	// відправка кожного файлу окремо
 
-  // дозавантаження історії повідомлень
-  // вивантажуємо не всю історію, а нові повідомлення від offset останнього збереженного на нашій стороні
+	async function sendFiles(files: File[]) {
+		const uploadedIds = await Promise.all(
+			files.map((file) => uploadFile(file)),
+		);
 
-  function reloadHistory() {
-    safeSendMessage({
-      path: 'ChatUpdates',
-      data: {
-        offset: lastMessage.value?.id,
-      }
-    });
-  }
+		const message = generateMessage(WebsocketPayloadType.SendMessage, {
+			file: uploadedIds,
+		});
+		saveSendingMessage(message);
+	}
 
-  // відключення вебсокета
+	// дозавантаження історії повідомлень
+	// вивантажуємо не всю історію, а нові повідомлення від offset останнього збереженного на нашій стороні
 
-  function disconnect() {
-    controller.value?.closeConnection();
-    controller.value = null;
-  }
+	function reloadHistory() {
+		const message = generateMessage(WebsocketPayloadType.ChatUpdates, {
+			offset: lastMessage.value?.id,
+		});
+		saveSendingMessage(message);
+	}
 
-  // обробка вхідних повідомлень
+	// відключення вебсокета
 
-  watch(
-    () => controller.value?.messageHandlers.value,
-    (newMessages) => {
-      if (!newMessages || newMessages.length === 0) return;
+	function disconnect() {
+		controller.value.closeConnection();
+		controller.value = null;
+	}
 
-      const last = newMessages[newMessages.length - 1];
-      if (!last) return;
+	// обробка вхідних повідомлень
 
-      const rootType = last.data?.["@type"];
+	watch(
+		() => controller.value?.socketMessages.value,
+		(newMessages) => {
+			if (!newMessages || newMessages.length === 0) return;
 
-      if (
-        rootType === "type.googleapis.com/webitel.portal.Response" &&
-        last.data?.data?.["@type"] === "type.googleapis.com/webitel.portal.UpdateNewMessage"
-      ) {
-        messages.value.push(last.data.data);
-      } else if (
-        rootType === "type.googleapis.com/webitel.portal.UpdateNewMessage" &&
-        last.data?.dispo === "Incoming"
-      ) {
-        messages.value.push(last.data);
-      }
+			const last = newMessages[newMessages.length - 1];
+			if (!last) return;
 
-      if (controller.value) {
-        controller.value.messageHandlers.value = [];
-      }
-    },
-    { deep: true }
-  );
+			const rootType = last.data?.['@type'];
 
+			if (
+				rootType === generateProtoType(WebsocketPortalType.Response) &&
+				last.data?.data?.['@type'] ===
+					generateProtoType(WebsocketPortalType.UpdateNewMessage)
+			) {
+				messages.value.push(last.data.data);
+			} else if (
+				rootType === generateProtoType(WebsocketPortalType.UpdateNewMessage) &&
+				last.data?.dispo === 'Incoming'
+			) {
+				messages.value.push(last.data);
+			}
 
-  return {
-    messages,
+			if (controller.value) {
+				controller.value.socketMessages.value = [];
+			}
+		},
+		{
+			deep: true,
+		},
+	);
 
-    connect,
-    disconnect,
-    sendTextMessage,
-    sendFiles,
-  }
+	return {
+		messages,
+
+		connect,
+		disconnect,
+		sendTextMessage,
+		sendFiles,
+	};
 });
