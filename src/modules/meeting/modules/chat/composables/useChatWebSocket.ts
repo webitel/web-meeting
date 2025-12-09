@@ -1,19 +1,18 @@
 import { useWebSocket } from '@vueuse/core';
 import { ref } from 'vue';
-import { isEmpty } from '@webitel/ui-sdk';
+import isEmpty from '@webitel/ui-sdk/src/scripts/isEmpty';
 import type {
-	ChatWebSocketParams,
+	AuthData,
 	SendMessagePayload,
 	ChatWebSocketApi,
 } from '../types/chat';
 
 // в кінці прибрати консоль логи
 
-export const useChatWebSocket = ({
-	url,
-	authData,
-}: ChatWebSocketParams): ChatWebSocketApi => {
+export const useChatWebSocket = (url: string): ChatWebSocketApi => {
 	const isConnected = ref(false);
+	const listeners: Array<(data: any) => void> = [];
+	const authRef: AuthData | null = ref(null);
 
 	const { send, open, close } = useWebSocket(url, {
 		immediate: false,
@@ -22,16 +21,15 @@ export const useChatWebSocket = ({
 			delay: 1000,
 		},
 		heartbeat: {
-			message: 'pong',
 			responseMessage: 'pong',
-			interval: 30000,
+			interval: 0,
 			pongTimeout: 5000,
 		},
 		onConnected() {
 			try {
 				send(
 					JSON.stringify({
-						meta: authData,
+						meta: authRef.value,
 					}),
 				);
 				isConnected.value = true;
@@ -42,11 +40,13 @@ export const useChatWebSocket = ({
 		onMessage(ws: WebSocket, event: MessageEvent<string>) {
 			if (isEmpty(event.data)) return;
 
+			let parsed;
 			try {
-				return JSON.parse(event.data);
+				parsed = JSON.parse(event.data);
 			} catch (e) {
 				console.error('WS parse error', e);
 			}
+			listeners.forEach((fn) => fn(parsed));
 		},
 		onError(error) {
 			console.error('[WS] error:', error);
@@ -57,15 +57,25 @@ export const useChatWebSocket = ({
 		},
 	});
 
-	function sendMessage({ payload }: SendMessagePayload): boolean {
+	function sendMessage(payload: SendMessagePayload): boolean {
 		return send(JSON.stringify(payload));
+	}
+
+	function onMessage(fn: (data: any) => void) {
+		listeners.push(fn);
+	}
+
+	function openConnection(authData) {
+		authRef.value = authData;
+		open();
 	}
 
 	return {
 		isConnected,
 
 		sendMessage,
-		open,
+		onMessage,
+		open: openConnection,
 		close,
 	};
 };

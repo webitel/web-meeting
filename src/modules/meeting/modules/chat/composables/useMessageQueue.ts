@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 
-export function useSafeChatMessaging(sendMethod) {
+export function useMessageQueue(sendMethod) {
 	const pendingMessageQueue = ref([]);
 
 	function dispatchMessage(payload) {

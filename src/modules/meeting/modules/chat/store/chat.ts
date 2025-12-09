@@ -7,8 +7,8 @@ import { PortalFilesAPI } from '../../chat/api/portalFiles';
 import type { AuthData, ChatWebSocket } from '../types/chat';
 import { WebsocketPayloadType } from '../enums/WebsocketPayloadType';
 import { WebsocketMessageType } from '../enums/WebsocketMessageType';
-import { generateProtoType, generateMessage } from '../scripts/generateProto';
-import { useSafeChatMessaging } from '../composables/useSafeChatMessaging';
+import { generateProtoType, generateMessage } from '../scripts/generateMessage';
+import { useMessageQueue } from '../composables/useMessageQueue';
 
 // Відкриті питання
 // чи треба статус завантаження кожного файлу?
@@ -18,29 +18,25 @@ import { useSafeChatMessaging } from '../composables/useSafeChatMessaging';
 export const useChatStore = defineStore('chat', () => {
 	const config = inject<AppConfig>('$config')!;
 	const messages = ref([]); // дописати тип   // дописати тип
-	const controller: ChatWebSocket = ref(null);
 
-	//
 	const authStore = useAuthStore();
 	const { accessToken, xPortalDevice } = storeToRefs(authStore);
 
-	const authData = computed((): AuthData => {
-		return {
+	const authData = computed(
+		(): AuthData => ({
 			'X-Portal-Access': accessToken.value,
 			'X-Portal-Device': xPortalDevice.value,
 			'X-Portal-Client': config!.token.appToken,
-		};
-	});
+		}),
+	);
+
+	const controller = useChatWebSocket(config.chat.host);
 
 	const lastMessage = computed(() => messages.value.at(-1) || null);
 
 	function connect() {
-		controller.value = useChatWebSocket({
-			url: config.chat.host, // wss://dev.webitel.com/portal/ws
-			authData: authData.value,
-		});
-
-		controller.value.open();
+		controller.open(authData.value);
+		handleIncomingMessage();
 	}
 
 	// TODO - прибрати в кінці
@@ -48,7 +44,7 @@ export const useChatStore = defineStore('chat', () => {
 	watch(
 		accessToken,
 		(token) => {
-			if (token && !controller.value) {
+			if (token) {
 				connect();
 			}
 		},
@@ -57,15 +53,14 @@ export const useChatStore = defineStore('chat', () => {
 		},
 	);
 
-	const { dispatchMessage, sendPendingMessages } = useSafeChatMessaging(
+	const { dispatchMessage, sendPendingMessages } = useMessageQueue(
 		(payload) => {
-			if (!controller.value?.isConnected.value) return false;
-			return controller.value.sendMessage(payload);
+			return controller.sendMessage(payload);
 		},
 	);
 
 	watch(
-		() => controller.value.isConnected.value,
+		() => controller?.isConnected.value,
 		(value) => {
 			if (value) {
 				sendPendingMessages();
@@ -134,30 +129,32 @@ export const useChatStore = defineStore('chat', () => {
 	// відключення вебсокета
 
 	function disconnect() {
-		controller.value.closeConnection();
-		controller.value = null;
+		controller.closeConnection();
+		controller = null;
 	}
 
 	// обробка вхідних повідомлень
 
-	controller.value.onMessage((wsMessage) => {
-		const rootType = wsMessage.data?.['@type'];
+	function handleIncomingMessage() {
+		controller.onMessage((wsMessage) => {
+			const rootType = wsMessage.data?.['@type'];
 
-		if (
-			rootType === generateProtoType(WebsocketMessageType.Response) &&
-			wsMessage.data?.data?.['@type'] ===
-				generateProtoType(WebsocketMessageType.UpdateNewMessage)
-		) {
-			messages.value.push(wsMessage.data.data);
-		}
+			if (
+				rootType === generateProtoType(WebsocketMessageType.Response) &&
+				wsMessage.data?.data?.['@type'] ===
+					generateProtoType(WebsocketMessageType.UpdateNewMessage)
+			) {
+				messages.value.push(wsMessage.data.data);
+			}
 
-		if (
-			rootType === generateProtoType(WebsocketMessageType.UpdateNewMessage) &&
-			wsMessage.data?.dispo === 'Incoming'
-		) {
-			messages.value.push(wsMessage.data);
-		}
-	});
+			if (
+				rootType === generateProtoType(WebsocketMessageType.UpdateNewMessage) &&
+				wsMessage.data?.dispo === 'Incoming'
+			) {
+				messages.value.push(wsMessage.data);
+			}
+		});
+	}
 
 	return {
 		messages,

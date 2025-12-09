@@ -1,17 +1,11 @@
 import type { Ref } from 'vue';
 import type { WebSocketStatus } from '@vueuse/core';
-import type { WebSocketStatus } from '@vueuse/core';
-import { SendMessageRequest } from '@buf/webitel_portal.community_timostamm-protobuf-ts';
+import type { SendMessageRequest } from '@buf/webitel_portal.community_timostamm-protobuf-ts';
 
 export interface AuthData {
 	'X-Portal-Access': string;
 	'X-Portal-Device': string;
 	'X-Portal-Client': string;
-}
-
-export interface ChatWebSocketParams {
-	url: string;
-	authData: AuthData;
 }
 
 export interface WSMessage {

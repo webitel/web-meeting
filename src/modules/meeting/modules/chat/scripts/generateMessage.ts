@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { SendMessageRequest } from '@buf/webitel_portal.community_timostamm-protobuf-ts';
+import type { SendMessageRequest } from '@buf/webitel_portal.community_timostamm-protobuf-ts';
 import { WebsocketMessageType } from '../enums/WebsocketMessageType';
 
 const protoBaseUrl = 'type.googleapis.com';

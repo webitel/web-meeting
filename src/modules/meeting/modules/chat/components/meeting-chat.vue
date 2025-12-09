@@ -24,7 +24,11 @@
 import { useI18n } from 'vue-i18n';
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { ChatAction, ChatContainerComponent, type ChatMessageType as UiChatMessageType } from '@webitel/ui-chats/ui';
+import {
+	ChatAction,
+	ChatContainerComponent,
+	type ChatMessageType as UiChatMessageType,
+} from '@webitel/ui-chats/ui';
 import type { Message as PortalChatMessageType } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
 import type { ResultCallbacks } from '@webitel/ui-sdk/src/types';
 
@@ -32,8 +36,8 @@ import { useChatStore } from '../store/chat';
 import SidebarContentWrapper from '../../../../sidebar/components/shared/sidebar-content-wrapper.vue';
 
 const emit = defineEmits<{
-  close: []
-}>()
+	close: [];
+}>();
 
 const { t } = useI18n();
 
@@ -42,21 +46,41 @@ const { messages } = storeToRefs(chatStore);
 const { sendTextMessage, sendFiles } = chatStore;
 
 const uiMessages = computed<UiChatMessageType[]>(() => {
+	const portalMessages: PortalChatMessageType[] = messages?.value ?? [];
+	const uiMsgs: UiChatMessageType[] = portalMessages.map((msg) => {
+		const { id, date: createdAt, from, file, text } = msg.message;
 
-  const portalMessages: PortalChatMessageType[] = messages?.value ?? [];
+		const message = {
+			id,
+			createdAt,
+			member: {
+				id: from.id,
+				name: from.name,
+				type: from.type,
+				self: from.name === 'You' ? true : false,
+			},
+		};
+		if (file)
+			message.file = {
+				id: file.id,
+				name: file.name,
+				size: file.size,
+				mime: file.mimeType,
+			};
+		if (text) message.text = text;
+		return message;
+	});
 
-  const uiMsgs: UiChatMessageType[] = portalMessages.map((msg) => msg);
-
-  return uiMsgs;
+	return uiMsgs;
 });
 
 async function localSendMessage(text: string, options?: ResultCallbacks) {
-  await sendTextMessage(text);
-  options?.onSuccess?.();
+	await sendTextMessage(text);
+	options?.onSuccess?.();
 }
 
 async function localSendFile(files: File[], options?: ResultCallbacks) {
-  await sendFiles(files);
-  options?.onSuccess?.();
+	await sendFiles(files);
+	options?.onSuccess?.();
 }
 </script>
