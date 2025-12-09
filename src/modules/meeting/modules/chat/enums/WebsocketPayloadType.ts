@@ -3,5 +3,5 @@ export const WebsocketPayloadType = {
 	ChatUpdates: 'ChatUpdates',
 } as const;
 
-export type WebsocketPayloadType =
+export type WebsocketChatPayloadType =
 	(typeof WebsocketPayloadType)[keyof typeof WebsocketPayloadType];

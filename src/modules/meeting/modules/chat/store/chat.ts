@@ -4,7 +4,7 @@ import { useChatWebSocket } from '../composables/useChatWebSocket.ts';
 import type { AppConfig } from '../../../../../types/config';
 import { useAuthStore } from '../../../../auth/stores/auth';
 import { PortalFilesAPI } from '../../chat/api/portalFiles';
-import type { AuthData, ChatWebSocket } from '../types/chat';
+import type { AuthData } from '../types/chat';
 import { WebsocketPayloadType } from '../enums/WebsocketPayloadType';
 import { WebsocketMessageType } from '../enums/WebsocketMessageType';
 import { generateProtoType, generateMessage } from '../scripts/generateMessage';

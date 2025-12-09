@@ -5,5 +5,5 @@ export const WebsocketMessageType = {
 	UpdateNewMessage: 'UpdateNewMessage',
 } as const;
 
-export type WebsocketMessageType =
+export type WebsocketChatMessageType =
 	(typeof WebsocketMessageType)[keyof typeof WebsocketMessageType];
