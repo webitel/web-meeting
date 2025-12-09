@@ -5,7 +5,7 @@
   >
     <template #title>
         <wt-icon icon="settings" color="info"></wt-icon>
-        <p>{{ t('devices.settings')}}</p>
+        <p>{{ t('vocabulary.settings')}}</p>
     </template>
 
     <template #main>

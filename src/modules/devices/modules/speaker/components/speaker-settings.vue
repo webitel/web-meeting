@@ -16,7 +16,7 @@
       class="speaker-settings__button"
       :disabled="isPlaying"
       @click="playBeep"
-    >{{ t('devices.check') }}</wt-button>
+    >{{ t('reusable.check').toUpperCase() }}</wt-button>
 
   </div>
 </template>

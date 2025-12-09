@@ -1,22 +1,22 @@
 <template>
-    <service-dialog>
-        <template #title>
-          {{ t('call.ended') }}
-        </template>
-        <template #main>
-            <wt-button
-             color="success"
-             @click="makeCall(number, { withAudio, withVideo })"
-             >{{t('call.join').toUpperCase()}}
-            </wt-button>
-        </template>
-        <template #actions>
-            <device-actions-bar
-                v-model:with-audio="withAudio"
-                v-model:with-video="withVideo"
-            />
-        </template>
-    </service-dialog>
+  <service-dialog>
+    <template #title>
+      {{ t('call.ended') }}
+    </template>
+    <template #main>
+      <wt-button
+        color="success"
+        @click="makeCall(number, { withAudio, withVideo })"
+      >{{t('call.join').toUpperCase()}}
+      </wt-button>
+    </template>
+    <template #actions>
+      <device-actions-bar
+        v-model:with-audio="withAudio"
+        v-model:with-video="withVideo"
+      />
+    </template>
+  </service-dialog>
 </template>
 
 <script setup lang="ts">

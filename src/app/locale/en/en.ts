@@ -1,4 +1,20 @@
 export default {
+	call: {
+		allowMessage: 'Allow microphone and Camera!',
+		allow: 'Allow',
+		joinMessage: 'Ready to join?',
+		join: 'Join now',
+		joinAgain: 'Join again',
+		ended: 'Call ended',
+	},
+	chat: {
+		chat: 'Meeting chat',
+	},
+	devices: {
+		microphone: 'Microphone',
+		camera: 'Camera',
+		speaker: 'Speaker',
+	},
 	evaluation: {
 		title: 'We’d love your feedback',
 		message: 'Please rate your consultation',
@@ -14,12 +30,4 @@ export default {
 		},
 	},
 	errorLinkMessage: 'Unfortunately, the link is incorrect',
-	devices: {
-		microphone: 'Microphone',
-		camera: 'Camera',
-		speaker: 'Speaker',
-		check: 'Check',
-		settings: 'Settings',
-	},
-	chat: 'Meeting chat',
 };
