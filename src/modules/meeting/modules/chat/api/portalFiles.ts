@@ -6,19 +6,19 @@ import {
 import { instance } from '../../../../../app/api/instance';
 
 const postPortalFile = async ({ params, headers }) => {
-	const values = applyTransform(params, [
-		camelToSnake(),
-	]);
-
-	const responce = await instance.post(
-		'https://dev.webitel.com/portal/files',
+	const values = applyTransform(
 		{
-			...values,
+			mimeType: params.mimeType || 'application/octet-stream',
+			...params,
 		},
-		{
-			headers,
-		},
+		[
+			camelToSnake(),
+		],
 	);
+
+	const responce = await instance.post('/portal/files', values, {
+		headers,
+	});
 	return applyTransform(responce.data, [
 		snakeToCamel(),
 	]);
@@ -29,7 +29,7 @@ const putPortalFile = async ({ file, uploadId, headers }): Promise => {
 		camelToSnake(),
 	]);
 
-	const responce = await instance.put('https://dev.webitel.com/portal/files', {
+	const responce = await instance.put('/portal/files', {
 		file,
 		params: {
 			uploadId: uploadIdValue,

@@ -8,7 +8,7 @@ import type { AuthData } from '../types/chat';
 import { WebsocketPayloadType } from '../enums/WebsocketPayloadType';
 import { WebsocketMessageType } from '../enums/WebsocketMessageType';
 import { generateProtoType, generateMessage } from '../scripts/generateMessage';
-import { useMessageQueue } from '../composables/useMessageQueue';
+import { useSafeChatMessaging } from '../composables/useSafeChatMessaging';
 
 // Відкриті питання
 // чи треба статус завантаження кожного файлу?
@@ -22,13 +22,11 @@ export const useChatStore = defineStore('chat', () => {
 	const authStore = useAuthStore();
 	const { accessToken, xPortalDevice } = storeToRefs(authStore);
 
-	const authData = computed(
-		(): AuthData => ({
-			'X-Portal-Access': accessToken.value,
-			'X-Portal-Device': xPortalDevice.value,
-			'X-Portal-Client': config!.token.appToken,
-		}),
-	);
+	const authData = computed<AuthData>(() => ({
+		'X-Portal-Access': accessToken.value,
+		'X-Portal-Device': xPortalDevice.value,
+		'X-Portal-Client': config!.token.appToken,
+	}));
 
 	const controller = useChatWebSocket(config.chat.host);
 
@@ -36,7 +34,7 @@ export const useChatStore = defineStore('chat', () => {
 
 	function connect() {
 		controller.open(authData.value);
-		handleIncomingMessage();
+		subscribeIncomingMessage();
 	}
 
 	// TODO - прибрати в кінці
@@ -53,11 +51,11 @@ export const useChatStore = defineStore('chat', () => {
 		},
 	);
 
-	const { dispatchMessage, sendPendingMessages } = useMessageQueue(
-		(payload) => {
+	const { dispatchMessage, sendPendingMessages } = useSafeChatMessaging({
+		sendMethod: (payload) => {
 			return controller.sendMessage(payload);
 		},
-	);
+	});
 
 	watch(
 		() => controller?.isConnected.value,
@@ -84,7 +82,6 @@ export const useChatStore = defineStore('chat', () => {
 		try {
 			const { uploadId } = await PortalFilesAPI.post({
 				params: {
-					mimeType: file.type || 'application/octet-stream',
 					name: file.name,
 				},
 				headers: authData.value,
@@ -134,8 +131,8 @@ export const useChatStore = defineStore('chat', () => {
 	}
 
 	// обробка вхідних повідомлень
-
-	function handleIncomingMessage() {
+	// TODO - порефакторити в кінці
+	function subscribeIncomingMessage() {
 		controller.onMessage((wsMessage) => {
 			const rootType = wsMessage.data?.['@type'];
 

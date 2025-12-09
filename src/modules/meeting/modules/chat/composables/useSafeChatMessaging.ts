@@ -1,11 +1,11 @@
 import { ref } from 'vue';
 
-export function useMessageQueue(sendMethod) {
+export function useSafeChatMessaging({ sendMethod }) {
 	const pendingMessageQueue = ref([]);
 
-	function dispatchMessage(payload) {
+	async function dispatchMessage(payload) {
 		try {
-			sendMethod(payload);
+			await sendMethod(payload);
 		} catch (error) {
 			pendingMessageQueue.value.push(payload);
 		}
