@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
-import { inject } from 'vue';
+import { inject, onMounted } from 'vue';
 import { useAuthStore } from './modules/auth/stores/auth';
 import MainScene from './modules/main-scene/components/main-scene.vue';
 import type { AppConfig } from './types/config';
@@ -16,8 +16,10 @@ const config = inject<AppConfig>('$config')!;
 
 const { locale } = useI18n();
 
-authStore.initialize();
-locale.value = config.lang;
+onMounted(async () => {
+	await authStore.initialize();
+	locale.value = config.lang || 'en';
+});
 </script>
 
 <style>
