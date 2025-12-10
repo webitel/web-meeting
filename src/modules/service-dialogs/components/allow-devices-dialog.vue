@@ -22,10 +22,6 @@ import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 import { useDevicesStore } from '../../devices/stores/devices';
 import ServiceDialog from './shared/service-dialog.vue';
 
-const emit = defineEmits<{
-	'settings:toggle': [];
-}>();
-
 const { t } = useI18n();
 
 const devicesStore = useDevicesStore();
