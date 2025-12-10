@@ -6,8 +6,8 @@
         <template #main>
             <wt-button
              color="success"
-             @click="makeCall(number, { withAudio, withVideo })"
-             >{{t('call.join').toUpperCase()}}
+             @click="makeCall({ withAudio, withVideo })"
+            >{{t('call.join').toUpperCase()}}
             </wt-button>
         </template>
         <template #actions>
@@ -29,9 +29,7 @@ import ServiceDialog from './shared/service-dialog.vue';
 
 const { t } = useI18n();
 
-const number = import.meta.env.DEV ? '00' : '';
-
-const withAudio = ref<boolean>(false);
+const withAudio = ref<boolean>(true);
 const withVideo = ref<boolean>(true);
 
 const meetingStore = useMeetingStore();

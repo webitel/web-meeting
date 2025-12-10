@@ -229,13 +229,10 @@ export const useMeetingStore = defineStore('meeting', () => {
 	/**
 	 * Make a call to a specific target
 	 */
-	async function makeCall(
-		target: string,
-		options?: {
-			withAudio?: boolean;
-			withVideo?: boolean;
-		},
-	): Promise<void> {
+	async function makeCall(options?: {
+		withAudio?: boolean;
+		withVideo?: boolean;
+	}): Promise<void> {
 		try {
 			startNowWatcher();
 			sessionState.value = SessionState.CONNECTING;
