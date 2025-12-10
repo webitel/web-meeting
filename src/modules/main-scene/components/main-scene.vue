@@ -1,13 +1,12 @@
 <template>
   <main class="main-scene">
     <brand-logo />
-    <component
-     :is="sceneComponent"
-     class="scene-component"
-     />
-    <sidebar-panel
-     v-if="sidebarPanelOpened"
-     />
+    <div class="main-scene__contents">
+      <meeting-container />
+      <sidebar-panel
+      v-if="sidebarPanelOpened"
+      />
+     </div>
   </main>
 </template>
 
@@ -16,11 +15,9 @@ import { storeToRefs } from 'pinia';
 import { computed, inject } from 'vue';
 import type { AppConfig } from '../../../types/config';
 import MeetingContainer from '../../meeting/components/meeting-container.vue';
-import AllowDevicesDialog from '../../service-dialogs/components/allow-devices-dialog.vue';
-import JoinDialog from '../../service-dialogs/components/join-dialog.vue';
 import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
-import { SceneState } from '../enums/SceneState';
+import { MeetingState } from '../enums/MeetingState';
 import { useMainSceneStore } from '../stores/mainScene';
 import BrandLogo from './shared/brand-logo.vue';
 
@@ -29,30 +26,18 @@ const $config = inject<AppConfig>('$config')!;
 const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
 
 const mainSceneStore = useMainSceneStore();
-const { sceneState } = storeToRefs(mainSceneStore);
+const { meetingState } = storeToRefs(mainSceneStore);
 
 const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
-const sceneComponent = computed(() => {
-	// return MeetingContainer
-
-	switch (sceneState.value) {
-		case SceneState.AllowDevicesDialog:
-			return AllowDevicesDialog;
-		case SceneState.JoinDialog:
-			return JoinDialog;
-		case SceneState.ActiveMeeting:
-			return MeetingContainer;
-		default:
-			return null;
-	}
+const showMeetingContainer = computed(() => {
+	return !!meetingState.value; // todo: meeting container or status popups
 });
 </script>
 
 <style scoped>
 .main-scene {
-  display: flex;
   position: relative;
   width: 100%;
   height: 100%;
@@ -69,8 +54,15 @@ const sceneComponent = computed(() => {
   transform: translateX(-50%);
 }
 
-.scene-component {
+.main-scene__contents {
   z-index: 1;
-  margin: auto;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  gap: var(--spacing-sm);
+}
+
+.meeting-component {
+  flex: 1 1 auto;
 }
 </style>
