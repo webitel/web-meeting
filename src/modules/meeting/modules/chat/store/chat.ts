@@ -1,5 +1,6 @@
 import { ref, watch, inject, computed } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
+import type { ChatMessageType as UiChatMessageType } from '@webitel/ui-chats/ui';
 import { useChatWebSocket } from '../composables/useChatWebSocket.ts';
 import type { AppConfig } from '../../../../../types/config';
 import { useAuthStore } from '../../../../auth/stores/auth';
@@ -10,14 +11,9 @@ import { WebsocketMessageType } from '../enums/WebsocketMessageType';
 import { generateProtoType, generateMessage } from '../scripts/generateMessage';
 import { useSafeChatMessaging } from '../composables/useSafeChatMessaging';
 
-// Відкриті питання
-// чи треба статус завантаження кожного файлу?
-// якщо коннект розірвано - треба якийсь лоадер намалювати?
-// формат messages не співпадає з воркспейсом, треба підігнати
-
 export const useChatStore = defineStore('chat', () => {
 	const config = inject<AppConfig>('$config')!;
-	const messages = ref([]); // дописати тип   // дописати тип
+	const messages = ref<UiChatMessageType[]>([]);
 
 	const authStore = useAuthStore();
 	const { accessToken, xPortalDevice } = storeToRefs(authStore);
@@ -67,16 +63,12 @@ export const useChatStore = defineStore('chat', () => {
 		},
 	);
 
-	// відправка текстового повідомлення
-
 	function sendTextMessage(text: string = '') {
 		const message = generateMessage(WebsocketPayloadType.SendMessage, {
 			text,
 		});
 		dispatchMessage(message);
 	}
-
-	// завантаження файлу
 
 	async function uploadFile(file: File, retry = 3): Promise<string> {
 		try {
@@ -100,8 +92,6 @@ export const useChatStore = defineStore('chat', () => {
 		}
 	}
 
-	// відправка кожного файлу окремо
-
 	async function sendFiles(files: File[]) {
 		const uploadedIds = await Promise.all(
 			files.map((file) => uploadFile(file)),
@@ -113,8 +103,8 @@ export const useChatStore = defineStore('chat', () => {
 		dispatchMessage(message);
 	}
 
-	// дозавантаження історії повідомлень
-	// вивантажуємо не всю історію, а нові повідомлення від offset останнього збереженного на нашій стороні
+	// reload message history
+	// we are not uploading all history, but new messages from the offset of the last one saved on our side
 
 	function reloadHistory() {
 		const message = generateMessage(WebsocketPayloadType.ChatUpdates, {
@@ -123,14 +113,11 @@ export const useChatStore = defineStore('chat', () => {
 		dispatchMessage(message);
 	}
 
-	// відключення вебсокета
-
 	function disconnect() {
 		controller.closeConnection();
 		controller = null;
 	}
 
-	// обробка вхідних повідомлень
 	// TODO - порефакторити в кінці
 	function subscribeIncomingMessage() {
 		controller.onMessage((wsMessage) => {
