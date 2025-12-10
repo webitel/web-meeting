@@ -1,4 +1,5 @@
 <template>
+    <!-- FOR TEST PURPOSES ONLY!! -->
     <div class="video-container">
         <div class="video-wrapper remote-video">
             <video :srcObject.prop="remoteVideoStream" autoplay playsinline />
@@ -12,6 +13,7 @@
 </template>
 
 <script setup lang="ts">
+// FOR TEST PURPOSES ONLY!!
 import { storeToRefs } from 'pinia';
 
 import { useMeetingStore } from '../../../../stores/meeting';

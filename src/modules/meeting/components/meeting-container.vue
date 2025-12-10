@@ -30,9 +30,11 @@
       @[`action:${VideoCallAction.Chat}`]="toggleChatPanel"
       @[`action:${VideoCallAction.Hangup}`]="hangup"
     >
-      <template
+      <template 
+        #content
         v-if="showContentSlot"
-      #content>
+      >
+      <!-- <video-container /> -->
         <component
           :is="contentComponent"
         />
@@ -55,8 +57,9 @@ import { useSidebarStore } from '../../sidebar/store/sidebar';
 import { useMeetingStore } from '../stores/meeting';
 import { useMainSceneStore } from '../../main-scene/stores/mainScene';
 import { MeetingState } from '../../main-scene/enums/MeetingState';
-import AllowDevicesDialog from '../../service-dialogs/components/allow-devices-dialog.vue';
-import JoinDialog from '../../service-dialogs/components/join-dialog.vue';
+import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devices-dialog.vue';
+import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
+import VideoContainer from '../modules/call/components/video/video-container.vue';
 
 const meetingStore = useMeetingStore();
 
@@ -108,4 +111,8 @@ const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
 </script>
 
 <style scoped>
+  .video-call :deep(.video-call-overlay) {
+    display: none;
+      z-index: -1 !important;
+    }
 </style>
