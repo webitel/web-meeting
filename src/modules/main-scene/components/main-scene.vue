@@ -23,6 +23,7 @@ import { useSidebarStore } from '../../sidebar/store/sidebar';
 import { SceneState } from '../enums/SceneState';
 import { useMainSceneStore } from '../stores/mainScene';
 import BrandLogo from './shared/brand-logo.vue';
+import CallEnded from '../../service-dialogs/components/call-ended.vue';
 
 const $config = inject<AppConfig>('$config')!;
 
@@ -44,6 +45,9 @@ const sceneComponent = computed(() => {
 			return JoinDialog;
 		case SceneState.ActiveMeeting:
 			return MeetingContainer;
+		case SceneState.CallEnded: {
+			return CallEnded;
+		}
 		default:
 			return null;
 	}

@@ -5,7 +5,6 @@
       <wt-icon
         icon="done--filled"
         color="success"></wt-icon>
-      <p>{{ t('webMeeting.evaluation.success.message') }}</p>
       <p>{{ t('evaluation.success.message') }}</p>
     </template>
     </message-container>

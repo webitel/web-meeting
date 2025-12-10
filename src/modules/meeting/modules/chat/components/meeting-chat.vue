@@ -2,15 +2,15 @@
   <sidebar-content-wrapper class="meeting-chat" @close="emit('close')">
     <template #title>
       <wt-icon icon="chat--filled" color="info"></wt-icon>
-      <p>{{ t('chat') }}</p>
+      <p>{{ t('chat.chat') }}</p>
     </template>
 
     <template #main>
       <chat-container-component
         :messages="uiMessages"
         :chat-actions="[
-          ChatAction.SendMessage, 
-          ChatAction.AttachFiles, 
+          ChatAction.SendMessage,
+          ChatAction.AttachFiles,
           ChatAction.EmojiPicker,
           ]"
         @[`action:${ChatAction.SendMessage}`]="localSendMessage"

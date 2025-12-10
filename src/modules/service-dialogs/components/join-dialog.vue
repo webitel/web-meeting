@@ -1,13 +1,13 @@
 <template>
     <service-dialog>
         <template #title>
-            Join Meeting
+          {{ t('call.ended') }}
         </template>
         <template #main>
             <wt-button
              color="success"
              @click="makeCall({ withAudio, withVideo })"
-             >Join Meeting
+            >{{t('call.join').toUpperCase()}}
             </wt-button>
         </template>
         <template #actions>
@@ -22,9 +22,12 @@
 <script setup lang="ts">
 import { WtButton } from '@webitel/ui-sdk/components';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 import { useMeetingStore } from '../../meeting/stores/meeting';
 import ServiceDialog from './shared/service-dialog.vue';
+
+const { t } = useI18n();
 
 const withAudio = ref<boolean>(true);
 const withVideo = ref<boolean>(true);
