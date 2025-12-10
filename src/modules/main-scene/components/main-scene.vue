@@ -1,5 +1,6 @@
 <template>
   <main class="main-scene">
+    <wt-notifications-bar />
     <brand-logo />
     <component
      :is="sceneComponent"

@@ -6,6 +6,8 @@ export default {
 		join: 'Join now',
 		joinAgain: 'Join again',
 		ended: 'Call ended',
+		accessDeniedMessage:
+			'Please allow to use your camera or microphone in browser settings',
 	},
 	chat: {
 		chat: 'Meeting chat',

@@ -34,10 +34,11 @@ export const useDevicesStore = defineStore('devices', () => {
 		error.value = '';
 
 		try {
-			await ensurePermissions();
+			// for notification only in case of failure to provide access to devices
+			const result = await ensurePermissions();
+			error.value = !result ? 'accessDevicesIsDenied' : '';
 		} catch (err) {
-			error.value = err instanceof Error ? err.message : String(err);
-			throw err;
+			throw error.value;
 		} finally {
 			isRequesting.value = false;
 		}
