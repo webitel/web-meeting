@@ -1,12 +1,11 @@
 <template>
     <service-dialog>
         <template #title>
-            Allow Devices
+          <p>{{ t('call.allowMessage' )}}</p>
         </template>
         <template #main>
-            <p>Please allow access to your microphone and camera to continue.</p>
             <wt-button :loading="isRequesting" color="error" @click="requestDeviceAccess">
-                Request Device Access
+                {{ t('call.allow').toUpperCase() }}
             </wt-button>
         </template>
         <template #actions>
@@ -18,13 +17,12 @@
 <script setup lang="ts">
 import { WtButton } from '@webitel/ui-sdk/components';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 import { useDevicesStore } from '../../devices/stores/devices';
 import ServiceDialog from './shared/service-dialog.vue';
 
-const emit = defineEmits<{
-	'settings:toggle': [];
-}>();
+const { t } = useI18n();
 
 const devicesStore = useDevicesStore();
 const { isRequesting } = storeToRefs(devicesStore);

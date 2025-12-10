@@ -5,12 +5,21 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n';
+import { inject, onMounted } from 'vue';
 import { useAuthStore } from './modules/auth/stores/auth';
 import MainScene from './modules/main-scene/components/main-scene.vue';
+import type { AppConfig } from './types/config';
 
 const authStore = useAuthStore();
+const config = inject<AppConfig>('$config')!;
 
-authStore.initialize();
+const { locale } = useI18n();
+
+onMounted(async () => {
+	await authStore.initialize();
+	locale.value = config.lang || 'en';
+});
 </script>
 
 <style>

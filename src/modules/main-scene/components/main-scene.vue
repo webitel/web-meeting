@@ -20,6 +20,7 @@ import { useSidebarStore } from '../../sidebar/store/sidebar';
 import { MeetingState } from '../enums/MeetingState';
 import { useMainSceneStore } from '../stores/mainScene';
 import BrandLogo from './shared/brand-logo.vue';
+import CallEnded from '../../service-dialogs/components/call-ended.vue';
 
 const $config = inject<AppConfig>('$config')!;
 

@@ -2,15 +2,15 @@
   <sidebar-content-wrapper class="meeting-chat" @close="emit('close')">
     <template #title>
       <wt-icon icon="chat--filled" color="info"></wt-icon>
-      <p>{{ t('chat') }}</p>
+      <p>{{ t('chat.chat') }}</p>
     </template>
 
     <template #main>
       <chat-container-component
         :messages="uiMessages"
         :chat-actions="[
-          ChatAction.SendMessage, 
-          ChatAction.AttachFiles, 
+          ChatAction.SendMessage,
+          ChatAction.AttachFiles,
           ChatAction.EmojiPicker,
           ]"
         @[`action:${ChatAction.SendMessage}`]="localSendMessage"
@@ -21,18 +21,19 @@
 </template>
 
 <script setup lang="ts">
-import type { Message as PortalChatMessageType } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
+import { useI18n } from 'vue-i18n';
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import {
 	ChatAction,
 	ChatContainerComponent,
 	type ChatMessageType as UiChatMessageType,
 } from '@webitel/ui-chats/ui';
+import type { Message as PortalChatMessageType } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
 import type { ResultCallbacks } from '@webitel/ui-sdk/src/types';
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import SidebarContentWrapper from '../../../../sidebar/components/shared/sidebar-content-wrapper.vue';
+
 import { useChatStore } from '../store/chat';
+import SidebarContentWrapper from '../../../../sidebar/components/shared/sidebar-content-wrapper.vue';
 
 const emit = defineEmits<{
 	close: [];
@@ -42,25 +43,44 @@ const { t } = useI18n();
 
 const chatStore = useChatStore();
 const { messages } = storeToRefs(chatStore);
-const { connect, sendMessage, sendFile } = chatStore;
-
-connect();
+const { sendTextMessage, sendFiles } = chatStore;
 
 const uiMessages = computed<UiChatMessageType[]>(() => {
 	const portalMessages: PortalChatMessageType[] = messages?.value ?? [];
+	const uiMsgs: UiChatMessageType[] = portalMessages.map((msg) => {
+		const { id, date: createdAt, from, file, text } = msg.message;
 
-	const uiMsgs: UiChatMessageType[] = portalMessages.map((msg) => msg);
+		const message = {
+			id,
+			createdAt,
+			member: {
+				id: from.id,
+				name: from.name,
+				type: from.type,
+				self: from.name === 'You' ? true : false,
+			},
+		};
+		if (file)
+			message.file = {
+				id: file.id,
+				name: file.name,
+				size: file.size,
+				mime: file.mimeType,
+			};
+		if (text) message.text = text;
+		return message;
+	});
 
 	return uiMsgs;
 });
 
 async function localSendMessage(text: string, options?: ResultCallbacks) {
-	await sendMessage(text);
+	await sendTextMessage(text);
 	options?.onSuccess?.();
 }
 
 async function localSendFile(files: File[], options?: ResultCallbacks) {
-	await sendFile(files);
+	await sendFiles(files);
 	options?.onSuccess?.();
 }
 </script>
