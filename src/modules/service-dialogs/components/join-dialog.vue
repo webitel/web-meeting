@@ -6,7 +6,7 @@
         <template #main>
             <wt-button
              color="success"
-             @click="makeCall(number, { withAudio, withVideo })"
+             @click="makeCall({ withAudio, withVideo })"
              >Join Meeting
             </wt-button>
         </template>
@@ -25,8 +25,6 @@ import { ref } from 'vue';
 import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 import { useMeetingStore } from '../../meeting/stores/meeting';
 import ServiceDialog from './shared/service-dialog.vue';
-
-const number = import.meta.env.DEV ? '00' : '';
 
 const withAudio = ref<boolean>(true);
 const withVideo = ref<boolean>(true);
