@@ -9,12 +9,16 @@
     <sidebar-panel
      v-if="sidebarPanelOpened"
      />
+    <div class="build-version">
+      {{ buildVersion }}
+    </div>
   </main>
 </template>
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 import { computed, inject } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { AppConfig } from '../../../types/config';
 import MeetingContainer from '../../meeting/components/meeting-container.vue';
 import AllowDevicesDialog from '../../service-dialogs/components/allow-devices-dialog.vue';
@@ -27,6 +31,14 @@ import BrandLogo from './shared/brand-logo.vue';
 import CallEnded from '../../service-dialogs/components/call-ended.vue';
 
 const $config = inject<AppConfig>('$config')!;
+const { t } = useI18n();
+
+const release = process.env.npm_package_version;
+const build = import.meta.env.VITE_BUILD_NUMBER;
+
+const buildVersion = computed(
+	() => `${t('webitelUI.headerActions.buildVersion')}: v${release}-${build}`,
+);
 
 const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
 
@@ -55,7 +67,9 @@ const sceneComponent = computed(() => {
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@webitel/styleguide/typography' as *;
+
 .main-scene {
   display: flex;
   position: relative;
@@ -77,5 +91,11 @@ const sceneComponent = computed(() => {
 .scene-component {
   z-index: 1;
   margin: auto;
+}
+
+.build-version {
+  @extend %typo-caption;
+  color:white;
+  white-space: nowrap;
 }
 </style>
