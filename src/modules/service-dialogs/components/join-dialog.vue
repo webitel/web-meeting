@@ -28,7 +28,7 @@ import ServiceDialog from './shared/service-dialog.vue';
 
 const number = import.meta.env.DEV ? '00' : '';
 
-const withAudio = ref<boolean>(false);
+const withAudio = ref<boolean>(true);
 const withVideo = ref<boolean>(true);
 
 const meetingStore = useMeetingStore();

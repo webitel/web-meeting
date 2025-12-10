@@ -1,13 +1,13 @@
 <template>
     <div class="camera-settings">
       <wt-select
-        id="camera-select"
         :options="devices"
         :clearable="false"
         option-label="label"
         track-by="deviceId"
+        use-value-from-options-by-prop="deviceId"
         :label="t('devices.camera')"
-        :value="selectedDevice?.label"
+        :value="selectedDevice?.deviceId"
         @update:model-value="setSelectedDevice">
       </wt-select>
 
