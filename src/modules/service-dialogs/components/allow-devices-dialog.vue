@@ -25,7 +25,7 @@ import { inject } from 'vue';
 import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
 import { useDevicesStore } from '../../devices/stores/devices';
 import ServiceDialog from './shared/service-dialog.vue';
-import { AccessErrors } from '../../devices/enums/AccessErrors';
+import { DeviceErrors } from '../../devices/enums/DeviceErrors';
 
 const { t } = useI18n();
 const eventBus = inject('$eventBus');
@@ -37,7 +37,7 @@ const { requestDeviceAccess } = devicesStore;
 
 const allowAccess = async () => {
 	await requestDeviceAccess();
-	if (error.value === AccessErrors.DevicesIsDenied) {
+	if (error.value === DeviceErrors.Denied) {
 		eventBus.$emit('notification', {
 			type: 'error',
 			text: t('call.accessDeniedMessage'),

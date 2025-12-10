@@ -1,7 +1,7 @@
 import { useDevicesList } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { AccessErrors } from '../enums/AccessErrors';
+import { DeviceErrors } from '../enums/DeviceErrors';
 
 /**
  * General device management store
@@ -37,7 +37,7 @@ export const useDevicesStore = defineStore('devices', () => {
 		try {
 			// for notification only in case of failure to provide access to devices
 			const result = await ensurePermissions();
-			error.value = !result ? AccessErrors.DevicesIsDenied : '';
+			error.value = !result ? DeviceErrors.Denied : '';
 		} catch (err) {
 			throw error.value;
 		} finally {
