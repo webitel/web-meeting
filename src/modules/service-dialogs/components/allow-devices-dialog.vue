@@ -1,10 +1,9 @@
 <template>
     <service-dialog>
         <template #title>
-            Allow Devices
+          <p>{{ t('call.allowMessage' )}}</p>
         </template>
         <template #main>
-            <p>{{t('call.allowMessage')}}</p>
             <wt-button :loading="isRequesting" color="error" @click="requestDeviceAccess">
                 {{ t('call.allow').toUpperCase() }}
             </wt-button>
