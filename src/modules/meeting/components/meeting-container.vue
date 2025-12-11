@@ -32,7 +32,7 @@
         #content
         v-if="showContentSlot"
       >
-      <!-- <video-container /> -->
+      <!-- <test-video-container /> -->
         <component
           :is="contentComponent"
         />
@@ -58,7 +58,7 @@ import { useMainSceneStore } from '../../main-scene/stores/mainScene';
 import { MeetingState } from '../../main-scene/enums/MeetingState';
 import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devices-dialog.vue';
 import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
-import VideoContainer from '../modules/call/components/video/video-container.vue';
+import TestVideoContainer from '../modules/call/components/video/test-video-container.vue';
 import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
 
 const meetingStore = useMeetingStore();
