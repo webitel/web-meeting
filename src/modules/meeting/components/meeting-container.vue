@@ -19,6 +19,9 @@
       :static="videoContainerStatic"
       hide-header
 
+      :actions:settings:pressed="settingsOpened"
+      :actions:chat:pressed="chatOpened"
+
       @[`action:${VideoCallAction.Mic}`]="toggleMute"
       @[`action:${VideoCallAction.Video}`]="toggleVideo"
       @[`action:${VideoCallAction.Settings}`]="toggleSettingsPanel"
@@ -99,7 +102,7 @@ const showContentSlot = computed(() => {
 });
 
 const sidebarStore = useSidebarStore();
-const { mode: sidebarPanelMode } = storeToRefs(sidebarStore);
+const { settingsOpened, chatOpened } = storeToRefs(sidebarStore);
 const { changeMode: changeSidebarMode } = sidebarStore;
 
 const toggleSettingsPanel = () => {
