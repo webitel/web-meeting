@@ -11,7 +11,7 @@ import { WebsocketMessageType } from '../enums/WebsocketMessageType';
 import { generateProtoType, generateMessage } from '../scripts/generateMessage';
 import { useSafeChatMessaging } from '../composables/useSafeChatMessaging';
 
-export const useChatStore = defineStore('chat', () => {
+export const useChatStore = defineStore('meeting/chat', () => {
 	const config = inject<AppConfig>('$config')!;
 	const messages = ref<UiChatMessageType[]>([]);
 

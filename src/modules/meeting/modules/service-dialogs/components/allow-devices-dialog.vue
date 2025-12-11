@@ -32,6 +32,7 @@ const { requestDeviceAccess } = devicesStore;
 const allowAccess = async () => {
 	await requestDeviceAccess();
 	if (error.value === DeviceErrors.Denied) {
+		// @ts-expect-error todo: add eventBus types
 		eventBus.$emit('notification', {
 			type: 'error',
 			text: t('call.accessDeniedMessage'),

@@ -25,7 +25,10 @@
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { SessionState, useMeetingStore } from '../../meeting/stores/meeting';
+import {
+	SessionState,
+	useCallStore,
+} from '../../meeting/modules/call/store/call';
 import SidebarContentWrapper from '../../sidebar/components/shared/sidebar-content-wrapper.vue';
 import CameraSettings from '../modules/camera/components/camera-settings.vue';
 import { useCameraStore } from '../modules/camera/stores/camera';
@@ -45,7 +48,7 @@ const devicesStore = useDevicesStore();
 const microphoneStore = useMicrophoneStore();
 const speakerStore = useSpeakerStore();
 const cameraStore = useCameraStore();
-const meetingStore = useMeetingStore();
+const callStore = useCallStore();
 
 const { permissionGranted, error } = storeToRefs(devicesStore);
 const { requestDeviceAccess } = devicesStore;
@@ -60,9 +63,9 @@ const { devices: cameras, selectedDeviceId: selectedCameraId } =
 
 // Destructure meeting store state
 const { sessionState, videoEnabled, microphoneEnabled } =
-	storeToRefs(meetingStore);
+	storeToRefs(callStore);
 
-const { changeMicrophone, changeCamera, changeSpeaker } = meetingStore;
+const { changeMicrophone, changeCamera, changeSpeaker } = callStore;
 
 // Watch for microphone changes and update active call
 watch(selectedMicrophoneId, async (newDeviceId) => {

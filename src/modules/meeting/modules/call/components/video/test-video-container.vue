@@ -16,11 +16,11 @@
 // FOR TEST PURPOSES ONLY!!
 import { storeToRefs } from 'pinia';
 
-import { useMeetingStore } from '../../../../stores/meeting';
+import { useCallStore } from '../../../call/store/call';
 
-const meetingStore = useMeetingStore();
+const callStore = useCallStore();
 
-const { remoteVideoStream, localVideoStream } = storeToRefs(meetingStore);
+const { remoteVideoStream, localVideoStream } = storeToRefs(callStore);
 </script>
 
 <style scoped>

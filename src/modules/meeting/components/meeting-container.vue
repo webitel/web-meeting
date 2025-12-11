@@ -53,20 +53,21 @@ import { ComponentSize } from '@webitel/ui-sdk/enums';
 import { useDevicesStore } from '../../devices/stores/devices';
 import { SidebarMode } from '../../sidebar/enums/SidebarMode';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
-import { useMeetingStore } from '../stores/meeting';
+import { useCallStore } from '../modules/call/store/call';
 import { useMainSceneStore } from '../../main-scene/stores/mainScene';
 import { MeetingState } from '../../main-scene/enums/MeetingState';
 import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devices-dialog.vue';
 import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
+import CallEndedDialog from '../modules/service-dialogs/components/call-ended.vue';
 import TestVideoContainer from '../modules/call/components/video/test-video-container.vue';
 import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
 
-const meetingStore = useMeetingStore();
+const callStore = useCallStore();
 
 const { remoteVideoStream, localVideoStream, microphoneEnabled, videoEnabled } =
-	storeToRefs(meetingStore);
+	storeToRefs(callStore);
 
-const { toggleMute, toggleVideo, hangup } = meetingStore;
+const { toggleMute, toggleVideo, hangup } = callStore;
 
 const mainSceneStore = useMainSceneStore();
 const { meetingState } = storeToRefs(mainSceneStore);
@@ -88,6 +89,8 @@ const contentComponent = computed(() => {
 			return AllowDevicesDialog;
 		case MeetingState.JoinDialog:
 			return JoinDialog;
+		case MeetingState.CallEnded:
+			return CallEndedDialog;
 		default:
 			return null;
 	}
