@@ -131,7 +131,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 * Initialize audio element for the session
 	 */
 	function initAudio(): void {
-		if (!session.value) return;
+		if (!session.value || sessionAudio.value) return;
 
 		const audio = new Audio();
 		audio.autoplay = true;
@@ -151,7 +151,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 * Initialize video streams for the session
 	 */
 	function initVideo(): void {
-		if (!session.value) return;
+		if (!session.value || localVideoStream.value) return;
 
 		const receivers = session.value.connection?.getReceivers();
 
@@ -262,9 +262,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 					sessionState.value = SessionState.ACTIVE;
 					sessionStartTime.value = new Date();
 
-					if (!sessionAudio.value) {
-						initAudio();
-					}
+					initAudio();
+					initVideo();
 
 					// apply initial video mute if requested
 					if (!startWithVideo) {
