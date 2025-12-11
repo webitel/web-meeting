@@ -72,7 +72,6 @@ export const useChatStore = defineStore('chat', () => {
 
 	async function uploadFile(file: File, retry = 3): Promise<string> {
 		try {
-			console.log(file);
 			const { uploadId } = await PortalFilesAPI.post({
 				url: config!.chat.filesEndpointUrl,
 				file: {
