@@ -1,4 +1,5 @@
 <template>
+  <div class="meeting-container">
     <video-call
       :sender:stream="localVideoStream"
       :receiver:stream="remoteVideoStream"
@@ -11,18 +12,12 @@
       :receiver:video:enabled="!!remoteVideoStream"
       :receiver:mic:enabled="!!remoteVideoStream"
 
-      :actions="[
-        VideoCallAction.Mic, 
-        VideoCallAction.Video, 
-        VideoCallAction.Settings, 
-        VideoCallAction.Chat, 
-        VideoCallAction.Hangup,
-      ]"
+      :actions="currentVideoContainerActions"
       
+      :key="videoContainerSize"
       :size="videoContainerSize"
+      :static="videoContainerStatic"
       hide-header
-      static
-
 
       @[`action:${VideoCallAction.Mic}`]="toggleMute"
       @[`action:${VideoCallAction.Video}`]="toggleVideo"
@@ -40,6 +35,7 @@
         />
       </template>
     </video-call>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -60,6 +56,7 @@ import { MeetingState } from '../../main-scene/enums/MeetingState';
 import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devices-dialog.vue';
 import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
 import VideoContainer from '../modules/call/components/video/video-container.vue';
+import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
 
 const meetingStore = useMeetingStore();
 
@@ -78,6 +75,10 @@ const videoContainerSize = computed(() => {
 	return ComponentSize.MD;
 });
 
+const videoContainerStatic = computed(() => {
+	return videoContainerSize.value === ComponentSize.LG;
+});
+
 const contentComponent = computed(() => {
 	switch (meetingState.value) {
 		case MeetingState.AllowDevicesDialog:
@@ -87,6 +88,10 @@ const contentComponent = computed(() => {
 		default:
 			return null;
 	}
+});
+
+const { actions: currentVideoContainerActions } = useVideoContainerActionsList({
+	meetingState,
 });
 
 const showContentSlot = computed(() => {
@@ -111,8 +116,14 @@ const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
 </script>
 
 <style scoped>
+  .meeting-container {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+  }
+
   .video-call :deep(.video-call-overlay) {
     display: none;
-      z-index: -1 !important;
     }
 </style>
