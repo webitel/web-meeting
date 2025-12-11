@@ -10,18 +10,20 @@ import { instance } from '../../../../../app/api/instance';
 
 //New upload. Creates a new upload, takes the file metadata, and returns the upload ID.
 
-const postPortalFile = async ({ params, headers }) => {
-	const values = applyTransform(
+const postPortalFile = async (params) => {
+	const { url, file, headers } = params;
+
+	const finalParams = applyTransform(
 		{
-			mimeType: params.mimeType || 'application/octet-stream',
-			...params,
+			mimeType: file.mimeType || 'application/octet-stream',
+			...file,
 		},
 		[
 			camelToSnake(),
 		],
 	);
 
-	const responce = await instance.post('/portal/files', values, {
+	const responce = await instance.post(url, finalParams, {
 		headers,
 	});
 	return applyTransform(responce.data, [
@@ -32,16 +34,15 @@ const postPortalFile = async ({ params, headers }) => {
 // Reupload. Continue or start the upload. Accepts the URL parameter uploadId obtained from the API above.
 // Request body - multipart form-data with the file.
 
-const putPortalFile = async ({ file, uploadId, headers }): Promise => {
-	const uploadIdValue = applyTransform(uploadId, [
-		camelToSnake(),
-	]);
+const putPortalFile = async (params): Promise => {
+	const { url, file, uploadId, headers } = params;
 
-	const responce = await instance.put('/portal/files', {
-		file,
-		params: {
-			uploadId: uploadIdValue,
-		},
+	const finalUrl = `${url}?uploadId=${uploadId}`;
+
+	const formData = new FormData();
+	formData.append('file', file);
+
+	const responce = await instance.put(finalUrl, formData, {
 		headers,
 	});
 	return applyTransform(responce.data, [

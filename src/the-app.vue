@@ -10,11 +10,16 @@ import { inject, onMounted } from 'vue';
 import { useAuthStore } from './modules/auth/stores/auth';
 import MainScene from './modules/main-scene/components/main-scene.vue';
 import type { AppConfig } from './types/config';
+import packageJson from '../package.json' with { type: 'json' };
 
 const authStore = useAuthStore();
 const config = inject<AppConfig>('$config')!;
 
 const { locale } = useI18n();
+
+// To check current build version
+const build = import.meta.env.VITE_BUILD_NUMBER;
+window.buildVersion = `v${packageJson.version}-${build}`;
 
 onMounted(async () => {
 	await authStore.initialize();

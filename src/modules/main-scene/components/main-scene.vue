@@ -1,5 +1,6 @@
 <template>
   <main class="main-scene">
+    <wt-notifications-bar />
     <brand-logo />
     <div class="main-scene__contents">
       <meeting-container />
