@@ -38,7 +38,7 @@ const showMeetingContainer = computed(() => {
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .main-scene {
   position: relative;
   width: 100%;
