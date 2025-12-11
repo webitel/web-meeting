@@ -127,6 +127,6 @@ const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
   }
 
   .video-call :deep(.video-call-overlay) {
-    display: none;
+    /* display: none; */
     }
 </style>

@@ -1,4 +1,3 @@
-import { type UseTimeAgoOptions, useTimeAgo } from '@vueuse/core';
 import JsSIP from 'jssip';
 import type { UA, WebSocketInterface } from 'jssip/lib/JsSIP';
 import type { RTCSession } from 'jssip/lib/RTCSession';
@@ -53,7 +52,7 @@ export const useMeetingStore = defineStore('meeting', () => {
 	});
 
 	const microphoneEnabled = computed(() =>
-		session.value ? session.value.isMuted().audio : false,
+		session.value ? !session.value.isMuted().audio : false,
 	);
 	const videoEnabled = computed(() =>
 		session.value ? !session.value.isMuted().video : false,
@@ -266,7 +265,7 @@ export const useMeetingStore = defineStore('meeting', () => {
 
 					// Apply initial mute if requested
 					if (options?.withAudio === false) {
-						mute();
+						disableMicrophone();
 					}
 				},
 				failed: (event: any) => {
@@ -320,14 +319,14 @@ export const useMeetingStore = defineStore('meeting', () => {
 		hangup();
 	});
 
-	function mute(): void {
-		session.value!.mute({
+	function enableMicrophone(): void {
+		session.value!.unmute({
 			audio: true,
 		});
 	}
 
-	function unmute(): void {
-		session.value!.unmute({
+	function disableMicrophone(): void {
+		session.value!.mute({
 			audio: true,
 		});
 	}
@@ -350,9 +349,9 @@ export const useMeetingStore = defineStore('meeting', () => {
 	 */
 	function toggleMute(): void {
 		if (microphoneEnabled.value) {
-			unmute();
+			disableMicrophone();
 		} else {
-			mute();
+			enableMicrophone();
 		}
 	}
 
@@ -475,8 +474,8 @@ export const useMeetingStore = defineStore('meeting', () => {
 		closeUserAgent,
 		makeCall,
 		hangup,
-		mute,
-		unmute,
+		enableMicrophone,
+		disableMicrophone,
 		disableVideo,
 		enableVideo,
 		toggleMute,
