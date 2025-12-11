@@ -1,38 +1,31 @@
 <template>
-    <service-dialog>
-        <template #title>
+    <meeting-service-dialog>
           <p>{{ t('call.allowMessage' )}}</p>
-        </template>
-        <template #main>
-            <wt-button
-              :loading="isRequesting"
-              color="error"
-              @click="allowAccess">
-              {{ t('call.allow').toUpperCase() }}
-            </wt-button>
-        </template>
-        <template #actions>
-        <device-actions-bar />
-        </template>
-    </service-dialog>
+
+        <wt-button
+            :loading="isRequesting"
+            color="error"
+            @click="allowAccess"
+        >
+             {{ t('call.allow').toUpperCase() }}
+        </wt-button>
+    </meeting-service-dialog>
 </template>
 
 <script setup lang="ts">
 import { WtButton } from '@webitel/ui-sdk/components';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+
+import { useDevicesStore } from '../../../../devices/stores/devices';
+import { DeviceErrors } from '../../../../devices/enums/DeviceErrors';
 import { inject } from 'vue';
-import DeviceActionsBar from '../../devices/components/device-actions-bar.vue';
-import { useDevicesStore } from '../../devices/stores/devices';
-import ServiceDialog from './shared/service-dialog.vue';
-import { DeviceErrors } from '../../devices/enums/DeviceErrors';
 
 const { t } = useI18n();
 const eventBus = inject('$eventBus');
 
 const devicesStore = useDevicesStore();
 const { isRequesting, error } = storeToRefs(devicesStore);
-
 const { requestDeviceAccess } = devicesStore;
 
 const allowAccess = async () => {

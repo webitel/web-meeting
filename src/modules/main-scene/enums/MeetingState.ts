@@ -1,8 +1,8 @@
-export const SceneState = {
+export const MeetingState = {
 	AllowDevicesDialog: 'allowDevicesDialog',
 	JoinDialog: 'joinDialog',
 	ActiveMeeting: 'activeMeeting',
 	CallEnded: 'callEnded',
 } as const;
 
-export type SceneState = (typeof SceneState)[keyof typeof SceneState];
+export type MeetingState = (typeof MeetingState)[keyof typeof MeetingState];
