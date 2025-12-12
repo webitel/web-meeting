@@ -1,9 +1,0 @@
-{
-	"call": {
-		"target": "service"
-	},
-	"assets": {
-		"logoPicture": "/meet/public/assets/web-logo.svg",
-		"mainBackground": "/meet/public/assets/web-background.svg"
-	}
-}

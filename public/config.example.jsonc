@@ -1,0 +1,20 @@
+{
+	// Token configuration
+	"token": {
+		"iss": "https://webitel.example.com/portal",
+		"endpointUrl": "https://webitel.example.com/api/portal/token",
+		"appToken": "<token>"
+	},
+
+	// Call configuration
+	"call": {
+		"host": "wss://webitel.example.com/wssip/",
+		"target": "service"
+	},
+
+	// Assets configuration
+	"assets": {
+		"logoPicture": "/meet/public/assets/web-logo.svg",
+		"mainBackground": "/meet/public/assets/web-background.svg"
+	}
+}
