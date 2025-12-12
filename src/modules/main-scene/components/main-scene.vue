@@ -7,6 +7,7 @@
       <sidebar-panel
       v-if="sidebarPanelOpened"
       />
+      <meeting-chat />
      </div>
   </main>
 </template>
@@ -18,10 +19,9 @@ import type { AppConfig } from '../../../types/config';
 import MeetingContainer from '../../meeting/components/meeting-container.vue';
 import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
-import { MeetingState } from '../enums/MeetingState';
 import { useMainSceneStore } from '../stores/mainScene';
 import BrandLogo from './shared/brand-logo.vue';
-import CallEnded from '../../service-dialogs/components/call-ended.vue';
+import MeetingChat from '../../meeting/modules/chat/components/meeting-chat.vue';
 
 const $config = inject<AppConfig>('$config')!;
 

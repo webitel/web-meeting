@@ -6,7 +6,7 @@
     </template>
 
     <template #main>
-      <chat-container-component
+      <chat-container
         :messages="uiMessages"
         :chat-actions="[
           ChatAction.SendMessage,
@@ -16,6 +16,7 @@
         @[`action:${ChatAction.SendMessage}`]="localSendMessage"
         @[`action:${ChatAction.AttachFiles}`]="localSendFile"
       />
+      <chat-action />
     </template>
   </sidebar-content-wrapper>
 </template>
@@ -24,11 +25,8 @@
 import { useI18n } from 'vue-i18n';
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import {
-	ChatAction,
-	ChatContainerComponent,
-	type ChatMessageType as UiChatMessageType,
-} from '@webitel/ui-chats/ui';
+import { ChatContainer, ChatAction } from '@webitel/ui-chats/ui';
+import { type ChatMessageType as UiChatMessageType } from '@webitel/ui-chats/ui';
 import type { Message as PortalChatMessageType } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
 import type { ResultCallbacks } from '@webitel/ui-sdk/src/types';
 
