@@ -117,7 +117,7 @@ export const useChatStore = defineStore('meeting/chat', () => {
 
 	function disconnect() {
 		controller.closeConnection();
-		controller = null;
+		///controller = null;
 	}
 
 	// TODO - порефакторити в кінці
