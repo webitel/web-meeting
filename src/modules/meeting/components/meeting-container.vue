@@ -16,8 +16,8 @@
       
       :key="videoContainerSize"
       :size="videoContainerSize"
-      :static="videoContainerStatic"
       hide-header
+      static
 
       :actions:settings:pressed="settingsOpened"
       :actions:chat:pressed="chatOpened"
@@ -77,10 +77,6 @@ const videoContainerSize = computed(() => {
 		return ComponentSize.LG;
 	}
 	return ComponentSize.MD;
-});
-
-const videoContainerStatic = computed(() => {
-	return videoContainerSize.value === ComponentSize.LG;
 });
 
 const contentComponent = computed(() => {
