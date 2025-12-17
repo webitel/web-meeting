@@ -33,9 +33,6 @@ const postPortalFile = async (params) => {
 			camelToSnake(),
 		],
 	);
-	console.log('finalParams', finalParams);
-	console.log('url', url);
-	console.log('headers', headers);
 
 	const responce = await instance.post(url, finalParams, {
 		headers,

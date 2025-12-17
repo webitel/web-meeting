@@ -45,7 +45,7 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 const chatStore = useChatStore();
-const { messages } = storeToRefs(chatStore);
+const { messages, isConnected } = storeToRefs(chatStore);
 const { sendTextMessage, sendFiles, connect, loadFile } = chatStore;
 
 const uiMessages = computed<UiChatMessageType[]>(() => {
@@ -89,6 +89,8 @@ async function localSendFile(files: File[], options?: ResultCallbacks) {
 }
 
 onMounted(() => {
-	connect();
+	if (!isConnected.value) {
+		connect();
+	}
 });
 </script>

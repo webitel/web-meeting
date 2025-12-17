@@ -8,15 +8,21 @@ import { PortalFilesAPI } from '../../chat/api/portalFiles';
 import type { AuthData, ChatWebSocketApi } from '../types/chat';
 import { WebsocketPayloadType } from '../enums/WebsocketPayloadType';
 import { WebsocketMessageType } from '../enums/WebsocketMessageType';
-import { generateProtoType, generateMessage } from '../scripts/generateMessage';
+import {
+	generateProtoType,
+	generateMessage,
+	generateHistoryMessage,
+} from '../scripts/generateMessage';
 import { useSafeChatMessaging } from '../composables/useSafeChatMessaging';
 
 export const useChatStore = defineStore('meeting/chat', () => {
 	const config = inject<AppConfig>('$config')!;
 	const messages = ref<UiChatMessageType[]>([]);
 	const controller = ref<ChatWebSocketApi | null>(null);
+	const reconnecting = ref(false);
 
 	const authStore = useAuthStore();
+	const { initialize: getNewToken } = authStore;
 	const { accessToken, xPortalDevice } = storeToRefs(authStore);
 
 	const authData = computed<AuthData>(() => ({
@@ -25,11 +31,15 @@ export const useChatStore = defineStore('meeting/chat', () => {
 		'X-Portal-Client': config!.token.appToken,
 	}));
 
-	controller.value = useChatWebSocket(config.chat.host);
-
 	const lastMessage = computed(() => messages.value.at(-1) || null);
+	const isConnected = computed(() => controller.value?.isConnected);
+
+	function createController() {
+		controller.value = useChatWebSocket(config.chat.host);
+	}
 
 	function connect() {
+		if (!controller.value) createController();
 		controller.value.open(authData.value);
 		subscribeIncomingMessage();
 	}
@@ -41,14 +51,35 @@ export const useChatStore = defineStore('meeting/chat', () => {
 	});
 
 	watch(
-		() => controller?.value.isConnected,
+		isConnected,
 		(value) => {
 			if (value) {
 				sendPendingMessages();
 				if (lastMessage.value) reloadHistory();
+			} else if (!reconnecting.value && !value) {
+				handleDisconnect();
 			}
 		},
+		{
+			immediate: true,
+		},
 	);
+
+	async function handleDisconnect() {
+		reconnecting.value = true;
+		try {
+			disconnect();
+
+			await getNewToken();
+
+			createController();
+			connect();
+		} catch (e) {
+			console.error('Chat reconnection error', e);
+		} finally {
+			reconnecting.value = false;
+		}
+	}
 
 	function sendTextMessage(text: string = '') {
 		const message = generateMessage(WebsocketPayloadType.SendMessage, {
@@ -113,15 +144,15 @@ export const useChatStore = defineStore('meeting/chat', () => {
 	// we are not uploading all history, but new messages from the offset of the last one saved on our side
 
 	function reloadHistory() {
-		const message = generateMessage(WebsocketPayloadType.ChatUpdates, {
-			offset: lastMessage.value?.id,
-		});
+		const message = generateHistoryMessage(lastMessage.value.message);
 		dispatchMessage(message);
 	}
 
 	function disconnect() {
-		controller.value.closeConnection();
-		controller.value = null;
+		if (controller.value) {
+			controller.value.close();
+			controller.value = null;
+		}
 	}
 
 	// TODO - порефакторити в кінці
@@ -134,20 +165,21 @@ export const useChatStore = defineStore('meeting/chat', () => {
 				wsMessage.data?.data?.['@type'] ===
 					generateProtoType(WebsocketMessageType.UpdateNewMessage)
 			) {
-				messages.value.push(wsMessage.data.data);
+				if (wsMessage.data.data) messages.value.push(wsMessage.data.data);
 			}
 
 			if (
 				rootType === generateProtoType(WebsocketMessageType.UpdateNewMessage) &&
 				wsMessage.data?.dispo === 'Incoming'
 			) {
-				messages.value.push(wsMessage.data);
+				if (wsMessage.data) messages.value.push(wsMessage.data);
 			}
 		});
 	}
 
 	return {
 		messages,
+		isConnected,
 
 		connect,
 		disconnect,

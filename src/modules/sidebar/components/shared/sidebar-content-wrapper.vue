@@ -46,9 +46,6 @@ const emit = defineEmits<{
 }
 
 .sidebar-content-wrapper__main {
-  max-height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+  height: 100%;
 }
 </style>
