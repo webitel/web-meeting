@@ -8,6 +8,17 @@ import { instance } from '../../../../../app/api/instance';
 // @author @Lera24
 // https://webitel.atlassian.net/browse/WTEL-7899?focusedCommentId=708994
 
+// loading file
+// https://webitel.atlassian.net/browse/WTEL-7899?focusedCommentId=711601
+const getPortalFile = async (params) => {
+	const { url, headers } = params;
+
+	const { data } = await instance.get(url, {
+		headers,
+	});
+	return data;
+};
+
 //New upload. Creates a new upload, takes the file metadata, and returns the upload ID.
 
 const postPortalFile = async (params) => {
@@ -22,6 +33,9 @@ const postPortalFile = async (params) => {
 			camelToSnake(),
 		],
 	);
+	console.log('finalParams', finalParams);
+	console.log('url', url);
+	console.log('headers', headers);
 
 	const responce = await instance.post(url, finalParams, {
 		headers,
@@ -51,6 +65,7 @@ const putPortalFile = async (params): Promise => {
 };
 
 export const PortalFilesAPI = {
+	get: getPortalFile,
 	post: postPortalFile,
 	put: putPortalFile,
 };
