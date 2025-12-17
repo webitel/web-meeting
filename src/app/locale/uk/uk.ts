@@ -26,10 +26,10 @@ export default {
 			title: 'Дякуємо!',
 			message: 'Ваш відгук успішно збережено',
 		},
-		error: {
+		fail: {
 			title: 'Упс!',
 			message: 'Щось пішло не так',
 		},
 	},
-	errorLinkMessage: 'На жаль, посилання неправильне',
+	invalidLinkMessage: 'На жаль, посилання неправильне',
 };

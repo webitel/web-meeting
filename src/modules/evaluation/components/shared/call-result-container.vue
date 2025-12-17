@@ -1,13 +1,13 @@
 <template>
-  <div class="message-container">
-    <div class="message-container__header">
+  <div class="call-result-container">
+    <div class="call-result-container__header">
       <slot name="title"></slot>
     </div>
 
-    <div class="message-container__main">
+    <div class="call-result-container__main">
       <slot name="main"></slot>
     </div>
-    <div class="message-container__actions">
+    <div class="call-result-container__actions">
       <slot name="actions"></slot>
     </div>
 
@@ -16,8 +16,9 @@
 
 <script setup lang="ts">
 </script>
-<style scoped>
-.message-container {
+
+<style scoped lang="scss">
+.call-result-container {
   width: 300px;
   height: 300px;
   display: flex;
@@ -28,17 +29,28 @@
   gap: var(--spacing-xs);
   border-radius: var(--spacing-xs);
 }
-.message-container__header {
+.call-result-container__header {
   background-color: var(--dp-18-surface-color);
   padding: var(--spacing-xs);
   border-radius: var(--spacing-xs);
 }
-.message-container__main {
+.call-result-container__main {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   flex: 1;
   text-align: center;
+}
+
+.call-result-container__actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+
+  .wt-button {
+    flex: 1;
+  }
 }
 </style>

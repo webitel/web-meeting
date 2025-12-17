@@ -3,39 +3,34 @@
     <wt-notifications-bar />
     <brand-logo />
     <div class="main-scene__contents">
-      <meeting-container />
+      <meeting-container
+        v-if="!hideMeetingContainer"
+        @hungup="hideMeetingContainer = true"/>
       <sidebar-panel
       v-if="sidebarPanelOpened"
       />
+      <evaluation-wrapper v-if="hideMeetingContainer"/>
      </div>
   </main>
 </template>
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import { computed, inject } from 'vue';
+import { inject, ref } from 'vue';
 import type { AppConfig } from '../../../types/config';
 import MeetingContainer from '../../meeting/components/meeting-container.vue';
 import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
-import { MeetingState } from '../enums/MeetingState';
-import { useMainSceneStore } from '../stores/mainScene';
 import BrandLogo from './shared/brand-logo.vue';
-import CallEnded from '../../service-dialogs/components/call-ended.vue';
+import EvaluationWrapper from '../../evaluation/components/evaluation-wrapper.vue';
 
 const $config = inject<AppConfig>('$config')!;
+const hideMeetingContainer = ref(false);
 
 const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
 
-const mainSceneStore = useMainSceneStore();
-const { meetingState } = storeToRefs(mainSceneStore);
-
 const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
-
-const showMeetingContainer = computed(() => {
-	return !!meetingState.value; // todo: meeting container or status popups
-});
 </script>
 
 <style scoped>

@@ -1,57 +1,55 @@
 <template>
-  <message-container>
+  <call-result-container>
     <template #title>{{ t('evaluation.title') }}</template>
 
-    <template #main>
-      <div class="evaluation-dialog__main">
-        <div class="evaluation-dialog__message">
-          <p>{{ t('evaluation.message') }}</p>
-        </div>
-
-        <wt-textarea class="evaluation-dialog__text" :placeholder="t('objects.chat.draftPlaceholder')"></wt-textarea>
-      </div>
-    </template>
+    <template #main>{{ t('evaluation.message') }}</template>
 
     <template #actions>
-      <div class="evaluation-dialog__actions">
-        <wt-button color="success">
-          <wt-icon icon="like" color="on-dark"/>
-          {{t('evaluation.good')}}
-        </wt-button>
-        <wt-button color="error">
-          <wt-icon icon="dislike" color="on-dark" />
-          {{ t('evaluation.bad')}}
-        </wt-button>
-      </div>
+      <wt-button color="success" @click="sendEvaluation(EvaluationValues.Good)">
+        <wt-icon icon="like" color="on-dark"/>
+        {{t('evaluation.good')}}
+      </wt-button>
+      <wt-button color="error" @click="sendEvaluation(EvaluationValues.Bad)">
+        <wt-icon icon="dislike" color="on-dark" />
+        {{ t('evaluation.bad')}}
+      </wt-button>
     </template>
-  </message-container>
+  </call-result-container>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import MessageContainer from '../../evaluation/components/shared/message-container.vue';
+import { inject } from 'vue';
+import { storeToRefs } from 'pinia';
+import CallResultContainer from '../../evaluation/components/shared/call-result-container.vue';
+import { EvaluationAPI } from '../api/evaluation';
+import type { AppConfig } from '../../../types/config';
+import {
+	EvaluationValues,
+	type EvaluationValuesType,
+} from '../enums/EvaluationValues';
+import { useAuthStore } from '../../auth/stores/auth';
+
+const emit = defineEmits<{
+	(e: 'change-view'): (view: EvaluationValuesType) => void;
+}>();
 
 const { t } = useI18n();
-</script>
+const config = inject<AppConfig>('$config')!;
 
-<style scoped>
-.evaluation-dialog__message {
-  padding: var(--spacing-sm);
-  text-align: center;
-  width: 100%;
-}
-.evaluation-dialog__actions {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-xs);
-  width: 100%;
-  .wt-button {
-    flex: 1;
-  }
-}
-.evaluation-dialog__main {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>
+const authStore = useAuthStore();
+const { meetingId } = storeToRefs(authStore);
+
+const sendEvaluation = async (value: EvaluationValuesType) => {
+	try {
+		await EvaluationAPI.post({
+			url: `${config!.evaluation.endpointUrl}/${meetingId.value}`,
+			satisfaction: config!.evaluation[`${value.toLowerCase()}Grade`],
+		});
+		emit('change-view', EvaluationValues.Good);
+	} catch (error) {
+		console.error('Error sending good evaluation:', error);
+		emit('change-view', EvaluationValues.Good);
+	}
+};
+</script>

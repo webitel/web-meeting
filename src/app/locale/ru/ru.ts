@@ -26,10 +26,10 @@ export default {
 			title: 'Спасибо!',
 			message: 'Ваш отзыв успешно сохранён',
 		},
-		error: {
+		fail: {
 			title: 'Упс!',
 			message: 'Что-то пошло не так',
 		},
 	},
-	errorLinkMessage: 'К сожалению, ссылка неверная',
+	invalidLinkMessage: 'К сожалению, ссылка неверная',
 };
