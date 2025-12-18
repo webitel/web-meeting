@@ -1,18 +1,21 @@
 <template>
-  <sidebar-content-wrapper class="meeting-chat" @close="emit('close')">
+  <sidebar-content-wrapper
+    class="meeting-chat"
+    @close="emit('close')">
     <template #title>
       <wt-icon icon="chat--filled" color="info"></wt-icon>
       <p>{{ t('chat.chat') }}</p>
     </template>
 
     <template #main>
-      <chat-container-component
+      <chat-container
         :messages="uiMessages"
         :chat-actions="[
           ChatAction.SendMessage,
           ChatAction.AttachFiles,
           ChatAction.EmojiPicker,
           ]"
+        @load="loadFile"
         @[`action:${ChatAction.SendMessage}`]="localSendMessage"
         @[`action:${ChatAction.AttachFiles}`]="localSendFile"
       />
@@ -22,11 +25,11 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
 	ChatAction,
-	ChatContainerComponent,
+	ChatContainer,
 	type ChatMessageType as UiChatMessageType,
 } from '@webitel/ui-chats/ui';
 import type { Message as PortalChatMessageType } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
@@ -42,8 +45,8 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 const chatStore = useChatStore();
-const { messages } = storeToRefs(chatStore);
-const { sendTextMessage, sendFiles } = chatStore;
+const { messages, isConnected } = storeToRefs(chatStore);
+const { sendTextMessage, sendFiles, connect, loadFile } = chatStore;
 
 const uiMessages = computed<UiChatMessageType[]>(() => {
 	const portalMessages: PortalChatMessageType[] = messages?.value ?? [];
@@ -65,7 +68,8 @@ const uiMessages = computed<UiChatMessageType[]>(() => {
 				id: file.id,
 				name: file.name,
 				size: file.size,
-				mime: file.mimeType,
+				mime: file.type,
+				url: file.url,
 			};
 		if (text) message.text = text;
 		return message;
@@ -83,4 +87,10 @@ async function localSendFile(files: File[], options?: ResultCallbacks) {
 	await sendFiles(files);
 	options?.onSuccess?.();
 }
+
+onMounted(() => {
+	if (!isConnected.value) {
+		connect();
+	}
+});
 </script>

@@ -16,15 +16,7 @@ export const useChatWebSocket = (url: string): ChatWebSocketApi => {
 
 	const { send, open, close } = useWebSocket(url, {
 		immediate: false,
-		autoReconnect: {
-			retries: Infinity,
-			delay: 1000,
-		},
-		heartbeat: {
-			responseMessage: 'pong',
-			interval: 0,
-			pongTimeout: 5000,
-		},
+		autoReconnect: false,
 		onConnected() {
 			try {
 				send(
@@ -40,6 +32,11 @@ export const useChatWebSocket = (url: string): ChatWebSocketApi => {
 		onMessage(ws: WebSocket, event: MessageEvent<string>) {
 			if (isEmpty(event.data)) return;
 
+			if (event.data === 'ping') {
+				ws.send('pong');
+				return;
+			}
+
 			let parsed;
 			try {
 				parsed = JSON.parse(event.data);
@@ -51,9 +48,13 @@ export const useChatWebSocket = (url: string): ChatWebSocketApi => {
 		onError(error) {
 			console.error('[WS] error:', error);
 		},
-		onDisconnected(event) {
+		onDisconnected(ws, event) {
 			isConnected.value = false;
-			console.log('[WS] disconnected:', event);
+			console.error('[WS] disconnected', {
+				code: event.code,
+				reason: event.reason,
+				readyState: ws.readyState,
+			});
 		},
 	});
 

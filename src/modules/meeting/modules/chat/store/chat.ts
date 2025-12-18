@@ -5,17 +5,24 @@ import { useChatWebSocket } from '../composables/useChatWebSocket.ts';
 import type { AppConfig } from '../../../../../types/config';
 import { useAuthStore } from '../../../../auth/stores/auth';
 import { PortalFilesAPI } from '../../chat/api/portalFiles';
-import type { AuthData } from '../types/chat';
+import type { AuthData, ChatWebSocketApi } from '../types/chat';
 import { WebsocketPayloadType } from '../enums/WebsocketPayloadType';
 import { WebsocketMessageType } from '../enums/WebsocketMessageType';
-import { generateProtoType, generateMessage } from '../scripts/generateMessage';
+import {
+	generateProtoType,
+	generateMessage,
+	generateHistoryMessage,
+} from '../scripts/generateMessage';
 import { useSafeChatMessaging } from '../composables/useSafeChatMessaging';
 
 export const useChatStore = defineStore('meeting/chat', () => {
 	const config = inject<AppConfig>('$config')!;
 	const messages = ref<UiChatMessageType[]>([]);
+	const controller = ref<ChatWebSocketApi | null>(null);
+	const reconnecting = ref(false);
 
 	const authStore = useAuthStore();
+	const { initialize: getNewToken } = authStore;
 	const { accessToken, xPortalDevice } = storeToRefs(authStore);
 
 	const authData = computed<AuthData>(() => ({
@@ -24,22 +31,33 @@ export const useChatStore = defineStore('meeting/chat', () => {
 		'X-Portal-Client': config!.token.appToken,
 	}));
 
-	const controller = useChatWebSocket(config.chat.host);
-
 	const lastMessage = computed(() => messages.value.at(-1) || null);
+	const isConnected = computed(() => controller.value?.isConnected);
+
+	function createController() {
+		controller.value = useChatWebSocket(config.chat.host);
+	}
 
 	function connect() {
-		controller.open(authData.value);
+		if (!controller.value) createController();
+		controller.value.open(authData.value);
 		subscribeIncomingMessage();
 	}
 
-	// TODO - прибрати в кінці
-	// https://github.com/webitel/web-meeting/pull/11#discussion_r2598189230
+	const { dispatchMessage, sendPendingMessages } = useSafeChatMessaging({
+		sendMethod: (payload) => {
+			return controller.value.sendMessage(payload);
+		},
+	});
+
 	watch(
-		accessToken,
-		(token) => {
-			if (token) {
-				connect();
+		isConnected,
+		(value) => {
+			if (value) {
+				sendPendingMessages();
+				if (lastMessage.value) reloadHistory();
+			} else if (!reconnecting.value && !value) {
+				handleDisconnect();
 			}
 		},
 		{
@@ -47,21 +65,19 @@ export const useChatStore = defineStore('meeting/chat', () => {
 		},
 	);
 
-	const { dispatchMessage, sendPendingMessages } = useSafeChatMessaging({
-		sendMethod: (payload) => {
-			return controller.sendMessage(payload);
-		},
-	});
+	async function handleDisconnect() {
+		reconnecting.value = true;
+		try {
+			disconnect();
 
-	watch(
-		() => controller?.isConnected.value,
-		(value) => {
-			if (value) {
-				sendPendingMessages();
-				if (lastMessage.value) reloadHistory();
-			}
-		},
-	);
+			await getNewToken();
+
+			createController();
+			connect();
+		} finally {
+			reconnecting.value = false;
+		}
+	}
 
 	function sendTextMessage(text: string = '') {
 		const message = generateMessage(WebsocketPayloadType.SendMessage, {
@@ -81,13 +97,13 @@ export const useChatStore = defineStore('meeting/chat', () => {
 				headers: authData.value,
 			});
 
-			const { fileId } = await PortalFilesAPI.put({
+			const fileData = await PortalFilesAPI.put({
 				url: config!.chat.filesEndpointUrl,
 				file,
 				uploadId,
 				headers: authData.value,
 			});
-			return fileId;
+			return fileData;
 		} catch (e) {
 			if (retry > 0) return uploadFile(file, retry - 1);
 			throw e;
@@ -95,34 +111,51 @@ export const useChatStore = defineStore('meeting/chat', () => {
 	}
 
 	async function sendFiles(files: File[]) {
-		const uploadedIds = await Promise.all(
+		const uploadedFiles = await Promise.all(
 			files.map((file) => uploadFile(file)),
 		);
 
-		const message = generateMessage(WebsocketPayloadType.SendMessage, {
-			file: uploadedIds,
+		uploadedFiles.forEach(
+			({ fileId: id, size, mimeType: type, name, hash: url }) => {
+				const message = generateMessage(WebsocketPayloadType.SendMessage, {
+					file: {
+						id,
+						size,
+						type,
+						name,
+						url,
+					},
+				});
+				dispatchMessage(message);
+			},
+		);
+	}
+
+	async function loadFile(fileId: string) {
+		await PortalFilesAPI.get({
+			url: `${config!.chat.filesEndpointUrl}/${fileId}`,
+			headers: authData.value,
 		});
-		dispatchMessage(message);
 	}
 
 	// reload message history
 	// we are not uploading all history, but new messages from the offset of the last one saved on our side
 
 	function reloadHistory() {
-		const message = generateMessage(WebsocketPayloadType.ChatUpdates, {
-			offset: lastMessage.value?.id,
-		});
+		const message = generateHistoryMessage(lastMessage.value.message);
 		dispatchMessage(message);
 	}
 
 	function disconnect() {
-		controller.closeConnection();
-		controller = null;
+		if (controller.value) {
+			controller.value.close();
+			controller.value = null;
+		}
 	}
 
 	// TODO - порефакторити в кінці
 	function subscribeIncomingMessage() {
-		controller.onMessage((wsMessage) => {
+		controller.value.onMessage((wsMessage) => {
 			const rootType = wsMessage.data?.['@type'];
 
 			if (
@@ -130,24 +163,26 @@ export const useChatStore = defineStore('meeting/chat', () => {
 				wsMessage.data?.data?.['@type'] ===
 					generateProtoType(WebsocketMessageType.UpdateNewMessage)
 			) {
-				messages.value.push(wsMessage.data.data);
+				if (wsMessage.data.data) messages.value.push(wsMessage.data.data);
 			}
 
 			if (
 				rootType === generateProtoType(WebsocketMessageType.UpdateNewMessage) &&
 				wsMessage.data?.dispo === 'Incoming'
 			) {
-				messages.value.push(wsMessage.data);
+				if (wsMessage.data) messages.value.push(wsMessage.data);
 			}
 		});
 	}
 
 	return {
 		messages,
+		isConnected,
 
 		connect,
 		disconnect,
 		sendTextMessage,
 		sendFiles,
+		loadFile,
 	};
 });

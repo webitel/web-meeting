@@ -20,3 +20,19 @@ export const generateMessage = (path: string, data: SendMessageRequest) => {
 		},
 	};
 };
+
+export const generateHistoryMessage = (message) => {
+	const id = uuidv4();
+
+	return {
+		id,
+		path: WebsocketMessageType.ChatHistory,
+		data: {
+			'@type': `${protoBaseUrl}/webitel.chat.${WebsocketMessageType.ChatMessagesRequest}`,
+			offset: {
+				id: message.id,
+			},
+			chatId: message.chat.id,
+		},
+	};
+};

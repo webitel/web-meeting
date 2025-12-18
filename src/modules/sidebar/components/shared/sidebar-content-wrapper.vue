@@ -28,6 +28,7 @@ const emit = defineEmits<{
 
 <style scoped>
 .sidebar-content-wrapper {
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
@@ -42,5 +43,9 @@ const emit = defineEmits<{
 .sidebar-content-wrapper__title {
   display: flex;
   gap: var(--spacing-xs);
+}
+
+.sidebar-content-wrapper__main {
+  height: 100%;
 }
 </style>

@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { WtButton as ChatPanel } from '@webitel/ui-sdk/components';
+import MeetingChat from '../../meeting/modules/chat/components/meeting-chat.vue';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import DevicesSettingsPanel from '../../devices/components/devices-settings-panel.vue';
@@ -22,7 +22,7 @@ const { mode } = storeToRefs(sidebarPanel);
 const sidebarPanelComponent = computed(() => {
 	switch (mode.value) {
 		case SidebarMode.Chat:
-			return ChatPanel;
+			return MeetingChat;
 		case SidebarMode.Settings:
 			return DevicesSettingsPanel;
 		default:
