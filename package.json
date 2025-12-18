@@ -21,7 +21,7 @@
 		"@buf/webitel_portal.community_timostamm-protobuf-ts": "^2.11.1-20251111115532-8ccb3d9865c1.1",
 		"@vueuse/core": "^13.9.0",
 		"@webitel/api-services": "^0.0.61",
-		"@webitel/ui-chats": "^0.0.2",
+		"@webitel/ui-chats": "^0.0.15",
 		"@webitel/ui-sdk": "^25.12.40",
 		"axios": "^1.13.1",
 		"jssip": "^3.10.1",

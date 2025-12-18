@@ -19,6 +19,7 @@ export interface AppConfig {
 		logoPicture: string;
 		mainBackground: string;
 	};
+	lang: 'en' | 'uk' | 'ru';
 	evaluation: {
 		endpointUrl: string;
 		goodGrade: number;
