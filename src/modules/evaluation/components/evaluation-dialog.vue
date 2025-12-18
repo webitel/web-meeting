@@ -42,10 +42,14 @@ const { meetingId } = storeToRefs(authStore);
 
 const sendEvaluation = async (value: EvaluationValuesType) => {
 	try {
-		await EvaluationAPI.post({
-			url: `${config!.evaluation.endpointUrl}/${meetingId.value}`,
-			satisfaction: config!.evaluation[`${value.toLowerCase()}Grade`],
-		});
+		await EvaluationAPI.post(
+			{
+				url: `${config!.evaluation.endpointUrl}/${meetingId.value}`,
+			},
+			{
+				satisfaction: config!.evaluation[`${value.toLowerCase()}Grade`],
+			},
+		);
 		emit('change-view', EvaluationValues.Good);
 	} catch (error) {
 		console.error('Error sending good evaluation:', error);
