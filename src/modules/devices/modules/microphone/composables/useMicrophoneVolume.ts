@@ -21,16 +21,24 @@ export function useMicrophoneVolume() {
 		microphone.connect(analyser);
 
 		// Start analyzing volume
-		const dataArray = new Uint8Array(analyser.frequencyBinCount);
+		const dataArray = new Uint8Array(analyser.fftSize);
 
 		const updateVolume = () => {
 			if (!analyser) return;
 
-			analyser.getByteFrequencyData(dataArray);
+			analyser.getByteTimeDomainData(dataArray);
+
+			let sumSquares = 0;
+			for (let i = 0; i < dataArray.length; i++) {
+				const value = (dataArray[i] - 128) / 128;
+				sumSquares += value * value;
+			}
 
 			// Calculate average volume (1-100)
-			const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-			volumeLevel.value = Math.round((average / 255) * 100);
+			const average = Math.sqrt(sumSquares / dataArray.length);
+			const newValue = Math.min(100, Math.round(average * 300));
+
+			volumeLevel.value = Math.round(volumeLevel.value * 0.7 + newValue * 0.3);
 
 			animationId = requestAnimationFrame(updateVolume);
 		};
