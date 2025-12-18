@@ -74,8 +74,6 @@ export const useChatStore = defineStore('meeting/chat', () => {
 
 			createController();
 			connect();
-		} catch (e) {
-			console.error('Chat reconnection error', e);
 		} finally {
 			reconnecting.value = false;
 		}

@@ -19,7 +19,7 @@ export interface AppConfig {
 		logoPicture: string;
 		mainBackground: string;
 	};
-	lang: string;
+	lang: 'en' | 'uk' | 'ru';
 }
 
 // Make it available globally for Vue's inject system
