@@ -3,20 +3,20 @@
     <wt-notifications-bar />
     <brand-logo />
     <div class="main-scene__contents">
-      <meeting-container
-        v-if="!hideMeetingContainer"
-        @hungup="hideMeetingContainer = true"/>
+      <component
+        :is="mainSceneComponent"
+        @hungup="hideMeetingContainer = true"
+      />
       <sidebar-panel
       v-if="sidebarPanelOpened"
       />
-      <evaluation-wrapper v-if="hideMeetingContainer"/>
      </div>
   </main>
 </template>
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import { inject, ref } from 'vue';
+import { inject, ref, computed } from 'vue';
 import type { AppConfig } from '../../../types/config';
 import MeetingContainer from '../../meeting/components/meeting-container.vue';
 import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
@@ -31,6 +31,10 @@ const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta
 
 const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
+
+const mainSceneComponent = computed(() =>
+	hideMeetingContainer.value ? EvaluationWrapper : MeetingContainer,
+);
 </script>
 
 <style scoped>

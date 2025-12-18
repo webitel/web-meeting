@@ -31,7 +31,7 @@ import {
 import { useAuthStore } from '../../auth/stores/auth';
 
 const emit = defineEmits<{
-	(e: 'change-view'): (view: EvaluationValuesType) => void;
+	'change-view': (view: EvaluationValuesType) => void;
 }>();
 
 const { t } = useI18n();
