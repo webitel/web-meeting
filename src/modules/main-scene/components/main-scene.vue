@@ -5,7 +5,7 @@
     <div class="main-scene__contents">
       <component
         :is="mainSceneComponent"
-        @hungup="hideMeetingContainer = true"
+        @hungup="callState = CallState.Finished"
       />
       <sidebar-panel
       v-if="sidebarPanelOpened"
@@ -23,18 +23,24 @@ import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
 import BrandLogo from './shared/brand-logo.vue';
 import EvaluationWrapper from '../../evaluation/components/evaluation-wrapper.vue';
+import { CallState, type CallStateType } from '../enums/CallState';
 
 const $config = inject<AppConfig>('$config')!;
-const hideMeetingContainer = ref(false);
+const callState = ref<CallStateType>(CallState.Active);
 
 const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
 
 const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
-const mainSceneComponent = computed(() =>
-	hideMeetingContainer.value ? EvaluationWrapper : MeetingContainer,
-);
+const mainSceneComponent = computed(() => {
+	switch (callState.value) {
+		case CallState.Finished:
+			return EvaluationWrapper;
+		default:
+			return MeetingContainer;
+	}
+});
 </script>
 
 <style scoped>

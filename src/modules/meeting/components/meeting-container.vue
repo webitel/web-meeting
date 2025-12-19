@@ -62,7 +62,7 @@ import CallEndedDialog from '../modules/service-dialogs/components/call-ended.vu
 import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
 
 const emit = defineEmits<{
-	hungup: () => void;
+	hungup: [];
 }>();
 
 const callStore = useCallStore();
