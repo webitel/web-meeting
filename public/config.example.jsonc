@@ -16,5 +16,6 @@
 	"assets": {
 		"logoPicture": "/meet/assets/web-logo.svg",
 		"mainBackground": "/meet/assets/web-background.svg"
-	}
+	},
+	"lang": "en" // ['en', 'ru', 'uk']
 }
