@@ -3,17 +3,17 @@
     <video-call
       :sender:stream="localVideoStream"
       :receiver:stream="remoteVideoStream"
-      
+
       :sender:mic:enabled="microphoneEnabled"
       :sender:video:enabled="videoEnabled"
       :sender:mic:accessed="microphoneAccessed"
       :sender:video:accessed="videoAccessed"
-      
+
       :receiver:video:enabled="!!remoteVideoStream"
       :receiver:mic:enabled="!!remoteVideoStream"
 
       :actions="currentVideoContainerActions"
-      
+
       :key="videoContainerSize"
       :size="videoContainerSize"
       hide-header
@@ -26,9 +26,9 @@
       @[`action:${VideoCallAction.Video}`]="toggleVideo"
       @[`action:${VideoCallAction.Settings}`]="toggleSettingsPanel"
       @[`action:${VideoCallAction.Chat}`]="toggleChatPanel"
-      @[`action:${VideoCallAction.Hangup}`]="hangup"
+      @[`action:${VideoCallAction.Hangup}`]="hangupCall"
     >
-      <template 
+      <template
         #content
         v-if="showContentSlot"
       >
@@ -59,8 +59,11 @@ import { MeetingState } from '../../main-scene/enums/MeetingState';
 import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devices-dialog.vue';
 import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
 import CallEndedDialog from '../modules/service-dialogs/components/call-ended.vue';
-import TestVideoContainer from '../modules/call/components/video/test-video-container.vue';
 import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
+
+const emit = defineEmits<{
+	hungup: [];
+}>();
 
 const callStore = useCallStore();
 
@@ -115,6 +118,11 @@ const toggleChatPanel = () => {
 const devicesStore = useDevicesStore();
 const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
 	storeToRefs(devicesStore);
+
+const hangupCall = () => {
+	hangup();
+	emit('hungup');
+};
 </script>
 
 <style scoped>

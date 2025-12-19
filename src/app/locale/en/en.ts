@@ -26,10 +26,10 @@ export default {
 			title: 'Thanks you!',
 			message: 'We’ve saved you response successfully',
 		},
-		error: {
+		fail: {
 			title: 'Oops!',
 			message: 'Something went wrong',
 		},
 	},
-	errorLinkMessage: 'Unfortunately, the link is incorrect',
+	invalidLinkMessage: 'Unfortunately, the link is incorrect',
 };

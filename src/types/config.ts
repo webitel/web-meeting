@@ -20,6 +20,11 @@ export interface AppConfig {
 		mainBackground: string;
 	};
 	lang: 'en' | 'uk' | 'ru';
+	evaluation: {
+		endpointUrl: string;
+		goodGrade: number;
+		badGrade: number;
+	};
 }
 
 // Make it available globally for Vue's inject system
