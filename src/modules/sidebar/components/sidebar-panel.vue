@@ -38,5 +38,6 @@ const sidebarPanelComponent = computed(() => {
   background: var(--wt-page-wrapper-content-wrapper-color);
   border-radius: var(--border-radius);
   padding: var(--spacing-sm);
+  z-index: 1;
 }
 </style>
