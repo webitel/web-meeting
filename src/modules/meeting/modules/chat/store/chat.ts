@@ -40,7 +40,8 @@ export const useChatStore = defineStore('meeting/chat', () => {
 
 	function connect() {
 		if (!controller.value) createController();
-		controller.value.open(authData.value);
+		const auth = authData.value;
+		controller.value.open(auth);
 		subscribeIncomingMessage();
 	}
 
@@ -52,11 +53,11 @@ export const useChatStore = defineStore('meeting/chat', () => {
 
 	watch(
 		isConnected,
-		(value) => {
+		(value, oldValue) => {
 			if (value) {
 				sendPendingMessages();
 				if (lastMessage.value) reloadHistory();
-			} else if (!reconnecting.value && !value) {
+			} else if (!reconnecting.value && oldValue) {
 				handleDisconnect();
 			}
 		},

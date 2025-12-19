@@ -3,10 +3,23 @@ import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
 
 export const useCameraStore = defineStore('devices/camera', () => {
-	const { videoInputs: devices } = useDevicesList({
+	const { videoInputs: allDevices } = useDevicesList({
 		constraints: {
 			video: true,
 		},
+	});
+
+	const devices = computed(() =>
+		allDevices.value.filter((device) => device.deviceId !== 'default'),
+	);
+
+	const defaultDevice = computed(() => {
+		const defaultEntry = allDevices.value.find((d) => d.deviceId === 'default');
+		if (!defaultEntry) return null;
+
+		const defaultGroupId = defaultEntry.groupId;
+
+		return devices.value.find((d) => d.groupId === defaultGroupId) || null;
 	});
 
 	const selectedDeviceId = ref<string>('');
@@ -17,11 +30,19 @@ export const useCameraStore = defineStore('devices/camera', () => {
 		devices.value.find((device) => device.deviceId === selectedDeviceId.value),
 	);
 
-	watch(devices, (devices) => {
-		if (devices?.length > 0 && !selectedDeviceId.value) {
-			selectedDeviceId.value = devices[0]?.deviceId ?? '';
-		}
-	});
+	watch(
+		defaultDevice,
+		(newDefault) => {
+			if (newDefault) {
+				selectedDeviceId.value = newDefault.deviceId;
+			} else if (devices.value.length > 0) {
+				selectedDeviceId.value = devices.value[0].deviceId;
+			}
+		},
+		{
+			immediate: true,
+		},
+	);
 
 	/**
 	 * Set selected camera
