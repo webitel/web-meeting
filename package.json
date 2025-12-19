@@ -22,7 +22,7 @@
 		"@vueuse/core": "^13.9.0",
 		"@webitel/api-services": "^0.0.61",
 		"@webitel/ui-chats": "^0.0.15",
-		"@webitel/ui-sdk": "^25.12.40",
+		"@webitel/ui-sdk": "^25.12.54",
 		"axios": "^1.13.1",
 		"jssip": "^3.10.1",
 		"lodash": "npm:lodash-es@latest",
