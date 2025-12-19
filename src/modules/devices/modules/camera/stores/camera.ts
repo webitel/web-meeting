@@ -17,24 +17,14 @@ export const useCameraStore = defineStore('devices/camera', () => {
 		devices.value.find((device) => device.deviceId === selectedDeviceId.value),
 	);
 
-	watch(devices, (newDevices, oldDevices) => {
-		const newDeviceIds = newDevices.map((device) => device.deviceId);
-		const oldDeviceIds = oldDevices.map((device) => device.deviceId);
-
-		const addedDevice = newDevices.find(
-			(device) => !oldDeviceIds.includes(device.deviceId),
+	watch(devices, (newDevices) => {
+		const stillExists = newDevices.some(
+			(device) => device.deviceId === selectedDeviceId.value,
 		);
 
-		if (addedDevice) {
-			selectedDeviceId.value = addedDevice.deviceId;
-			return;
-		}
+		if (stillExists) return;
 
-		const selectedStillExists = newDeviceIds.includes(selectedDeviceId.value);
-
-		if (!selectedStillExists) {
-			selectedDeviceId.value = newDevices[0].deviceId;
-		}
+		selectedDeviceId.value = newDevices[0].deviceId;
 	});
 
 	/**
