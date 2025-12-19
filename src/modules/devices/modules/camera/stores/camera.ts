@@ -3,23 +3,10 @@ import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
 
 export const useCameraStore = defineStore('devices/camera', () => {
-	const { videoInputs: allDevices } = useDevicesList({
+	const { videoInputs: devices } = useDevicesList({
 		constraints: {
 			video: true,
 		},
-	});
-
-	const devices = computed(() =>
-		allDevices.value.filter((device) => device.deviceId !== 'default'),
-	);
-
-	const defaultDevice = computed(() => {
-		const defaultEntry = allDevices.value.find((d) => d.deviceId === 'default');
-		if (!defaultEntry) return null;
-
-		const defaultGroupId = defaultEntry.groupId;
-
-		return devices.value.find((d) => d.groupId === defaultGroupId) || null;
 	});
 
 	const selectedDeviceId = ref<string>('');
@@ -30,19 +17,25 @@ export const useCameraStore = defineStore('devices/camera', () => {
 		devices.value.find((device) => device.deviceId === selectedDeviceId.value),
 	);
 
-	watch(
-		defaultDevice,
-		(newDefault) => {
-			if (newDefault) {
-				selectedDeviceId.value = newDefault.deviceId;
-			} else if (devices.value.length > 0) {
-				selectedDeviceId.value = devices.value[0].deviceId;
-			}
-		},
-		{
-			immediate: true,
-		},
-	);
+	watch(devices, (newDevices, oldDevices) => {
+		const newDeviceIds = newDevices.map((device) => device.deviceId);
+		const oldDeviceIds = oldDevices.map((device) => device.deviceId);
+
+		const addedDevice = newDevices.find(
+			(device) => !oldDeviceIds.includes(device.deviceId),
+		);
+
+		if (addedDevice) {
+			selectedDeviceId.value = addedDevice.deviceId;
+			return;
+		}
+
+		const selectedStillExists = newDeviceIds.includes(selectedDeviceId.value);
+
+		if (!selectedStillExists) {
+			selectedDeviceId.value = newDevices[0].deviceId;
+		}
+	});
 
 	/**
 	 * Set selected camera
