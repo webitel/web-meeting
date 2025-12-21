@@ -86,7 +86,7 @@ export const useCameraStore = defineStore('devices/camera', () => {
 		}
 	}
 
-	async function getSelectedDeviceStreamTrack(
+	async function getDeviceStreamTrack(
 		deviceId: string = selectedDeviceId.value,
 	) {
 		return getDeviceStreamTrack(deviceId);
@@ -112,7 +112,7 @@ export const useCameraStore = defineStore('devices/camera', () => {
 		setSelectedDevice,
 		startStream,
 		stopStream,
-		getSelectedDeviceStreamTrack,
+		getDeviceStreamTrack,
 
 		cleanup,
 	};
