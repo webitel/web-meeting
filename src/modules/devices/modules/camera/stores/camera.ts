@@ -1,6 +1,12 @@
 import { useDevicesList } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
+import {
+	cleanupStream,
+	getDeviceStreamTrack,
+	getStreamFromDeviceId,
+	getVideoTrackFromStream,
+} from '../../../scripts/deviceUtils';
 
 export const useCameraStore = defineStore('devices/camera', () => {
 	const { videoInputs: allDevices } = useDevicesList({
@@ -60,15 +66,10 @@ export const useCameraStore = defineStore('devices/camera', () => {
 		// Stop any existing stream
 		stopStream();
 
-		if (!deviceId) return null;
-
 		// Get camera stream
-		const newStream = await navigator.mediaDevices.getUserMedia({
-			video: {
-				deviceId: {
-					exact: deviceId,
-				},
-			},
+		const newStream = await getStreamFromDeviceId({
+			deviceId,
+			deviceType: 'video',
 		});
 
 		stream.value = newStream;
@@ -80,9 +81,15 @@ export const useCameraStore = defineStore('devices/camera', () => {
 	 */
 	function stopStream(): void {
 		if (stream.value) {
-			stream.value.getTracks().forEach((track) => track.stop());
+			cleanupStream(stream.value);
 			stream.value = null;
 		}
+	}
+
+	async function getSelectedDeviceStreamTrack(
+		deviceId: string = selectedDeviceId.value,
+	) {
+		return getDeviceStreamTrack(deviceId);
 	}
 
 	/**
@@ -105,6 +112,8 @@ export const useCameraStore = defineStore('devices/camera', () => {
 		setSelectedDevice,
 		startStream,
 		stopStream,
+		getSelectedDeviceStreamTrack,
+
 		cleanup,
 	};
 });
