@@ -41,6 +41,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	// Session state
 	const sessionState = ref<SessionState | null>(null);
+	const sessionStateAtCallEnd = ref<SessionState | null>(null);
 
 	// Session timing
 	const sessionStartTime = ref<Date | null>(null);
@@ -277,10 +278,12 @@ export const useCallStore = defineStore('meeting/call', () => {
 				},
 				failed: (event: any) => {
 					console.error('Call failed:', event);
+					sessionStateAtCallEnd.value = sessionState.value ?? null;
 					closeSession();
 				},
 				ended: () => {
 					console.log('Call ended');
+					sessionStateAtCallEnd.value = sessionState.value ?? null;
 					closeSession();
 				},
 			};
@@ -488,6 +491,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		microphoneEnabled,
 		videoEnabled,
 		sessionStartTime,
+		sessionStateAtCallEnd,
 
 		// Computed
 		sessionDuration,

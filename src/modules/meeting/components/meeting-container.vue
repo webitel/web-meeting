@@ -26,13 +26,12 @@
       @[`action:${VideoCallAction.Video}`]="toggleVideo"
       @[`action:${VideoCallAction.Settings}`]="toggleSettingsPanel"
       @[`action:${VideoCallAction.Chat}`]="toggleChatPanel"
-      @[`action:${VideoCallAction.Hangup}`]="hangupCall"
+      @[`action:${VideoCallAction.Hangup}`]="hangup"
     >
       <template
         #content
         v-if="showContentSlot"
       >
-      <!-- <test-video-container /> -->
         <component
           :is="contentComponent"
         />
@@ -60,10 +59,6 @@ import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devi
 import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
 import CallEndedDialog from '../modules/service-dialogs/components/call-ended.vue';
 import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
-
-const emit = defineEmits<{
-	hungup: [];
-}>();
 
 const callStore = useCallStore();
 
@@ -118,11 +113,6 @@ const toggleChatPanel = () => {
 const devicesStore = useDevicesStore();
 const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
 	storeToRefs(devicesStore);
-
-const hangupCall = () => {
-	hangup();
-	emit('hungup');
-};
 </script>
 
 <style scoped>

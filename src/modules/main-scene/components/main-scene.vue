@@ -5,7 +5,6 @@
     <div class="main-scene__contents">
       <component
         :is="mainSceneComponent"
-        @hungup="callState = CallState.Finished"
       />
       <sidebar-panel
       v-if="sidebarPanelOpened"
@@ -23,23 +22,25 @@ import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
 import BrandLogo from './shared/brand-logo.vue';
 import EvaluationWrapper from '../../evaluation/components/evaluation-wrapper.vue';
-import { CallState, type CallStateType } from '../enums/CallState';
+import {
+	useCallStore,
+	SessionState,
+} from '../../meeting/modules/call/store/call';
 
 const $config = inject<AppConfig>('$config')!;
-const callState = ref<CallStateType>(CallState.Active);
 
 const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
 
 const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
+const callStore = useCallStore();
+const { sessionStateAtCallEnd } = storeToRefs(callStore);
+
 const mainSceneComponent = computed(() => {
-	switch (callState.value) {
-		case CallState.Finished:
-			return EvaluationWrapper;
-		default:
-			return MeetingContainer;
-	}
+	return sessionStateAtCallEnd.value === SessionState.ACTIVE
+		? EvaluationWrapper
+		: MeetingContainer;
 });
 </script>
 

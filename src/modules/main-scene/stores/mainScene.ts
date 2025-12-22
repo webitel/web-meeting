@@ -1,7 +1,10 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useDevicesStore } from '../../devices/stores/devices';
-import { useCallStore } from '../../meeting/modules/call/store/call';
+import {
+	useCallStore,
+	SessionState,
+} from '../../meeting/modules/call/store/call';
 import { MeetingState } from '../enums/MeetingState';
 
 export const useMainSceneStore = defineStore('mainScene', () => {
@@ -9,7 +12,7 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 	const { permissionGranted } = storeToRefs(devicesStore);
 
 	const callStore = useCallStore();
-	const { session } = storeToRefs(callStore);
+	const { session, sessionStateAtCallEnd } = storeToRefs(callStore);
 
 	const shouldShowAllowDevicesDialog = computed(() => {
 		return !permissionGranted.value;
@@ -21,6 +24,9 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 		}
 		if (shouldShowAllowDevicesDialog.value) {
 			return MeetingState.AllowDevicesDialog;
+		}
+		if (sessionStateAtCallEnd.value === SessionState.RINGING) {
+			return MeetingState.CallEnded;
 		}
 		return MeetingState.JoinDialog;
 	});
