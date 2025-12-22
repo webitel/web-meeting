@@ -46,7 +46,7 @@ const sendEvaluation = async (value: EvaluationValuesType) => {
 	try {
 		await EvaluationAPI.post(
 			{
-				url: `${config!.evaluation.endpointUrl}/${meetingId.value}`,
+				url: `${config!.evaluation.endpointUrl}/${meetingId.value}/satisfaction`,
 			},
 			{
 				satisfaction: config!.evaluation[`${value.toLowerCase()}Grade`],
