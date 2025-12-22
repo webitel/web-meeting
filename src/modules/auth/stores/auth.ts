@@ -59,6 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
 					'call',
 					'chat',
 				],
+				meetingId: meetingId.value,
 			} as TokenRequest,
 		);
 
