@@ -5,7 +5,7 @@
     <div class="main-scene__contents">
       <component
         :is="mainSceneComponent"
-        @hungup="callState = CallState.Finished"
+        @hungup="hangup"
       />
       <sidebar-panel
       v-if="sidebarPanelOpened"
@@ -32,6 +32,11 @@ const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta
 
 const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
+
+const hangup = () => {
+	if (sidebarPanelOpened) sidebarStore.close();
+	callState.value = CallState.Finished;
+};
 
 const mainSceneComponent = computed(() => {
 	switch (callState.value) {
