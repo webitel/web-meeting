@@ -49,7 +49,7 @@ const sendEvaluation = async (value: EvaluationValuesType) => {
 				url: `${config!.evaluation.endpointUrl}/${meetingId.value}/satisfaction`,
 			},
 			{
-				satisfaction: config!.evaluation[`${value.toLowerCase()}Grade`],
+				satisfaction: String(config!.evaluation[`${value.toLowerCase()}Grade`]),
 			},
 		);
 		emit('change-view', EvaluationValues.Good);
