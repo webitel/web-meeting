@@ -50,10 +50,7 @@ const putPortalFile = async (params): Promise => {
 
 	const finalUrl = `${url}?uploadId=${uploadId}`;
 
-	const formData = new FormData();
-	formData.append('file', file);
-
-	const responce = await instance.put(finalUrl, formData, {
+	const responce = await instance.put(finalUrl, file, {
 		headers,
 	});
 	return applyTransform(responce.data, [
