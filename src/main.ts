@@ -24,6 +24,7 @@ const initApp = async () => {
 (async () => {
 	const config = await fetchConfig();
 	const app = await initApp();
+	await router.isReady();
 	app.provide('$config', config);
 	app.mount('#app');
 })();
