@@ -38,6 +38,9 @@ export const useAuthStore = defineStore('auth', () => {
 	);
 
 	const initialize = async () => {
+		console.log('meetingId in initialize', meetingId.value);
+		console.log('route', route);
+		console.log('route.params.meetingId', route.params.meetingId);
 		const response: AccessToken = await PortalAPI.postPortalToken(
 			{
 				url: config.token.endpointUrl,
