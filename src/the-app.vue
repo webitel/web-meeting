@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
-import { inject, onMounted } from 'vue';
+import { inject, nextTick, onMounted } from 'vue';
 import { useAuthStore } from './modules/auth/stores/auth';
 import MainScene from './modules/main-scene/components/main-scene.vue';
 import type { AppConfig } from './types/config';
@@ -22,6 +22,7 @@ const build = import.meta.env.VITE_BUILD_NUMBER;
 window.buildVersion = `v${packageJson.version}-${build}`;
 
 onMounted(async () => {
+	await nextTick();
 	await authStore.initialize();
 	locale.value = config.lang || 'en';
 });
