@@ -54,14 +54,33 @@ export const useCallStore = defineStore('meeting/call', () => {
 		return duration < 0 ? 0 : duration;
 	});
 
-	const microphoneEnabled = computed(() =>
-		session.value
-			? !session.value.isMuted().audio
-			: initCallWithMicrophone.value,
-	);
-	const videoEnabled = computed(() =>
-		session.value ? !session.value.isMuted().video : initCallWithVideo.value,
-	);
+	const microphoneEnabled = computed({
+		get(): boolean {
+			return initCallWithMicrophone.value;
+		},
+		set(value: boolean) {
+			initCallWithMicrophone.value = value;
+			if (value) {
+				enableMicrophone();
+			} else {
+				disableMicrophone();
+			}
+		},
+	});
+
+	const videoEnabled = computed({
+		get(): boolean {
+			return initCallWithVideo.value;
+		},
+		set(value: boolean) {
+			initCallWithVideo.value = value;
+			if (value) {
+				enableVideo();
+			} else {
+				disableVideo();
+			}
+		},
+	});
 
 	/**
 	 * Initialize the JsSIP User Agent
@@ -262,17 +281,12 @@ export const useCallStore = defineStore('meeting/call', () => {
 					sessionState.value = SessionState.ACTIVE;
 					sessionStartTime.value = new Date();
 
-					initAudio();
-					initVideo();
-
-					// apply initial video mute if requested
-					if (!startWithVideo) {
-						disableVideo();
+					if (startWithVideo) {
+						initVideo();
 					}
 
-					// apply initial audio mute if requested
-					if (!startWithAudio) {
-						disableMicrophone();
+					if (startWithAudio) {
+						initAudio();
 					}
 				},
 				failed: (event: any) => {
@@ -326,14 +340,18 @@ export const useCallStore = defineStore('meeting/call', () => {
 		hangup();
 	});
 
-	function enableMicrophone(): void {
+	async function enableMicrophone(): void {
+		if (!sessionAudio.value) {
+			await initAudio();
+		}
 		if (!session.value) {
 			initCallWithMicrophone.value = true;
-		} else {
-			session.value!.unmute({
-				audio: true,
-			});
+			return;
 		}
+
+		session.value!.unmute({
+			audio: true,
+		});
 	}
 
 	function disableMicrophone(): void {
@@ -356,37 +374,33 @@ export const useCallStore = defineStore('meeting/call', () => {
 		}
 	}
 
-	function enableVideo(): void {
+	async function enableVideo(): void {
+		if (!localVideoStream.value && !remoteVideoStream.value) {
+			await initVideo();
+		}
 		if (!session.value) {
 			initCallWithVideo.value = true;
-		} else {
-			session.value!.unmute({
-				video: true,
-			});
-			initVideo();
+			return;
 		}
+
+		session.value!.unmute({
+			video: true,
+		});
+		initVideo();
 	}
 
 	/**
 	 * Toggle mute state
 	 */
 	function toggleMute(): void {
-		if (microphoneEnabled.value) {
-			disableMicrophone();
-		} else {
-			enableMicrophone();
-		}
+		microphoneEnabled.value = !microphoneEnabled.value;
 	}
 
 	/**
 	 * Toggle video state
 	 */
 	function toggleVideo(): void {
-		if (videoEnabled.value) {
-			disableVideo();
-		} else {
-			enableVideo();
-		}
+		videoEnabled.value = !videoEnabled.value;
 	}
 
 	/**
