@@ -1,25 +1,18 @@
 import { useDevicesList } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
+import {
+	cleanupStream,
+	getDeviceStreamTrack,
+	getStreamFromDeviceId,
+	getVideoTrackFromStream,
+} from '../../../scripts/deviceUtils';
 
 export const useCameraStore = defineStore('devices/camera', () => {
-	const { videoInputs: allDevices } = useDevicesList({
+	const { videoInputs: devices } = useDevicesList({
 		constraints: {
 			video: true,
 		},
-	});
-
-	const devices = computed(() =>
-		allDevices.value.filter((device) => device.deviceId !== 'default'),
-	);
-
-	const defaultDevice = computed(() => {
-		const defaultEntry = allDevices.value.find((d) => d.deviceId === 'default');
-		if (!defaultEntry) return null;
-
-		const defaultGroupId = defaultEntry.groupId;
-
-		return devices.value.find((d) => d.groupId === defaultGroupId) || null;
 	});
 
 	const selectedDeviceId = ref<string>('');
@@ -30,19 +23,15 @@ export const useCameraStore = defineStore('devices/camera', () => {
 		devices.value.find((device) => device.deviceId === selectedDeviceId.value),
 	);
 
-	watch(
-		defaultDevice,
-		(newDefault) => {
-			if (newDefault) {
-				selectedDeviceId.value = newDefault.deviceId;
-			} else if (devices.value.length > 0) {
-				selectedDeviceId.value = devices.value[0].deviceId;
-			}
-		},
-		{
-			immediate: true,
-		},
-	);
+	watch(devices, (newDevices) => {
+		const stillExists = newDevices.some(
+			(device) => device.deviceId === selectedDeviceId.value,
+		);
+
+		if (stillExists) return;
+
+		selectedDeviceId.value = newDevices[0].deviceId;
+	});
 
 	/**
 	 * Set selected camera
@@ -60,15 +49,10 @@ export const useCameraStore = defineStore('devices/camera', () => {
 		// Stop any existing stream
 		stopStream();
 
-		if (!deviceId) return null;
-
 		// Get camera stream
-		const newStream = await navigator.mediaDevices.getUserMedia({
-			video: {
-				deviceId: {
-					exact: deviceId,
-				},
-			},
+		const newStream = await getStreamFromDeviceId({
+			deviceId,
+			deviceType: 'video',
 		});
 
 		stream.value = newStream;
@@ -80,9 +64,15 @@ export const useCameraStore = defineStore('devices/camera', () => {
 	 */
 	function stopStream(): void {
 		if (stream.value) {
-			stream.value.getTracks().forEach((track) => track.stop());
+			cleanupStream(stream.value);
 			stream.value = null;
 		}
+	}
+
+	async function getDeviceStreamTrack(
+		deviceId: string = selectedDeviceId.value,
+	) {
+		return getDeviceStreamTrack(deviceId);
 	}
 
 	/**
@@ -105,6 +95,8 @@ export const useCameraStore = defineStore('devices/camera', () => {
 		setSelectedDevice,
 		startStream,
 		stopStream,
+		getDeviceStreamTrack,
+
 		cleanup,
 	};
 });

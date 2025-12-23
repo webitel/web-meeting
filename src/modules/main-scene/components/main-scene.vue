@@ -5,6 +5,7 @@
     <div class="main-scene__contents">
       <component
         :is="mainSceneComponent"
+        @hungup="hangup"
       />
       <sidebar-panel
       v-if="sidebarPanelOpened"
@@ -15,7 +16,7 @@
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import { inject, ref, computed } from 'vue';
+import { inject, computed } from 'vue';
 import type { AppConfig } from '../../../types/config';
 import MeetingContainer from '../../meeting/components/meeting-container.vue';
 import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
@@ -36,6 +37,10 @@ const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
 const callStore = useCallStore();
 const { sessionState } = storeToRefs(callStore);
+
+const hangup = () => {
+	if (sidebarPanelOpened) sidebarStore.close();
+};
 
 const mainSceneComponent = computed(() => {
 	return sessionState.value === SessionState.COMPLETED
