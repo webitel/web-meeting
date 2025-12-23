@@ -32,7 +32,6 @@
         #content
         v-if="showContentSlot"
       >
-      <!-- <test-video-container /> -->
         <component
           :is="contentComponent"
         />
@@ -61,11 +60,11 @@ import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
 import CallEndedDialog from '../modules/service-dialogs/components/call-ended.vue';
 import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
 
+const callStore = useCallStore();
+
 const emit = defineEmits<{
 	hungup: [];
 }>();
-
-const callStore = useCallStore();
 
 const { remoteVideoStream, localVideoStream, microphoneEnabled, videoEnabled } =
 	storeToRefs(callStore);

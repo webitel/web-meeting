@@ -21,7 +21,11 @@ const MeetingStateToVideoActionsMap: Record<MeetingState, VideoCallAction[]> = {
 		VideoCallAction.Chat,
 		VideoCallAction.Hangup,
 	],
-	[MeetingState.CallEnded]: [],
+	[MeetingState.CallEnded]: [
+		VideoCallAction.Mic,
+		VideoCallAction.Video,
+		VideoCallAction.Settings,
+	],
 };
 
 export const useVideoContainerActionsList = ({
