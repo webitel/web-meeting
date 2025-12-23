@@ -23,6 +23,7 @@ window.buildVersion = `v${packageJson.version}-${build}`;
 
 onMounted(async () => {
 	await nextTick();
+	await nextTick();
 	await authStore.initialize();
 	locale.value = config.lang || 'en';
 });

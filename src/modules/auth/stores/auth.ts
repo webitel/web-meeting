@@ -23,8 +23,6 @@ export const useAuthStore = defineStore('auth', () => {
 
 	const xPortalDevice = ref<string>(uuidv4());
 
-	const meetingId = computed<string>(() => route.params.meetingId! as string);
-
 	const accessToken = computed<string | null>(
 		() => userinfo.value?.accessToken ?? null,
 	);
@@ -37,10 +35,10 @@ export const useAuthStore = defineStore('auth', () => {
 		() => userinfo.value?.chat ?? null,
 	);
 
+	const getMeetingId = () => route.params.meetingId! as string | undefined;
+
 	const initialize = async () => {
-		console.log('meetingId in initialize', meetingId.value);
-		console.log('route', route);
-		console.log('route.params.meetingId', route.params.meetingId);
+		const meetingId = getMeetingId();
 		const response: AccessToken = await PortalAPI.postPortalToken(
 			{
 				url: config.token.endpointUrl,
@@ -62,7 +60,7 @@ export const useAuthStore = defineStore('auth', () => {
 					'call',
 					'chat',
 				],
-				meetingId: meetingId.value,
+				meetingId,
 			} as TokenRequest,
 		);
 
@@ -75,7 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
 		xPortalDevice,
 
 		// computed
-		meetingId,
+		meetingId: computed(() => getMeetingId()),
 		accessToken,
 		callAccount,
 		chatAccount,

@@ -15,13 +15,9 @@ const postPortalToken = async (
 	{ url, headers }: Pick<AxiosRequestConfig<TokenRequest>, 'url' | 'headers'>,
 	credentials: TokenRequest,
 ): Promise<AccessToken> => {
-	console.log('credentials', credentials);
-	console.log('url', url);
-	console.log('headers', headers);
 	const sentCredentials = applyTransform(credentials, [
 		camelToSnake(),
 	]);
-	console.log('sentCredentials', sentCredentials);
 
 	const response = await instance.post<AccessToken>(url, sentCredentials, {
 		headers,
