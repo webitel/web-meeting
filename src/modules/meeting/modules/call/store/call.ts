@@ -13,6 +13,10 @@ export enum SessionState {
 	CONNECTING = 'CONNECTING',
 	RINGING = 'RINGING',
 	ACTIVE = 'ACTIVE',
+
+	CANCELED = 'CANCELED', // cancellation until the call is accepted
+	COMPLETED = 'COMPLETED', // successful call ending after conversation
+	FAILED = 'FAILED', // an error occurred
 }
 
 /**
@@ -41,7 +45,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	// Session state
 	const sessionState = ref<SessionState | null>(null);
-	const sessionStateAtCallEnd = ref<SessionState | null>(null);
 
 	// Session timing
 	const sessionStartTime = ref<Date | null>(null);
@@ -223,7 +226,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 		}
 
 		// Reset state
-		sessionState.value = null;
 		session.value = null;
 		sessionStartTime.value = null;
 
@@ -278,12 +280,14 @@ export const useCallStore = defineStore('meeting/call', () => {
 				},
 				failed: (event: any) => {
 					console.error('Call failed:', event);
-					sessionStateAtCallEnd.value = sessionState.value ?? null;
+					sessionState.value = SessionState.FAILED;
 					closeSession();
 				},
 				ended: () => {
 					console.log('Call ended');
-					sessionStateAtCallEnd.value = sessionState.value ?? null;
+					if (sessionState.value === SessionState.ACTIVE) {
+						sessionState.value = SessionState.COMPLETED;
+					} else sessionState.value = SessionState.CANCELED;
 					closeSession();
 				},
 			};
@@ -311,7 +315,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			(window as any).jssipSession = rtcSession;
 		} catch (err) {
 			console.error('Failed to make call:', err);
-			sessionState.value = null;
+			sessionState.value = SessionState.FAILED;
 			throw err;
 		}
 	}
@@ -491,7 +495,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 		microphoneEnabled,
 		videoEnabled,
 		sessionStartTime,
-		sessionStateAtCallEnd,
 
 		// Computed
 		sessionDuration,

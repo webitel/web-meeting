@@ -35,10 +35,10 @@ const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
 const callStore = useCallStore();
-const { sessionStateAtCallEnd } = storeToRefs(callStore);
+const { sessionState } = storeToRefs(callStore);
 
 const mainSceneComponent = computed(() => {
-	return sessionStateAtCallEnd.value === SessionState.ACTIVE
+	return sessionState.value === SessionState.COMPLETED
 		? EvaluationWrapper
 		: MeetingContainer;
 });

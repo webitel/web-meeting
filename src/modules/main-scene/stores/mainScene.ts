@@ -12,7 +12,7 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 	const { permissionGranted } = storeToRefs(devicesStore);
 
 	const callStore = useCallStore();
-	const { session, sessionStateAtCallEnd } = storeToRefs(callStore);
+	const { session, sessionState } = storeToRefs(callStore);
 
 	const shouldShowAllowDevicesDialog = computed(() => {
 		return !permissionGranted.value;
@@ -25,7 +25,7 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 		if (shouldShowAllowDevicesDialog.value) {
 			return MeetingState.AllowDevicesDialog;
 		}
-		if (sessionStateAtCallEnd.value === SessionState.RINGING) {
+		if (sessionState.value === SessionState.CANCELED) {
 			return MeetingState.CallEnded;
 		}
 		return MeetingState.JoinDialog;
