@@ -18,14 +18,14 @@ import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import MeetingServiceDialog from './shared/meeting-service-dialog.vue';
 
-import { useDevicesStore } from '../../../../devices/stores/devices';
+import { useDevicesPermissionsStore } from '../../../../devices/modules/permissions/stores/permissions';
 import { DeviceErrors } from '../../../../devices/enums/DeviceErrors';
 import { inject } from 'vue';
 
 const { t } = useI18n();
 const eventBus = inject('$eventBus');
 
-const devicesStore = useDevicesStore();
+const devicesStore = useDevicesPermissionsStore();
 const { isRequesting, error } = storeToRefs(devicesStore);
 const { requestDeviceAccess } = devicesStore;
 

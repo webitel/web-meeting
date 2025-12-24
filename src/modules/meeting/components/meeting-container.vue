@@ -49,7 +49,7 @@ import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { ComponentSize } from '@webitel/ui-sdk/enums';
 
-import { useDevicesStore } from '../../devices/stores/devices';
+import { useDevicesPermissionsStore } from '../../devices/modules/permissions/stores/permissions';
 import { SidebarMode } from '../../sidebar/enums/SidebarMode';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
 import { useCallStore } from '../modules/call/store/call';
@@ -114,7 +114,7 @@ const toggleChatPanel = () => {
 	changeSidebarMode(SidebarMode.Chat);
 };
 
-const devicesStore = useDevicesStore();
+const devicesStore = useDevicesPermissionsStore();
 const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
 	storeToRefs(devicesStore);
 

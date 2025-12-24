@@ -1,6 +1,6 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { computed } from 'vue';
-import { useDevicesStore } from '../../devices/stores/devices';
+import { useDevicesPermissionsStore } from '../../devices/modules/permissions/stores/permissions';
 import {
 	useCallStore,
 	SessionState,
@@ -8,7 +8,7 @@ import {
 import { MeetingState } from '../enums/MeetingState';
 
 export const useMainSceneStore = defineStore('mainScene', () => {
-	const devicesStore = useDevicesStore();
+	const devicesStore = useDevicesPermissionsStore();
 	const { permissionGranted } = storeToRefs(devicesStore);
 
 	const callStore = useCallStore();
