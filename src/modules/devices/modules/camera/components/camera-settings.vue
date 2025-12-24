@@ -1,60 +1,53 @@
 <template>
     <div class="camera-settings">
       <wt-select
-        :options="devices"
+        :options="devicesList"
         :clearable="false"
         option-label="label"
         track-by="deviceId"
         use-value-from-options-by-prop="deviceId"
         :label="t('devices.camera')"
-        :value="selectedDevice?.deviceId"
-        @update:model-value="setSelectedDevice">
+        :value="selectedDeviceId"
+        @update:model-value="setPreferredDevice">
       </wt-select>
 
-      <video
-        ref="cameraPreviewElement"
-        :srcObject="stream"
-        autoplay
-        playsinline
-        muted
-        class="camera-settings__video" />
+      <camera-preview 
+        v-if="selectedDeviceId"
+        :stream="deviceStream" 
+        @request-stream="startSelectedDeviceStream" 
+      />
     </div>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onUnmounted, watch } from 'vue';
+import { onUnmounted, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import CameraPreview from './camera-preview.vue';
 
 import { useCameraStore } from '../stores/camera';
 
 const cameraStore = useCameraStore();
 const { t } = useI18n();
 
-const { devices, selectedDevice, selectedDeviceId, stream } =
+const { devicesList, selectedDeviceId, deviceStream } =
 	storeToRefs(cameraStore);
 
-const { startStream, stopStream, setSelectedDevice, cleanup } = cameraStore;
+const { startSelectedDeviceStream, stopStream, setPreferredDevice, cleanup } =
+	cameraStore;
 
-watch(
-	selectedDeviceId,
-	async (newDeviceId) => {
-		if (stream.value) {
-			stopStream();
-		}
+// onMounted(() => {
+// startSelectedDeviceStream();
+// });
 
-		if (!newDeviceId) return;
-
-		await startStream();
-	},
-	{
-		immediate: true,
-	},
-);
-
-onUnmounted(() => {
-	cleanup();
-});
+/**
+ * @author: @dlohvinov
+ *
+ * i guess won't be needed coz we'll reuse this stream for call / camera preview on "join" dialog
+ */
+// onUnmounted(() => {
+// 	cleanup();
+// });
 </script>
 
 <style scoped>
@@ -62,9 +55,5 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-}
-
-.camera-settings__video {
-  border-radius: var(--spacing-sm);
 }
 </style>

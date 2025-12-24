@@ -56,6 +56,10 @@ export function getVideoTrackFromStream(
 	return handleMultipleTracks(videoTracks);
 }
 
+/**
+ *
+ * returns only one video track if there are many (coz stream.getVideoTracks() returns array)
+ */
 function handleMultipleTracks(
 	videoTracks: MediaStreamTrack[],
 ): MediaStreamTrack | null {
