@@ -52,6 +52,24 @@ export const useCallStore = defineStore('meeting/call', () => {
 	let nowInterval: ReturnType<typeof setInterval> | null = null;
 
 	// Computed
+	const remoteVideoActive = computed(() => {
+		if (!session.value?.connection) return false;
+
+		return session.value.connection.getReceivers().some((receiver) => {
+			const track = receiver.track;
+			return (
+				track &&
+				track.kind === 'video' &&
+				track.readyState === 'live' &&
+				track.enabled
+			);
+		});
+	});
+
+	const receiverVideoEnabled = computed(
+		() => remoteVideoActive.value || videoEnabled.value,
+	);
+
 	const isSessionStateFinished = computed(
 		() =>
 			sessionState.value === SessionState.COMPLETED ||
@@ -506,6 +524,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		// Computed
 		sessionDuration,
 		isSessionStateFinished,
+		receiverVideoEnabled,
 
 		// Actions
 		startUserAgent,
