@@ -5,6 +5,8 @@ import { defineStore, storeToRefs } from 'pinia';
 import { computed, inject, markRaw, ref } from 'vue';
 import type { AppConfig } from '../../../../../types/config';
 import { useAuthStore } from '../../../../auth/stores/auth';
+import { useCameraStore } from '../../../../devices/modules/camera/stores/camera';
+import { useMicrophoneStore } from '../../../../devices/modules/microphone/stores/microphone';
 
 /**
  * Session states for the call
@@ -24,6 +26,16 @@ export const useCallStore = defineStore('meeting/call', () => {
 	const authStore = useAuthStore();
 	const { xPortalDevice, meetingId, accessToken, callAccount } =
 		storeToRefs(authStore);
+
+	const cameraStore = useCameraStore();
+	const { stream: cameraStream } = storeToRefs(cameraStore);
+	const {
+		startStream: startCameraStream,
+		getDeviceStreamTrack: getSelectedCameraStreamTrack,
+	} = cameraStore;
+
+	const microphoneStore = useMicrophoneStore();
+	// const { getSelectedDeviceStreamTrack: getSelectedMicrophoneStreamTrack } = microphoneStore;
 
 	// User Agent
 	const userAgent = ref<UA | null>(null);
@@ -249,12 +261,15 @@ export const useCallStore = defineStore('meeting/call', () => {
 				await startUserAgent();
 			}
 
+			await startCameraStream();
+
 			const eventHandlers = {
 				progress: () => {
 					// Call is ringing
 					console.log('Call progress (ringing)');
 					sessionState.value = SessionState.RINGING;
 					initAudio();
+					initVideo();
 				},
 				confirmed: () => {
 					// Call is confirmed (200 OK)
@@ -262,8 +277,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 					sessionState.value = SessionState.ACTIVE;
 					sessionStartTime.value = new Date();
 
-					initAudio();
-					initVideo();
+					// initAudio();
 
 					// apply initial video mute if requested
 					if (!startWithVideo) {
@@ -291,6 +305,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 					audio: true,
 					video: true,
 				},
+				// mediaStream: cameraStream.value,
 				extraHeaders: [
 					`X-Webitel-Meeting: ${meetingId.value}`,
 				],
@@ -425,15 +440,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 */
 	async function changeCamera(deviceId: string) {
 		// Get new video stream with selected device
-		const newStream = await navigator.mediaDevices.getUserMedia({
-			video: {
-				deviceId: {
-					exact: deviceId,
-				},
-			},
-		});
-
-		const newVideoTrack = newStream.getVideoTracks()[0];
+		const { stream: newStream, track: newVideoTrack } =
+			await getSelectedCameraStreamTrack(deviceId);
 
 		// Find the video sender in the peer connection
 		const videoSender = session
@@ -458,12 +466,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 * Change speaker (audio output)
 	 */
 	async function changeSpeaker(deviceId: string) {
-		// Use setSinkId to change the audio output device
-		if (sessionAudio.value && 'setSinkId' in sessionAudio.value) {
-			await (sessionAudio.value as any).setSinkId(deviceId);
-		} else {
-			console.warn('setSinkId is not supported in this browser');
-		}
+		await (sessionAudio.value as any).setSinkId(deviceId);
 	}
 
 	/**
