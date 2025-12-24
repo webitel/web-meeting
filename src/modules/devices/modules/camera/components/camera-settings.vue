@@ -1,15 +1,15 @@
 <template>
     <div class="camera-settings">
       <wt-select
+        :value="selectedDeviceId"
         :options="devicesList"
+        :label="t('devices.camera')"
         :clearable="false"
         option-label="label"
         track-by="deviceId"
         use-value-from-options-by-prop="deviceId"
-        :label="t('devices.camera')"
-        :value="selectedDeviceId"
-        @update:model-value="setPreferredDevice">
-      </wt-select>
+        @update:model-value="setPreferredDevice"
+      />
 
       <camera-preview 
         v-if="selectedDeviceId"
@@ -21,7 +21,6 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onUnmounted, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import CameraPreview from './camera-preview.vue';
 

@@ -1,70 +1,52 @@
 <template>
     <div class="microphone-settings">
       <wt-select
-        id="microphone-select"
-        :options="devices"
+	    :value="selectedDeviceId"
+        :options="devicesList"
+        :label="t('devices.microphone')"
         :clearable="false"
         option-label="label"
         track-by="deviceId"
-        :label="t('devices.microphone')"
-        :value="selectedDevice?.label"
-        @update:model-value="setSelectedDevice">
-      </wt-select>
+        use-value-from-options-by-prop="deviceId"
+        @update:model-value="setPreferredDevice"
+	  />
 
-      <div v-if="selectedDeviceId" class="microphone-settings__load-bar">
-        <wt-load-bar max="100" :value="volumeLevel" color="info"/>
-      </div>
-
+      <microphone-preview
+		v-if="selectedDeviceId"
+		:stream="deviceStream"
+		@request-stream="startSelectedDeviceStream"
+	  />
     </div>
 </template>
 
 <script setup lang="ts">
-import { WtLoadBar } from '@webitel/ui-sdk/components';
 import { storeToRefs } from 'pinia';
-import { onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useMicrophoneVolume } from '../composables/useMicrophoneVolume';
+
 import { useMicrophoneStore } from '../stores/microphone';
+import MicrophonePreview from './microphone-preview.vue';
 
 const microphoneStore = useMicrophoneStore();
 const { t } = useI18n();
 
-const { devices, selectedDeviceId, selectedDevice, stream } =
+const { devicesList, selectedDeviceId, deviceStream } =
 	storeToRefs(microphoneStore);
 
-const { startStream, stopStream, setSelectedDevice, cleanup } = microphoneStore;
+const { startSelectedDeviceStream, stopStream, setPreferredDevice, cleanup } =
+	microphoneStore;
 
-const {
-	volumeLevel,
-	start: startVolumeMonitoring,
-	stop: stopVolumeMonitoring,
-} = useMicrophoneVolume();
+// onMounted(() => {
+// startSelectedDeviceStream();
+// });
 
-watch(
-	selectedDeviceId,
-	async (newDeviceId) => {
-		if (stream.value) {
-			stopStream();
-			stopVolumeMonitoring();
-		}
-
-		if (!newDeviceId) return;
-
-		await startStream();
-
-		if (!stream.value) return;
-
-		startVolumeMonitoring(stream.value);
-	},
-	{
-		immediate: true,
-	},
-);
-
-onUnmounted(() => {
-	stopVolumeMonitoring();
-	cleanup();
-});
+/**
+ * @author: @dlohvinov
+ *
+ * i guess won't be needed coz we'll reuse this stream for call / camera preview on "join" dialog
+ */
+// onUnmounted(() => {
+// 	cleanup();
+// });
 </script>
 
 <style scoped>
