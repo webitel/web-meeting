@@ -26,7 +26,7 @@
       @[`action:${VideoCallAction.Video}`]="toggleVideo"
       @[`action:${VideoCallAction.Settings}`]="toggleSettingsPanel"
       @[`action:${VideoCallAction.Chat}`]="toggleChatPanel"
-      @[`action:${VideoCallAction.Hangup}`]="hangupCall"
+      @[`action:${VideoCallAction.Hangup}`]="hangup"
     >
       <template
         #content
@@ -61,10 +61,6 @@ import CallEndedDialog from '../modules/service-dialogs/components/call-ended.vu
 import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
 
 const callStore = useCallStore();
-
-const emit = defineEmits<{
-	hungup: [];
-}>();
 
 const { remoteVideoStream, localVideoStream, microphoneEnabled, videoEnabled } =
 	storeToRefs(callStore);
@@ -117,11 +113,6 @@ const toggleChatPanel = () => {
 const devicesStore = useDevicesStore();
 const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
 	storeToRefs(devicesStore);
-
-const hangupCall = () => {
-	hangup();
-	emit('hungup');
-};
 </script>
 
 <style scoped>

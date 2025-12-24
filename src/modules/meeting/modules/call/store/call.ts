@@ -52,6 +52,13 @@ export const useCallStore = defineStore('meeting/call', () => {
 	let nowInterval: ReturnType<typeof setInterval> | null = null;
 
 	// Computed
+	const isSessionStateFinished = computed(
+		() =>
+			sessionState.value === SessionState.COMPLETED ||
+			sessionState.value === SessionState.CANCELED ||
+			sessionState.value === SessionState.FAILED,
+	);
+
 	const sessionDuration = computed(() => {
 		if (!sessionStartTime.value) return null;
 		const duration = now.value - sessionStartTime.value.getTime();
@@ -498,6 +505,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 		// Computed
 		sessionDuration,
+		isSessionStateFinished,
 
 		// Actions
 		startUserAgent,
