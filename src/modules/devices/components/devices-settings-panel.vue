@@ -36,7 +36,7 @@ import MicrophoneSettings from '../modules/microphone/components/microphone-sett
 import { useMicrophoneStore } from '../modules/microphone/stores/microphone';
 import SpeakerSettings from '../modules/speaker/components/speaker-settings.vue';
 import { useSpeakerStore } from '../modules/speaker/stores/speaker';
-import { useDevicesStore } from '../stores/devices';
+import { useDevicesPermissionsStore } from '../modules/permissions/stores/permissions';
 
 const { t } = useI18n();
 
@@ -44,7 +44,7 @@ const emit = defineEmits<{
 	close: [];
 }>();
 
-const devicesStore = useDevicesStore();
+const devicesStore = useDevicesPermissionsStore();
 const microphoneStore = useMicrophoneStore();
 const speakerStore = useSpeakerStore();
 const cameraStore = useCameraStore();
@@ -54,12 +54,9 @@ const { permissionGranted, error } = storeToRefs(devicesStore);
 const { requestDeviceAccess } = devicesStore;
 
 // Destructure state from individual device stores
-const { devices: microphones, selectedDeviceId: selectedMicrophoneId } =
-	storeToRefs(microphoneStore);
-const { devices: speakers, selectedDeviceId: selectedSpeakerId } =
-	storeToRefs(speakerStore);
-const { devices: cameras, selectedDeviceId: selectedCameraId } =
-	storeToRefs(cameraStore);
+const { selectedDeviceId: selectedMicrophoneId } = storeToRefs(microphoneStore);
+const { selectedDeviceId: selectedSpeakerId } = storeToRefs(speakerStore);
+const { selectedDeviceId: selectedCameraId } = storeToRefs(cameraStore);
 
 // Destructure meeting store state
 const { sessionState, videoEnabled, microphoneEnabled } =

@@ -7,7 +7,7 @@ import {
 	getDeviceStreamTrack,
 	getStreamFromDeviceId,
 } from '../scripts/deviceUtils';
-import { useDefaultDevice } from '../composables/composables/useDefaultDevice';
+import { useDefaultDevice } from '../composables/useDefaultDevice';
 
 /**
  * store factory for microphone / camera devices
