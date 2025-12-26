@@ -25,6 +25,7 @@
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import {
 	SessionState,
 	useCallStore,
@@ -50,13 +51,13 @@ const speakerStore = useSpeakerStore();
 const cameraStore = useCameraStore();
 const callStore = useCallStore();
 
-const { permissionGranted, error } = storeToRefs(devicesStore);
+const { permissionGranted } = storeToRefs(devicesStore);
 const { requestDeviceAccess } = devicesStore;
 
 // Destructure state from individual device stores
-const { selectedDeviceId: selectedMicrophoneId } = storeToRefs(microphoneStore);
+const { deviceStream: microphoneStream } = storeToRefs(microphoneStore);
 const { selectedDeviceId: selectedSpeakerId } = storeToRefs(speakerStore);
-const { selectedDeviceId: selectedCameraId } = storeToRefs(cameraStore);
+const { deviceStream: cameraStream } = storeToRefs(cameraStore);
 
 // Destructure meeting store state
 const { sessionState, videoEnabled, microphoneEnabled } =
@@ -65,35 +66,27 @@ const { sessionState, videoEnabled, microphoneEnabled } =
 const { changeMicrophone, changeCamera, changeSpeaker } = callStore;
 
 // Watch for microphone changes and update active call
-watch(selectedMicrophoneId, async (newDeviceId) => {
-	if (
-		newDeviceId &&
-		sessionState.value === SessionState.ACTIVE &&
-		microphoneEnabled.value
-	) {
-		await changeMicrophone(newDeviceId);
+watch(microphoneStream, (newStream) => {
+	if (sessionState.value === SessionState.ACTIVE && microphoneEnabled.value) {
+		changeMicrophone(newStream);
 	}
 });
 
 // // Watch for camera changes and update active call
-watch(selectedCameraId, async (newDeviceId) => {
-	if (
-		newDeviceId &&
-		sessionState.value === SessionState.ACTIVE &&
-		videoEnabled.value
-	) {
-		await changeCamera(newDeviceId);
+watch(cameraStream, (newStream) => {
+	if (sessionState.value === SessionState.ACTIVE && videoEnabled.value) {
+		changeCamera(newStream);
 	}
 });
 
 // // Watch for speaker changes and update active call
-watch(selectedSpeakerId, async (newDeviceId) => {
+watch(selectedSpeakerId, (newDeviceId) => {
 	if (
 		newDeviceId &&
 		sessionState.value === SessionState.ACTIVE &&
 		videoEnabled.value
 	) {
-		await changeSpeaker(newDeviceId);
+		changeSpeaker(newDeviceId);
 	}
 });
 

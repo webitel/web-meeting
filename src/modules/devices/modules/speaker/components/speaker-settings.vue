@@ -1,22 +1,22 @@
 <template>
   <div class="speaker-settings">
     <wt-select
-      id="speaker-select"
       :options="devices"
       :clearable="false"
-      option-label="label"
-      track-by="deviceId"
       :label="t('devices.speaker')"
       :value="selectedDevice?.label"
-      @update:model-value="setSelectedDevice">
-    </wt-select>
+      option-label="label"
+      track-by="deviceId"
+      @update:model-value="setSelectedDevice"
+    />
 
     <wt-button
       color="secondary"
-      class="speaker-settings__button"
       :disabled="isPlaying"
       @click="playBeep"
-    >{{ t('reusable.check').toUpperCase() }}</wt-button>
+    >
+      {{ t('reusable.check').toUpperCase() }}
+    </wt-button>
 
   </div>
 </template>
