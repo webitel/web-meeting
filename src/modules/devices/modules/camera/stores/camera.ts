@@ -9,68 +9,113 @@ import {
 } from '../../../scripts/deviceUtils';
 
 export const useCameraStore = defineStore('devices/camera', () => {
-	const { videoInputs: devices } = useDevicesList({
+	const { videoInputs: devicesList } = useDevicesList({
 		constraints: {
 			video: true,
 		},
 	});
 
-	const selectedDeviceId = ref<string>('');
+	/**
+	 * manually (!) selected deviceId to use
+	 */
+	const prefferedDeviceId = ref<string | null>(null);
 
-	const stream = ref<MediaStream | null>(null);
+	/**
+	 * stream of the selected device
+	 * used both for device preview in settings and for call
+	 */
+	const deviceStream = ref<MediaStream | null>(null);
 
-	const selectedDevice = computed(() =>
-		devices.value.find((device) => device.deviceId === selectedDeviceId.value),
-	);
-
-	watch(devices, (newDevices) => {
-		const stillExists = newDevices.some(
-			(device) => device.deviceId === selectedDeviceId.value,
+	/**
+	 * device which should be used for call/preview
+	 * user-preferred device or "default"/fallback device in the devices list
+	 */
+	const selectedDevice = computed(() => {
+		const prefferredDevice = devicesList.value.find(
+			(device) => device.deviceId === prefferedDeviceId.value,
 		);
 
-		if (stillExists) return;
-
-		selectedDeviceId.value = newDevices[0].deviceId;
+		// if no manually selected, fallback to last device
+		return prefferredDevice || devicesList.value.at(-1);
 	});
 
 	/**
-	 * Set selected camera
+	 * id of device which should be used for call/preview
 	 */
-	function setSelectedDevice(deviceId: string): void {
-		selectedDeviceId.value = deviceId;
+	const selectedDeviceId = computed(() => {
+		return selectedDevice.value?.deviceId || null;
+	});
+
+	/**
+	 * this watcher should reset prefferedDeviceId if manually selected device was ejected or not available
+	 */
+	watch(devicesList, (newDevicesList) => {
+		if (!prefferedDeviceId.value) return;
+
+		const hasPreviouslySelectedDevice = newDevicesList.some(
+			(device) => device.deviceId === prefferedDeviceId.value,
+		);
+
+		if (!hasPreviouslySelectedDevice) {
+			prefferedDeviceId.value = null;
+		}
+	});
+
+	/**
+	 * Set user-preferred device,
+	 */
+	function setPreferredDevice(
+		deviceId: string,
+		{
+			updateStream = true,
+		}: {
+			updateStream?: boolean;
+		} = {},
+	) {
+		prefferedDeviceId.value = deviceId;
+
+		if (!updateStream) return;
+
+		if (deviceId) {
+			startSelectedDeviceStream();
+		} else {
+			stopStream();
+		}
 	}
 
 	/**
 	 * Start camera stream for testing
 	 */
-	async function startStream(
-		deviceId: string = selectedDeviceId.value,
-	): Promise<MediaStream | null> {
+	async function startSelectedDeviceStream(): Promise<MediaStream | null> {
 		// Stop any existing stream
 		stopStream();
 
+		if (!selectedDeviceId.value) {
+			throw new Error('No Camera device selected, cant start stream');
+		}
+
 		// Get camera stream
 		const newStream = await getStreamFromDeviceId({
-			deviceId,
+			deviceId: selectedDeviceId.value,
 			deviceType: 'video',
 		});
 
-		stream.value = newStream;
+		deviceStream.value = newStream;
 		return newStream;
 	}
 
 	/**
-	 * Stop camera stream
+	 * Stop ongoing device stream (if any)
 	 */
 	function stopStream(): void {
-		if (stream.value) {
-			cleanupStream(stream.value);
-			stream.value = null;
+		if (deviceStream.value) {
+			cleanupStream(deviceStream.value);
+			deviceStream.value = null;
 		}
 	}
 
 	async function getDeviceStreamTrack(
-		deviceId: string = selectedDeviceId.value,
+		deviceId: string | null = selectedDeviceId.value,
 	) {
 		return getDeviceStreamTrack(deviceId);
 	}
@@ -78,24 +123,25 @@ export const useCameraStore = defineStore('devices/camera', () => {
 	/**
 	 * Cleanup
 	 */
-	function cleanup(): void {
+	function cleanup() {
 		stopStream();
 	}
 
 	return {
 		// State
-		devices,
-		selectedDeviceId,
-		stream,
+		deviceStream,
+		prefferedDeviceId,
 
 		// Computed
+		devicesList,
 		selectedDevice,
+		selectedDeviceId,
 
 		// Actions
-		setSelectedDevice,
-		startStream,
+		setPreferredDevice,
+		startSelectedDeviceStream,
 		stopStream,
-		getDeviceStreamTrack,
+		// getDeviceStreamTrack,
 
 		cleanup,
 	};

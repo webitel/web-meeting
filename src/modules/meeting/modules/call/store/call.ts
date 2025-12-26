@@ -5,6 +5,7 @@ import { defineStore, storeToRefs } from 'pinia';
 import { computed, inject, markRaw, ref } from 'vue';
 import type { AppConfig } from '../../../../../types/config';
 import { useAuthStore } from '../../../../auth/stores/auth';
+import { useCameraStore } from '../../../../devices/modules/camera/stores/camera';
 
 /**
  * Session states for the call
@@ -28,6 +29,10 @@ export const useCallStore = defineStore('meeting/call', () => {
 	const authStore = useAuthStore();
 	const { xPortalDevice, meetingId, accessToken, callAccount } =
 		storeToRefs(authStore);
+
+	const cameraStore = useCameraStore();
+	const { deviceStream: cameraStream } = storeToRefs(cameraStore);
+	const { startSelectedDeviceStream: startCameraStream } = cameraStore;
 
 	// User Agent
 	const userAgent = ref<UA | null>(null);
@@ -252,6 +257,10 @@ export const useCallStore = defineStore('meeting/call', () => {
 				await startUserAgent();
 			}
 
+			if (!cameraStream.value) {
+				await startCameraStream();
+			}
+
 			const eventHandlers = {
 				progress: () => {
 					// Call is ringing
@@ -298,6 +307,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 					audio: true,
 					video: true,
 				},
+				mediaStream: cameraStream.value!,
 				extraHeaders: [
 					`X-Webitel-Meeting: ${meetingId.value}`,
 				],
