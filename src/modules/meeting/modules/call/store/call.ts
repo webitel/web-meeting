@@ -59,23 +59,12 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	const callMediaStream = ref<MediaStream | null>(null);
 
-	// Session timing
-	const sessionStartTime = ref<Date | null>(null);
-	const now = ref<number>(Date.now());
-	let nowInterval: ReturnType<typeof setInterval> | null = null;
-
-	// Computed
-	const sessionDuration = computed(() => {
-		if (!sessionStartTime.value) return null;
-		const duration = now.value - sessionStartTime.value.getTime();
-		return duration < 0 ? 0 : duration;
-	});
-
 	const microphoneEnabled = computed(() =>
 		session.value
 			? !session.value.isMuted().audio
 			: initCallWithMicrophone.value,
 	);
+
 	const videoEnabled = computed(() =>
 		session.value ? !session.value.isMuted().video : initCallWithVideo.value,
 	);
@@ -107,6 +96,12 @@ export const useCallStore = defineStore('meeting/call', () => {
 				const ua = new JsSIP.UA(configuration);
 				ua.start();
 
+				/**
+				 * @author: @dlohvinov
+				 *
+				 * dont remove "markRaw" here!!
+				 * coz najibnetsya
+				 */
 				userAgent.value = markRaw(ua);
 
 				// Handle beforeunload to cleanup
@@ -215,28 +210,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 	}
 
 	/**
-	 * Start the reactive now watcher for session duration
-	 */
-	function startNowWatcher(): void {
-		if (nowInterval) return;
-
-		now.value = Date.now();
-		nowInterval = setInterval(() => {
-			now.value = Date.now();
-		}, 1000);
-	}
-
-	/**
-	 * Stop the reactive now watcher
-	 */
-	function stopNowWatcher(): void {
-		if (nowInterval) {
-			clearInterval(nowInterval);
-			nowInterval = null;
-		}
-	}
-
-	/**
 	 * Close the current session
 	 */
 	function closeSession(): void {
@@ -258,9 +231,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 		// Reset state
 		session.value = null;
-		sessionStartTime.value = null;
 
-		stopNowWatcher();
 		closeUserAgent();
 	}
 
@@ -275,7 +246,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 		const startWithVideo = options?.withVideo ?? initCallWithVideo.value;
 
 		try {
-			startNowWatcher();
 			sessionState.value = SessionState.CONNECTING;
 
 			// Start user agent if not already started
@@ -290,19 +260,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 				startMicrophoneStream(),
 			]);
 
-			callMediaStream.value!.addTrack(cameraStreamTrack.value); // todo: handle error if no track
-			callMediaStream.value!.addTrack(microphoneStreamTrack.value); // todo: handle error if no track
-
-			// window.attachVideo = async () => {
-			// await startCameraStream();
-			// if (cameraStream.value) {
-			// changeCamera();
-			// }
-			// };
-
-			// if (!cameraStream.value) {
-			// 	await startCameraStream();
-			// }
+			// values are "!" coz tracks should be initialized after startCameraStream() and startMicrophoneStream()
+			callMediaStream.value!.addTrack(cameraStreamTrack.value!.clone());
+			callMediaStream.value!.addTrack(microphoneStreamTrack.value!.clone());
 
 			const eventHandlers = {
 				progress: () => {
@@ -315,7 +275,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 					// Call is confirmed (200 OK)
 					console.log('Call confirmed');
 					sessionState.value = SessionState.ACTIVE;
-					sessionStartTime.value = new Date();
 
 					initAudio();
 					initVideo();
@@ -359,15 +318,13 @@ export const useCallStore = defineStore('meeting/call', () => {
 				sessionTimersExpires: 300,
 			};
 
-			// const rtcSession = userAgent.value!.call('00', callOptions);
 			const rtcSession = userAgent.value!.call(
 				appConfig.call.target,
 				callOptions,
 			);
 			session.value = rtcSession;
 
-			// For debugging
-			(window as any).jssipSession = rtcSession;
+			(window as any).jssipSession = rtcSession; // For debugging
 		} catch (err) {
 			console.error('Failed to make call:', err);
 			sessionState.value = SessionState.FAILED;
@@ -383,10 +340,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 			session.value.terminate();
 		}
 	}
-
-	window.addEventListener('beforeunload', () => {
-		hangup();
-	});
 
 	function enableMicrophone(): void {
 		if (!session.value) {
@@ -454,68 +407,67 @@ export const useCallStore = defineStore('meeting/call', () => {
 	/**
 	 * Change microphone during active call
 	 */
-	async function changeMicrophone(deviceId: string) {
-		// Get new audio stream with selected device
-		const newStream = await navigator.mediaDevices.getUserMedia({
-			audio: {
-				deviceId: {
-					exact: deviceId,
-				},
-			},
+	function changeMicrophone(newStream: MediaStream) {
+		/**
+		 * @author: @dlohvinov
+		 *
+		 * not sure if newStream param is needed,
+		 * if stream track is used from device store
+		 */
+		return changeUserMediaDevice({
+			stream: newStream,
+			track: microphoneStreamTrack.value!,
+			constraint: 'audio',
 		});
-
-		const newAudioTrack = newStream.getAudioTracks()[0];
-
-		// Find the audio sender in the peer connection
-		const audioSender = session
-			.value!.connection.getSenders()
-			.find((sender) => sender.track?.kind === 'audio');
-
-		const oldTrack = audioSender?.track;
-
-		if (audioSender && newAudioTrack) {
-			// Replace the old track with the new one
-			await audioSender.replaceTrack(newAudioTrack);
-
-			// Stop the old track
-			oldTrack?.stop();
-		}
 	}
 
 	/**
 	 * Change camera during active call
 	 */
-	async function changeCamera(deviceId: string = '') {
-		// Get new video stream with selected device
-		// const newStream = await navigator.mediaDevices.getUserMedia({
-		// 	video: {
-		// 		deviceId: {
-		// 			exact: deviceId,
-		// 		},
-		// 	},
-		// });
+	function changeCamera(newStream: MediaStream) {
+		/**
+		 * @author: @dlohvinov
+		 *
+		 * not sure if newStream param is needed,
+		 * if stream track is used from device store
+		 */
+		return changeUserMediaDevice({
+			stream: newStream,
+			track: cameraStreamTrack.value!,
+			constraint: 'video',
+		});
+	}
 
-		const newStream = cameraStream.value!;
-
-		const newVideoTrack = newStream.getVideoTracks()[0];
-
-		// Find the video sender in the peer connection
-		const videoSender = session
+	async function changeUserMediaDevice({
+		stream: newStream,
+		track: newTrack,
+		constraint,
+	}: {
+		stream: MediaStream;
+		track: MediaStreamTrack;
+		constraint: 'audio' | 'video';
+	}) {
+		// Find the sender in the peer connection
+		const constraintSender = session
 			.value!.connection.getSenders()
-			.find((sender) => sender.track?.kind === 'video');
+			.find((sender) => sender.track?.kind === constraint);
 
-		const oldTrack = videoSender?.track;
+		if (!constraintSender) {
+			throw new Error(`No ${constraint} sender found for call`);
+		}
 
-		if (videoSender && newVideoTrack) {
-			// Replace the old track with the new one
-			await videoSender.replaceTrack(newVideoTrack);
+		const oldTrack = constraintSender.track;
 
+		// Replace the old track with the new one
+		await constraintSender.replaceTrack(newTrack);
+
+		if (constraint === 'video') {
 			// Update local video stream
 			localVideoStream.value = newStream;
-
-			// Stop the old track
-			oldTrack?.stop();
 		}
+
+		// Stop the old track
+		oldTrack?.stop();
 	}
 
 	/**
@@ -523,23 +475,20 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 */
 	async function changeSpeaker(deviceId: string) {
 		// Use setSinkId to change the audio output device
-		if (sessionAudio.value && 'setSinkId' in sessionAudio.value) {
-			await (sessionAudio.value as any).setSinkId(deviceId);
-		} else {
-			console.warn('setSinkId is not supported in this browser');
-		}
+		await (sessionAudio.value as HTMLAudioElement).setSinkId(deviceId);
 	}
 
-	/**
-	 * Cleanup store
-	 */
-	function cleanup(): void {
+	function cleanup() {
 		if (session.value) {
 			hangup();
 		}
 		closeUserAgent();
-		stopNowWatcher();
 	}
+
+	// coz hangup ends server connection
+	window.addEventListener('beforeunload', () => {
+		hangup();
+	});
 
 	return {
 		// State
@@ -551,10 +500,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 		sessionState,
 		microphoneEnabled,
 		videoEnabled,
-		sessionStartTime,
-
-		// Computed
-		sessionDuration,
 
 		// Actions
 		startUserAgent,

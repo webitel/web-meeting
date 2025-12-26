@@ -112,7 +112,7 @@ export const createUserMediaStore = (
 			if (deviceId) {
 				startSelectedDeviceStream();
 			} else {
-				stopStream();
+				cleanup();
 			}
 		}
 
@@ -121,7 +121,10 @@ export const createUserMediaStore = (
 		 */
 		async function startSelectedDeviceStream(): Promise<MediaStream | null> {
 			// Stop any existing stream
-			stopStream();
+
+			if (deviceStream.value) {
+				cleanupStream(deviceStream.value);
+			}
 
 			if (!selectedDeviceId.value) {
 				throw new Error('No Camera device selected, cant start stream');
@@ -138,20 +141,13 @@ export const createUserMediaStore = (
 		}
 
 		/**
-		 * Stop ongoing device stream (if any)
+		 * Cleanup
 		 */
-		function stopStream(): void {
+		function cleanup() {
 			if (deviceStream.value) {
 				cleanupStream(deviceStream.value);
 				deviceStream.value = null;
 			}
-		}
-
-		/**
-		 * Cleanup
-		 */
-		function cleanup() {
-			stopStream();
 		}
 
 		return {
@@ -168,7 +164,6 @@ export const createUserMediaStore = (
 			// Actions
 			setPreferredDevice,
 			startSelectedDeviceStream,
-			stopStream,
 			// getDeviceStreamTrack,
 
 			cleanup,

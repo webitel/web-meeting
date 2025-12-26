@@ -22,6 +22,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { onUnmounted } from 'vue';
 
 import { useMicrophoneStore } from '../stores/microphone';
 import MicrophonePreview from './microphone-preview.vue';
@@ -32,21 +33,17 @@ const { t } = useI18n();
 const { devicesList, selectedDeviceId, deviceStream } =
 	storeToRefs(microphoneStore);
 
-const { startSelectedDeviceStream, stopStream, setPreferredDevice, cleanup } =
+const { startSelectedDeviceStream, setPreferredDevice, cleanup } =
 	microphoneStore;
-
-// onMounted(() => {
-// startSelectedDeviceStream();
-// });
 
 /**
  * @author: @dlohvinov
  *
  * i guess won't be needed coz we'll reuse this stream for call / camera preview on "join" dialog
  */
-// onUnmounted(() => {
-// 	cleanup();
-// });
+onUnmounted(() => {
+	cleanup();
+});
 </script>
 
 <style scoped>
