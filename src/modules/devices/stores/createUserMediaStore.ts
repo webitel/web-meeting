@@ -4,9 +4,9 @@ import { computed, ref, watch } from 'vue';
 
 import {
 	cleanupStream,
-	getDeviceStreamTrack,
+	getMediaStreamMainTrack,
 	getStreamFromDeviceId,
-} from '../scripts/deviceUtils';
+} from '../scripts/mediaStreamUtils';
 import { useDefaultDevice } from '../composables/useDefaultDevice';
 
 /**
@@ -68,6 +68,15 @@ export const createUserMediaStore = (
 		 */
 		const selectedDeviceId = computed(() => {
 			return selectedDevice.value?.deviceId || null;
+		});
+
+		const deviceStreamMainTrack = computed(() => {
+			if (!deviceStream.value) return null;
+
+			return getMediaStreamMainTrack({
+				stream: deviceStream.value,
+				deviceType: constraint,
+			});
 		});
 
 		/**
@@ -138,12 +147,6 @@ export const createUserMediaStore = (
 			}
 		}
 
-		async function getDeviceStreamTrack(
-			deviceId: string | null = selectedDeviceId.value,
-		) {
-			return getDeviceStreamTrack(deviceId);
-		}
-
 		/**
 		 * Cleanup
 		 */
@@ -160,6 +163,7 @@ export const createUserMediaStore = (
 			devicesList,
 			selectedDevice,
 			selectedDeviceId,
+			deviceStreamMainTrack,
 
 			// Actions
 			setPreferredDevice,

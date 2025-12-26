@@ -23,37 +23,41 @@ export function cleanupStream(stream: MediaStream): void {
 /**
  * Cant just return stream, coz this fn handles multiple tracks
  */
-export async function getDeviceStreamTrack(deviceId: string): Promise<{
+export function getMediaStreamMainTrack({
+	stream: deviceStream,
+	deviceType,
+}: {
 	stream: MediaStream;
-	track: MediaStreamTrack;
-}> {
-	const deviceStream = await getStreamFromDeviceId({
-		deviceId,
-		deviceType: 'video',
-	});
+	deviceType: 'video' | 'audio';
+}): MediaStreamTrack | null {
 	if (!deviceStream) {
-		throw new Error(`Failed to get MediaStream from device ${deviceId}`);
-	}
-
-	const deviceVideoTrack = getVideoTrackFromStream(deviceStream);
-	if (!deviceVideoTrack) {
 		throw new Error(
-			`Failed to get MediaStreamTrack of MediaStream from device ${deviceId}`,
+			`Failed to get MediaStream from device with type ${deviceType}`,
 		);
 	}
 
-	return {
-		stream: deviceStream,
-		track: deviceVideoTrack,
-	};
+	if (deviceType === 'video') {
+		return getVideoTrackFromStream(deviceStream);
+	}
+	if (deviceType === 'audio') {
+		return getAudioTrackFromStream(deviceStream);
+	}
+
+	throw new Error(
+		`Failed to get MediaStreamTrack of MediaStream from device with type ${deviceType}`,
+	);
 }
 
-export function getVideoTrackFromStream(
-	stream: MediaStream,
-): MediaStreamTrack | null {
+function getVideoTrackFromStream(stream: MediaStream): MediaStreamTrack | null {
 	const videoTracks = stream.getVideoTracks();
 
 	return handleMultipleTracks(videoTracks);
+}
+
+function getAudioTrackFromStream(stream: MediaStream): MediaStreamTrack | null {
+	const audioTracks = stream.getAudioTracks();
+
+	return handleMultipleTracks(audioTracks);
 }
 
 /**

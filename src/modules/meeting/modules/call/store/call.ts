@@ -6,6 +6,7 @@ import { computed, inject, markRaw, ref } from 'vue';
 import type { AppConfig } from '../../../../../types/config';
 import { useAuthStore } from '../../../../auth/stores/auth';
 import { useCameraStore } from '../../../../devices/modules/camera/stores/camera';
+import { useMicrophoneStore } from '../../../../devices/modules/microphone/stores/microphone';
 
 /**
  * Session states for the call
@@ -30,8 +31,13 @@ export const useCallStore = defineStore('meeting/call', () => {
 	const { xPortalDevice, meetingId, accessToken, callAccount } =
 		storeToRefs(authStore);
 
+	const microphoneStore = useMicrophoneStore();
+	const { deviceStreamMainTrack: microphoneStreamTrack } =
+		storeToRefs(microphoneStore);
+	const { startSelectedDeviceStream: startMicrophoneStream } = microphoneStore;
+
 	const cameraStore = useCameraStore();
-	const { deviceStream: cameraStream } = storeToRefs(cameraStore);
+	const { deviceStreamMainTrack: cameraStreamTrack } = storeToRefs(cameraStore);
 	const { startSelectedDeviceStream: startCameraStream } = cameraStore;
 
 	// User Agent
@@ -50,6 +56,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	// Session state
 	const sessionState = ref<SessionState | null>(null);
+
+	const callMediaStream = ref<MediaStream | null>(null);
 
 	// Session timing
 	const sessionStartTime = ref<Date | null>(null);
@@ -133,6 +141,24 @@ export const useCallStore = defineStore('meeting/call', () => {
 		if (userAgent.value) {
 			userAgent.value.stop();
 			userAgent.value = null;
+		}
+	}
+
+	function createCallMediaStream() {
+		if (callMediaStream.value) {
+			clearCallMediaStream();
+		}
+
+		const stream = new MediaStream();
+		callMediaStream.value = stream;
+
+		return stream;
+	}
+
+	function clearCallMediaStream() {
+		if (callMediaStream.value) {
+			callMediaStream.value.getTracks().forEach((track) => track.stop());
+			callMediaStream.value = null;
 		}
 	}
 
@@ -257,9 +283,26 @@ export const useCallStore = defineStore('meeting/call', () => {
 				await startUserAgent();
 			}
 
-			if (!cameraStream.value) {
-				await startCameraStream();
-			}
+			createCallMediaStream();
+
+			await Promise.all([
+				startCameraStream(),
+				startMicrophoneStream(),
+			]);
+
+			callMediaStream.value!.addTrack(cameraStreamTrack.value); // todo: handle error if no track
+			callMediaStream.value!.addTrack(microphoneStreamTrack.value); // todo: handle error if no track
+
+			// window.attachVideo = async () => {
+			// await startCameraStream();
+			// if (cameraStream.value) {
+			// changeCamera();
+			// }
+			// };
+
+			// if (!cameraStream.value) {
+			// 	await startCameraStream();
+			// }
 
 			const eventHandlers = {
 				progress: () => {
@@ -291,6 +334,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 					console.error('Call failed:', event);
 					sessionState.value = SessionState.FAILED;
 					closeSession();
+					clearCallMediaStream();
 				},
 				ended: () => {
 					console.log('Call ended');
@@ -298,6 +342,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 						sessionState.value = SessionState.COMPLETED;
 					} else sessionState.value = SessionState.CANCELED;
 					closeSession();
+					clearCallMediaStream();
 				},
 			};
 
@@ -307,7 +352,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 					audio: true,
 					video: true,
 				},
-				mediaStream: cameraStream.value!,
+				mediaStream: callMediaStream.value!,
 				extraHeaders: [
 					`X-Webitel-Meeting: ${meetingId.value}`,
 				],
@@ -440,15 +485,17 @@ export const useCallStore = defineStore('meeting/call', () => {
 	/**
 	 * Change camera during active call
 	 */
-	async function changeCamera(deviceId: string) {
+	async function changeCamera(deviceId: string = '') {
 		// Get new video stream with selected device
-		const newStream = await navigator.mediaDevices.getUserMedia({
-			video: {
-				deviceId: {
-					exact: deviceId,
-				},
-			},
-		});
+		// const newStream = await navigator.mediaDevices.getUserMedia({
+		// 	video: {
+		// 		deviceId: {
+		// 			exact: deviceId,
+		// 		},
+		// 	},
+		// });
+
+		const newStream = cameraStream.value!;
 
 		const newVideoTrack = newStream.getVideoTracks()[0];
 
