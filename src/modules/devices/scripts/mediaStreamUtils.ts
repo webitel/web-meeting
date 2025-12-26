@@ -1,9 +1,11 @@
+import { UserDeviceType } from '../enums/UserDeviceType';
+
 export async function getStreamFromDeviceId({
 	deviceId,
 	deviceType,
 }: {
 	deviceId: string;
-	deviceType: 'video' | 'audio';
+	deviceType: UserDeviceType;
 }): Promise<MediaStream | null> {
 	const stream = await navigator.mediaDevices.getUserMedia({
 		[deviceType]: {
@@ -28,7 +30,7 @@ export function getMediaStreamMainTrack({
 	deviceType,
 }: {
 	stream: MediaStream;
-	deviceType: 'video' | 'audio';
+	deviceType: UserDeviceType;
 }): MediaStreamTrack | null {
 	if (!deviceStream) {
 		throw new Error(
@@ -36,10 +38,10 @@ export function getMediaStreamMainTrack({
 		);
 	}
 
-	if (deviceType === 'video') {
+	if (deviceType === UserDeviceType.Video) {
 		return getVideoTrackFromStream(deviceStream);
 	}
-	if (deviceType === 'audio') {
+	if (deviceType === UserDeviceType.Audio) {
 		return getAudioTrackFromStream(deviceStream);
 	}
 
