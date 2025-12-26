@@ -56,8 +56,8 @@ const { requestDeviceAccess } = devicesStore;
 
 // Destructure state from individual device stores
 const { deviceStream: microphoneStream } = storeToRefs(microphoneStore);
-const { selectedDeviceId: selectedSpeakerId } = storeToRefs(speakerStore);
 const { deviceStream: cameraStream } = storeToRefs(cameraStore);
+const { selectedDeviceId: selectedSpeakerId } = storeToRefs(speakerStore);
 
 // Destructure meeting store state
 const { sessionState, videoEnabled, microphoneEnabled } =
@@ -65,16 +65,32 @@ const { sessionState, videoEnabled, microphoneEnabled } =
 
 const { changeMicrophone, changeCamera, changeSpeaker } = callStore;
 
-// Watch for microphone changes and update active call
+/**
+ * @author: @dlohvinov
+ *
+ * Watch for stream change, coz its changed with deviceId, and call store needs stream, not deviceId
+ */
 watch(microphoneStream, (newStream) => {
-	if (sessionState.value === SessionState.ACTIVE && microphoneEnabled.value) {
+	if (
+		newStream &&
+		sessionState.value === SessionState.ACTIVE &&
+		microphoneEnabled.value
+	) {
 		changeMicrophone(newStream);
 	}
 });
 
-// // Watch for camera changes and update active call
+/**
+ * @author: @dlohvinov
+ *
+ * Watch for stream change, coz its changed with deviceId, and call store needs stream, not deviceId
+ */
 watch(cameraStream, (newStream) => {
-	if (sessionState.value === SessionState.ACTIVE && videoEnabled.value) {
+	if (
+		newStream &&
+		sessionState.value === SessionState.ACTIVE &&
+		videoEnabled.value
+	) {
 		changeCamera(newStream);
 	}
 });

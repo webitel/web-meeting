@@ -1,5 +1,7 @@
 import { computed, type ComputedRef } from 'vue';
 
+import { UserMediaConstraintType } from '../enums/UserDeviceType';
+
 interface UseDefaultDeviceReturn {
 	defaultDevice: ComputedRef<MediaDeviceInfo | undefined>;
 	/**
@@ -13,10 +15,10 @@ export function useDefaultDevice({
 	constraint,
 	allDevicesList,
 }: {
-	constraint: 'audio' | 'video';
+	constraint: UserMediaConstraintType;
 	allDevicesList: ComputedRef<MediaDeviceInfo[]>;
 }): UseDefaultDeviceReturn {
-	if (constraint === 'audio') {
+	if (constraint === UserMediaConstraintType.Audio) {
 		return useDefaultAudioDevice({
 			allDevicesList,
 		});

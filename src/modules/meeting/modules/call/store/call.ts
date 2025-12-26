@@ -3,10 +3,13 @@ import type { UA, WebSocketInterface } from 'jssip/lib/JsSIP';
 import type { RTCSession } from 'jssip/lib/RTCSession';
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, inject, markRaw, ref } from 'vue';
+
 import type { AppConfig } from '../../../../../types/config';
 import { useAuthStore } from '../../../../auth/stores/auth';
 import { useCameraStore } from '../../../../devices/modules/camera/stores/camera';
 import { useMicrophoneStore } from '../../../../devices/modules/microphone/stores/microphone';
+import { useSpeakerStore } from '../../../../devices/modules/speaker/stores/speaker';
+import { UserMediaConstraintType } from '../../../../devices/enums/UserDeviceType';
 
 /**
  * Session states for the call
@@ -39,6 +42,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 	const cameraStore = useCameraStore();
 	const { deviceStreamMainTrack: cameraStreamTrack } = storeToRefs(cameraStore);
 	const { startSelectedDeviceStream: startCameraStream } = cameraStore;
+
+	const speakerStore = useSpeakerStore();
+	const { selectedDeviceId: speakerDeviceId } = storeToRefs(speakerStore);
 
 	// User Agent
 	const userAgent = ref<UA | null>(null);
@@ -175,6 +181,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 		audio.srcObject = stream;
 		sessionAudio.value = audio;
+		changeSpeaker(speakerDeviceId.value!);
 	}
 
 	/**
@@ -417,7 +424,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		return changeUserMediaDevice({
 			stream: newStream,
 			track: microphoneStreamTrack.value!,
-			constraint: 'audio',
+			constraint: UserMediaConstraintType.Audio,
 		});
 	}
 
@@ -434,7 +441,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		return changeUserMediaDevice({
 			stream: newStream,
 			track: cameraStreamTrack.value!,
-			constraint: 'video',
+			constraint: UserMediaConstraintType.Video,
 		});
 	}
 
@@ -445,7 +452,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	}: {
 		stream: MediaStream;
 		track: MediaStreamTrack;
-		constraint: 'audio' | 'video';
+		constraint: UserMediaConstraintType;
 	}) {
 		// Find the sender in the peer connection
 		const constraintSender = session
@@ -461,7 +468,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		// Replace the old track with the new one
 		await constraintSender.replaceTrack(newTrack);
 
-		if (constraint === 'video') {
+		if (constraint === UserMediaConstraintType.Video) {
 			// Update local video stream
 			localVideoStream.value = newStream;
 		}

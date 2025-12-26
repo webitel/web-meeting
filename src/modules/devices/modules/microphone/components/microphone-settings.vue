@@ -1,7 +1,7 @@
 <template>
     <div class="microphone-settings">
       <wt-select
-	    :value="selectedDeviceId"
+	      :value="selectedDeviceId"
         :options="devicesList"
         :label="t('devices.microphone')"
         :clearable="false"
