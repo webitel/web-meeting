@@ -25,7 +25,10 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 		if (shouldShowAllowDevicesDialog.value) {
 			return MeetingState.AllowDevicesDialog;
 		}
-		if (sessionState.value === SessionState.CANCELED) {
+		if (
+			sessionState.value === SessionState.CANCELED ||
+			sessionState.value === SessionState.FAILED
+		) {
 			return MeetingState.CallEnded;
 		}
 		return MeetingState.JoinDialog;

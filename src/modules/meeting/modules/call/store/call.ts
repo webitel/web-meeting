@@ -65,6 +65,13 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	const callMediaStream = ref<MediaStream | null>(null);
 
+	const isSessionStateFinished = computed(
+		() =>
+			sessionState.value === SessionState.COMPLETED ||
+			sessionState.value === SessionState.CANCELED ||
+			sessionState.value === SessionState.FAILED,
+	);
+
 	const microphoneEnabled = computed(() =>
 		session.value
 			? !session.value.isMuted().audio
@@ -507,6 +514,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 		sessionState,
 		microphoneEnabled,
 		videoEnabled,
+
+		// Computed
+		isSessionStateFinished,
 
 		// Actions
 		startUserAgent,
