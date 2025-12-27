@@ -1,57 +1,45 @@
 <template>
     <div class="camera-settings">
       <wt-select
-        :options="devices"
+        :value="selectedDeviceId"
+        :options="devicesList"
+        :label="t('devices.camera')"
         :clearable="false"
         option-label="label"
         track-by="deviceId"
         use-value-from-options-by-prop="deviceId"
-        :label="t('devices.camera')"
-        :value="selectedDevice?.deviceId"
-        @update:model-value="setSelectedDevice">
-      </wt-select>
+        @update:model-value="setPreferredDevice"
+      />
 
-      <video
-        ref="cameraPreviewElement"
-        :srcObject="stream"
-        autoplay
-        playsinline
-        muted
-        class="camera-settings__video" />
+      <camera-preview
+        v-if="selectedDeviceId"
+        :stream="deviceStream" 
+        @request-stream="startSelectedDeviceStream" 
+      />
     </div>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { onUnmounted } from 'vue';
 
+import CameraPreview from './camera-preview.vue';
 import { useCameraStore } from '../stores/camera';
 
 const cameraStore = useCameraStore();
 const { t } = useI18n();
 
-const { devices, selectedDevice, selectedDeviceId, stream } =
+const { devicesList, selectedDeviceId, deviceStream } =
 	storeToRefs(cameraStore);
 
-const { startStream, stopStream, setSelectedDevice, cleanup } = cameraStore;
+const { startSelectedDeviceStream, setPreferredDevice, cleanup } = cameraStore;
 
-watch(
-	selectedDeviceId,
-	async (newDeviceId) => {
-		if (stream.value) {
-			stopStream();
-		}
-
-		if (!newDeviceId) return;
-
-		await startStream();
-	},
-	{
-		immediate: true,
-	},
-);
-
+/**
+ * @author: @dlohvinov
+ *
+ * i guess won't be needed coz we'll reuse this stream for call / camera preview on "join" dialog
+ */
 onUnmounted(() => {
 	cleanup();
 });
@@ -62,9 +50,5 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-}
-
-.camera-settings__video {
-  border-radius: var(--spacing-sm);
 }
 </style>

@@ -1,54 +1,35 @@
 <template>
   <div class="speaker-settings">
     <wt-select
-      id="speaker-select"
-      :options="devices"
+      :options="devicesList"
       :clearable="false"
+      :label="t('devices.speaker')"
+      :value="selectedDeviceId"
       option-label="label"
       track-by="deviceId"
-      :label="t('devices.speaker')"
-      :value="selectedDevice?.label"
-      @update:model-value="setSelectedDevice">
-    </wt-select>
+      use-value-from-options-by-prop="deviceId"
+      @update:model-value="setPreferredDevice"
+    />
 
-    <wt-button
-      color="secondary"
-      class="speaker-settings__button"
-      :disabled="isPlaying"
-      @click="playBeep"
-    >{{ t('reusable.check').toUpperCase() }}</wt-button>
-
+    <speaker-preview
+     :device-id="selectedDeviceId"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSpeakerStore } from '../stores/speaker';
-
-const speakerStore = useSpeakerStore();
+import SpeakerPreview from './speaker-preview.vue';
 
 const { t } = useI18n();
 
-const { devices, selectedDevice, selectedDeviceId } = storeToRefs(speakerStore);
+const speakerStore = useSpeakerStore();
 
-const { setSelectedDevice, playTestBeep } = speakerStore;
+const { devicesList, selectedDeviceId } = storeToRefs(speakerStore);
 
-const isPlaying = ref(false);
-
-async function playBeep(): Promise<void> {
-	if (isPlaying.value || !selectedDeviceId.value) return;
-
-	try {
-		isPlaying.value = true;
-		await playTestBeep(selectedDeviceId.value);
-	} catch (error) {
-		console.error('Error playing beep:', error);
-	} finally {
-		isPlaying.value = false;
-	}
-}
+const { setPreferredDevice } = speakerStore;
 </script>
 
 <style scoped>

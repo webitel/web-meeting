@@ -25,6 +25,7 @@
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import {
 	SessionState,
 	useCallStore,
@@ -36,7 +37,7 @@ import MicrophoneSettings from '../modules/microphone/components/microphone-sett
 import { useMicrophoneStore } from '../modules/microphone/stores/microphone';
 import SpeakerSettings from '../modules/speaker/components/speaker-settings.vue';
 import { useSpeakerStore } from '../modules/speaker/stores/speaker';
-import { useDevicesStore } from '../stores/devices';
+import { useDevicesPermissionsStore } from '../modules/permissions/stores/permissions';
 
 const { t } = useI18n();
 
@@ -44,22 +45,19 @@ const emit = defineEmits<{
 	close: [];
 }>();
 
-const devicesStore = useDevicesStore();
+const devicesStore = useDevicesPermissionsStore();
 const microphoneStore = useMicrophoneStore();
 const speakerStore = useSpeakerStore();
 const cameraStore = useCameraStore();
 const callStore = useCallStore();
 
-const { permissionGranted, error } = storeToRefs(devicesStore);
+const { permissionGranted } = storeToRefs(devicesStore);
 const { requestDeviceAccess } = devicesStore;
 
 // Destructure state from individual device stores
-const { devices: microphones, selectedDeviceId: selectedMicrophoneId } =
-	storeToRefs(microphoneStore);
-const { devices: speakers, selectedDeviceId: selectedSpeakerId } =
-	storeToRefs(speakerStore);
-const { devices: cameras, selectedDeviceId: selectedCameraId } =
-	storeToRefs(cameraStore);
+const { deviceStream: microphoneStream } = storeToRefs(microphoneStore);
+const { deviceStream: cameraStream } = storeToRefs(cameraStore);
+const { selectedDeviceId: selectedSpeakerId } = storeToRefs(speakerStore);
 
 // Destructure meeting store state
 const { sessionState, videoEnabled, microphoneEnabled } =
@@ -67,36 +65,44 @@ const { sessionState, videoEnabled, microphoneEnabled } =
 
 const { changeMicrophone, changeCamera, changeSpeaker } = callStore;
 
-// Watch for microphone changes and update active call
-watch(selectedMicrophoneId, async (newDeviceId) => {
+/**
+ * @author: @dlohvinov
+ *
+ * Watch for stream change, coz its changed with deviceId, and call store needs stream, not deviceId
+ */
+watch(microphoneStream, (newStream) => {
 	if (
-		newDeviceId &&
+		newStream &&
 		sessionState.value === SessionState.ACTIVE &&
 		microphoneEnabled.value
 	) {
-		await changeMicrophone(newDeviceId);
+		changeMicrophone(newStream);
 	}
 });
 
-// // Watch for camera changes and update active call
-watch(selectedCameraId, async (newDeviceId) => {
+/**
+ * @author: @dlohvinov
+ *
+ * Watch for stream change, coz its changed with deviceId, and call store needs stream, not deviceId
+ */
+watch(cameraStream, (newStream) => {
 	if (
-		newDeviceId &&
+		newStream &&
 		sessionState.value === SessionState.ACTIVE &&
 		videoEnabled.value
 	) {
-		await changeCamera(newDeviceId);
+		changeCamera(newStream);
 	}
 });
 
 // // Watch for speaker changes and update active call
-watch(selectedSpeakerId, async (newDeviceId) => {
+watch(selectedSpeakerId, (newDeviceId) => {
 	if (
 		newDeviceId &&
 		sessionState.value === SessionState.ACTIVE &&
 		videoEnabled.value
 	) {
-		await changeSpeaker(newDeviceId);
+		changeSpeaker(newDeviceId);
 	}
 });
 
