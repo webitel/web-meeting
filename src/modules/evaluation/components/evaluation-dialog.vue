@@ -9,6 +9,7 @@
         <wt-icon icon="like" color="on-dark"/>
         {{t('evaluation.good')}}
       </wt-button>
+
       <wt-button color="error" @click="sendEvaluation(EvaluationValues.Bad)">
         <wt-icon icon="dislike" color="on-dark" />
         {{ t('evaluation.bad')}}
@@ -59,3 +60,9 @@ const sendEvaluation = async (value: EvaluationValuesType) => {
 	}
 };
 </script>
+
+<style lang="scss">
+.wt-button {
+  width: 100%;
+}
+</style>
