@@ -82,6 +82,24 @@ export const useCallStore = defineStore('meeting/call', () => {
 		session.value ? !session.value.isMuted().video : initCallWithVideo.value,
 	);
 
+	const remoteVideoActive = computed(() => {
+		if (!session.value?.connection) return false;
+
+		return session.value.connection.getReceivers().some((receiver) => {
+			const track = receiver.track;
+			return (
+				track &&
+				track.kind === 'video' &&
+				track.readyState === 'live' &&
+				track.enabled
+			);
+		});
+	});
+
+	const receiverVideoEnabled = computed(
+		() => remoteVideoActive.value || videoEnabled.value,
+	);
+
 	/**
 	 * Initialize the JsSIP User Agent
 	 */
@@ -517,6 +535,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 		// Computed
 		isSessionStateFinished,
+		receiverVideoEnabled,
 
 		// Actions
 		startUserAgent,
