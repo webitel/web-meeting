@@ -26,7 +26,9 @@ const emit = defineEmits<{
 }>();
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@webitel/styleguide/typography' as *;
+
 .sidebar-content-wrapper {
   height: 100%;
   display: flex;
@@ -41,6 +43,7 @@ const emit = defineEmits<{
 }
 
 .sidebar-content-wrapper__title {
+  @extend %typo-subtitle-1;
   display: flex;
   gap: var(--spacing-xs);
 }

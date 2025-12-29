@@ -18,6 +18,8 @@
 </script>
 
 <style scoped lang="scss">
+@use '@webitel/styleguide/typography' as *;
+
 .call-result-container {
   width: 300px;
   height: 300px;
@@ -30,6 +32,7 @@
   border-radius: var(--spacing-xs);
 }
 .call-result-container__header {
+  @extend %typo-subtitle-1;
   background-color: var(--dp-18-surface-color);
   padding: var(--spacing-xs);
   border-radius: var(--spacing-xs);

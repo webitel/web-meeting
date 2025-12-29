@@ -1,6 +1,6 @@
 export default {
 	call: {
-		allowMessage: 'Allow microphone and Camera!',
+		allowMessage: 'Allow microphone and camera!',
 		allow: 'Allow',
 		joinMessage: 'Ready to join?',
 		join: 'Join now',
