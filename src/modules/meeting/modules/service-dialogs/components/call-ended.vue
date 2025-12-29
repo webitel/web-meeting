@@ -5,7 +5,7 @@
       <wt-button
         color="success"
         @click="makeCall"
-      >{{t('call.join').toUpperCase()}}
+      >{{t('call.joinAgain').toUpperCase()}}
       </wt-button>
   </meeting-service-dialog>
 </template>
