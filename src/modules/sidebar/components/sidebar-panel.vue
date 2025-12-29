@@ -36,7 +36,7 @@ const sidebarPanelComponent = computed(() => {
   width: 320px;
   height: 100%;
   background: var(--wt-page-wrapper-content-wrapper-color);
-  border-radius: var(--border-radius);
+  border-radius: var(--p-border-radius-xl);
   padding: var(--spacing-sm);
   z-index: 1;
 }
