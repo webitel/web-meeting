@@ -3,15 +3,18 @@ import { UserDeviceType } from '../enums/UserDeviceType';
 export async function getStreamFromDeviceId({
 	deviceId,
 	deviceType,
+	constraints,
 }: {
 	deviceId: string;
 	deviceType: UserDeviceType;
+	constraints: object;
 }): Promise<MediaStream | null> {
 	const stream = await navigator.mediaDevices.getUserMedia({
 		[deviceType]: {
 			deviceId: {
 				exact: deviceId,
 			},
+			...constraints,
 		},
 	});
 

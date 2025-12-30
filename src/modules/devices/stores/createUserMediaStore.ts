@@ -87,6 +87,18 @@ export const createUserMediaStore = (
 			const newStream = await getStreamFromDeviceId({
 				deviceId: selectedDeviceId.value,
 				deviceType: constraint,
+				constraints: {
+					width: {
+						min: 1024,
+						ideal: 1280,
+						max: 1920,
+					},
+					height: {
+						min: 776,
+						ideal: 720,
+						max: 1080,
+					},
+				},
 			});
 
 			deviceStream.value = newStream;

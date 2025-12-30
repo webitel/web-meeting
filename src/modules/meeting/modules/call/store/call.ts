@@ -249,6 +249,31 @@ export const useCallStore = defineStore('meeting/call', () => {
 		closeUserAgent();
 	}
 
+	/*
+	 * Set high quality
+	 */
+	async function forceHighQuality(sender: any) {
+		try {
+			const parameters = sender.getParameters();
+
+			if (!parameters.encodings || parameters.encodings.length === 0) {
+				parameters.encodings = [
+					{},
+				];
+			}
+
+			parameters.encodings[0].priority = 'high';
+			parameters.encodings[0].networkPriority = 'high';
+			parameters.encodings[0].maxBitrate = 4000 * 100 * 1000; // 4000kbps
+			// parameters.encodings[0].scalabilityMode = 'L1T3';
+			parameters.degradationPreference = 'maintain-resolution';
+
+			await sender.setParameters(parameters);
+		} catch (e) {
+			console.error(`set quality error: ${e}`);
+		}
+	}
+
 	/**
 	 * Make a call to a specific target
 	 */
@@ -317,6 +342,19 @@ export const useCallStore = defineStore('meeting/call', () => {
 					closeSession();
 					clearCallMediaStream();
 				},
+				peerconnection: (data: any) => {
+					const pc = data.peerconnection;
+					pc.addEventListener('track', async (event: any) => {
+						if (event.track.kind === 'video') {
+							const sender = pc
+								.getSenders()
+								.find((s: RTCRtpSender) => s.track?.kind === 'video');
+							if (sender) {
+								await forceHighQuality(sender);
+							}
+						}
+					});
+				},
 			};
 
 			const callOptions = {
@@ -329,7 +367,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 				extraHeaders: [
 					`X-Webitel-Meeting: ${meetingId.value}`,
 				],
-				sessionTimersExpires: 300,
+				sessionTimersExpires: 120,
 			};
 
 			const rtcSession = userAgent.value!.call(
