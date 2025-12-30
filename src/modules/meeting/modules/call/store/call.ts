@@ -10,7 +10,6 @@ import { useCameraStore } from '../../../../devices/modules/camera/stores/camera
 import { useMicrophoneStore } from '../../../../devices/modules/microphone/stores/microphone';
 import { useSpeakerStore } from '../../../../devices/modules/speaker/stores/speaker';
 import { UserMediaConstraintType } from '../../../../devices/enums/UserDeviceType';
-import { applyVideoTrackResolution } from '../scripts/applyVideoTrackResolution';
 import { forceSenderVideoHighQuality } from '../scripts/forceSenderVideoHighQuality';
 
 /**
@@ -278,7 +277,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 			]);
 
 			const videoTrackClone = cameraStreamTrack.value!.clone();
-			applyVideoTrackResolution(videoTrackClone);
 
 			// values are "!" coz tracks should be initialized after startCameraStream() and startMicrophoneStream()
 			callMediaStream.value!.addTrack(videoTrackClone);
@@ -482,8 +480,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 		await constraintSender.replaceTrack(newTrack);
 
 		if (constraint === UserMediaConstraintType.Video) {
-			applyVideoTrackResolution(newTrack);
-
 			// Update local video stream
 			localVideoStream.value = newStream;
 		}
