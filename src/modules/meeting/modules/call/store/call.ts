@@ -73,15 +73,21 @@ export const useCallStore = defineStore('meeting/call', () => {
 			sessionState.value === SessionState.FAILED,
 	);
 
-	const microphoneEnabled = computed(() =>
-		session.value
-			? !session.value.isMuted().audio
-			: initCallWithMicrophone.value,
-	);
+	const microphoneEnabled = computed(() => {
+		// https://webitel.atlassian.net/browse/WTEL-8385
+		if (sessionState.value === SessionState.ACTIVE) {
+			return !session.value?.isMuted().audio;
+		}
+		return initCallWithMicrophone.value;
+	});
 
-	const videoEnabled = computed(() =>
-		session.value ? !session.value.isMuted().video : initCallWithVideo.value,
-	);
+	const videoEnabled = computed(() => {
+		// https://webitel.atlassian.net/browse/WTEL-8385
+		if (sessionState.value === SessionState.ACTIVE) {
+			return !session.value?.isMuted().video;
+		}
+		return initCallWithVideo.value;
+	});
 
 	/**
 	 * Initialize the JsSIP User Agent
@@ -285,18 +291,16 @@ export const useCallStore = defineStore('meeting/call', () => {
 			const eventHandlers = {
 				progress: () => {
 					// Call is ringing
-					console.log('Call progress (ringing)');
-					sessionState.value = SessionState.RINGING;
-					initAudio();
-				},
-				confirmed: () => {
-					// Call is confirmed (200 OK)
-					console.log('Call confirmed');
-					sessionState.value = SessionState.ACTIVE;
+					console.log('1: Call progress (ringing)');
 
 					initAudio();
 					initVideo();
 
+					/**
+					 * @author: dlohvinov
+					 * initial mute should be applied before call is confirmed,
+					 * @see https://webitel.atlassian.net/browse/WTEL-8385
+					 */
 					// apply initial video mute if requested
 					if (!startWithVideo) {
 						disableVideo();
@@ -306,6 +310,12 @@ export const useCallStore = defineStore('meeting/call', () => {
 					if (!startWithAudio) {
 						disableMicrophone();
 					}
+				},
+
+				confirmed: () => {
+					// Call is confirmed (200 OK)
+					console.log('2: Call confirmed');
+					sessionState.value = SessionState.ACTIVE;
 				},
 				failed: (event: any) => {
 					console.error('Call failed:', event);
@@ -341,8 +351,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 				callOptions,
 			);
 			session.value = rtcSession;
-
-			(window as any).jssipSession = rtcSession; // For debugging
+			(window as any).currentCallRTCSession = rtcSession; // For debugging
 		} catch (err) {
 			console.error('Failed to make call:', err);
 			sessionState.value = SessionState.FAILED;
