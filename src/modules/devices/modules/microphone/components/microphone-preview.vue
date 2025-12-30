@@ -8,17 +8,37 @@
 
 <script setup lang="ts">
 import { WtLoadBar } from '@webitel/ui-sdk/components';
-import { onMounted, onUnmounted, watch } from 'vue';
-    
+import { watch, ref, computed, onUnmounted } from 'vue';
+
+import {
+	cleanupStream,
+	getStreamFromDeviceId,
+} from '../../../scripts/mediaStreamUtils';
+import { UserDeviceType } from '../../../enums/UserDeviceType';
+
 import { useMicrophoneVolume } from '../composables/useMicrophoneVolume';
 
-const { stream } = defineProps<{
-    stream: MediaStream | null;
+const { stream: callStream, deviceId } = defineProps<{
+	deviceId: string;
+	/**
+	 * @author: dlohvinov
+	 *
+	 * active call stream to use as preview,
+	 * if present!
+	 */
+	stream?: MediaStream | null;
 }>();
 
-const emit = defineEmits<{
-	requestStream: [];
-}>();
+const localStream = ref<MediaStream | null>(null);
+
+const previewStream = computed(() => {
+	return callStream || localStream.value;
+});
+
+function tryCleanupLocalStream() {
+	localStream.value && cleanupStream(localStream.value);
+	localStream.value = null;
+}
 
 const {
 	volumeLevel,
@@ -26,23 +46,32 @@ const {
 	stop: stopVolumeMonitoring,
 } = useMicrophoneVolume();
 
-onMounted(() => {
-    if (!stream) {
-        emit('requestStream');
-	} else {
-        startVolumeMonitoring(stream);
-    }
+watch(
+	() => deviceId,
+	async (newDeviceId) => {
+		tryCleanupLocalStream();
+
+		if (newDeviceId) {
+			localStream.value = await getStreamFromDeviceId({
+				deviceId: newDeviceId,
+				deviceType: UserDeviceType.Audio,
+			});
+		}
+	},
+	{
+		immediate: true,
+	},
+);
+
+watch(previewStream, (newStream) => {
+	if (newStream) {
+		stopVolumeMonitoring();
+		startVolumeMonitoring(newStream);
+	}
 });
 
 onUnmounted(() => {
-    stopVolumeMonitoring();
+	tryCleanupLocalStream();
+	stopVolumeMonitoring();
 });
-
-watch(() => stream, (newStream) => {
-    if (newStream) {
-        stopVolumeMonitoring();
-        startVolumeMonitoring(newStream);
-    }
-});
-
 </script>

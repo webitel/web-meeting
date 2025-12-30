@@ -282,11 +282,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 				startMicrophoneStream(),
 			]);
 
-			const videoTrackClone = cameraStreamTrack.value!.clone();
-
 			// values are "!" coz tracks should be initialized after startCameraStream() and startMicrophoneStream()
-			callMediaStream.value!.addTrack(videoTrackClone);
-			callMediaStream.value!.addTrack(microphoneStreamTrack.value!.clone());
+			callMediaStream.value!.addTrack(cameraStreamTrack.value!);
+			callMediaStream.value!.addTrack(microphoneStreamTrack.value!);
 
 			const eventHandlers = {
 				progress: () => {

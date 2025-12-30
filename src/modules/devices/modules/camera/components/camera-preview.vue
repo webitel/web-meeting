@@ -1,7 +1,7 @@
 <template>
     <video
         class="camera-settings__video" 
-        :srcObject="stream"
+        :srcObject="previewStream"
         autoplay
         playsinline
         muted
@@ -9,20 +9,54 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { watch, ref, computed, onUnmounted } from 'vue';
+import {
+	cleanupStream,
+	getStreamFromDeviceId,
+} from '../../../scripts/mediaStreamUtils';
+import { UserDeviceType } from '../../../enums/UserDeviceType';
 
-const { stream } = defineProps<{
-	stream: MediaStream | null;
+const { stream: callStream, deviceId } = defineProps<{
+	deviceId: string;
+	/**
+	 * @author: dlohvinov
+	 *
+	 * active call stream to use as preview,
+	 * if present!
+	 */
+	stream?: MediaStream | null;
 }>();
 
-const emit = defineEmits<{
-	requestStream: [];
-}>();
+const localStream = ref<MediaStream | null>(null);
 
-onMounted(() => {
-	if (!stream) {
-		emit('requestStream');
-	}
+const previewStream = computed(() => {
+	return callStream || localStream.value;
+});
+
+function tryCleanupLocalStream() {
+	localStream.value && cleanupStream(localStream.value);
+	localStream.value = null;
+}
+
+watch(
+	() => deviceId,
+	async (newDeviceId) => {
+		tryCleanupLocalStream();
+
+		if (newDeviceId) {
+			localStream.value = await getStreamFromDeviceId({
+				deviceId: newDeviceId,
+				deviceType: UserDeviceType.Video,
+			});
+		}
+	},
+	{
+		immediate: true,
+	},
+);
+
+onUnmounted(() => {
+	tryCleanupLocalStream();
 });
 </script>
 
