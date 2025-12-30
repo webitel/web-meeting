@@ -8,6 +8,7 @@ import {
 } from '../scripts/mediaStreamUtils';
 import { useDeviceSelection } from '../composables/useDeviceSelection';
 import { UserMediaConstraintType } from '../enums/UserDeviceType';
+import { applyVideoTrackResolution } from '../modules/camera/scripts/applyVideoTrackResolution';
 
 /**
  * store factory for microphone / camera devices
@@ -32,17 +33,18 @@ export const createUserMediaStore = (
 		});
 
 		/**
-		 * stream of the selected device
-		 *
-		 * used both for device preview in settings and for call
+		 * stream of the selected device, used for call
 		 */
-		const deviceStream = ref<MediaStream | null>(null);
+		const deviceCallStream = ref<MediaStream | null>(null);
 
-		const deviceStreamMainTrack = computed(() => {
-			if (!deviceStream.value) return null;
+		/**
+		 * only for call, coz track is not needed for preview
+		 */
+		const deviceCallStreamMainTrack = computed(() => {
+			if (!deviceCallStream.value) return null;
 
 			return getMediaStreamMainTrack({
-				stream: deviceStream.value,
+				stream: deviceCallStream.value,
 				deviceType: constraint,
 			});
 		});
@@ -72,11 +74,15 @@ export const createUserMediaStore = (
 		/**
 		 * Start camera stream for testing
 		 */
-		async function startSelectedDeviceStream(): Promise<MediaStream | null> {
+		async function startSelectedDeviceStream({
+			preview = false,
+		}: {
+			preview?: boolean; // should be stored in state as deviceStream (true), or just returned (false)
+		} = {}): Promise<MediaStream | null> {
 			// Stop any existing stream
 
-			if (deviceStream.value) {
-				cleanupStream(deviceStream.value);
+			if (!preview && deviceCallStream.value) {
+				cleanupStream(deviceCallStream.value);
 			}
 
 			if (!selectedDeviceId.value) {
@@ -89,7 +95,14 @@ export const createUserMediaStore = (
 				deviceType: constraint,
 			});
 
-			deviceStream.value = newStream;
+			if (!preview) {
+				deviceCallStream.value = newStream;
+
+				if (constraint === UserMediaConstraintType.Video) {
+					applyVideoTrackResolution(deviceCallStreamMainTrack.value!);
+				}
+			}
+
 			return newStream;
 		}
 
@@ -97,27 +110,26 @@ export const createUserMediaStore = (
 		 * Cleanup
 		 */
 		function cleanup() {
-			if (deviceStream.value) {
-				cleanupStream(deviceStream.value);
-				deviceStream.value = null;
+			if (deviceCallStream.value) {
+				cleanupStream(deviceCallStream.value);
+				deviceCallStream.value = null;
 			}
 		}
 
 		return {
 			// State
-			deviceStream,
+			deviceCallStream,
 			prefferedDeviceId,
 
 			// Computed
 			devicesList,
 			selectedDevice,
 			selectedDeviceId,
-			deviceStreamMainTrack,
+			deviceCallStreamMainTrack,
 
 			// Actions
 			setPreferredDevice,
 			startSelectedDeviceStream,
-			// getDeviceStreamTrack,
 
 			cleanup,
 		};

@@ -10,6 +10,7 @@ import { useCameraStore } from '../../../../devices/modules/camera/stores/camera
 import { useMicrophoneStore } from '../../../../devices/modules/microphone/stores/microphone';
 import { useSpeakerStore } from '../../../../devices/modules/speaker/stores/speaker';
 import { UserMediaConstraintType } from '../../../../devices/enums/UserDeviceType';
+import { cleanupStream } from '../../../../devices/scripts/mediaStreamUtils';
 
 /**
  * Session states for the call
@@ -35,13 +36,20 @@ export const useCallStore = defineStore('meeting/call', () => {
 		storeToRefs(authStore);
 
 	const microphoneStore = useMicrophoneStore();
-	const { deviceStreamMainTrack: microphoneStreamTrack } =
+	const { deviceCallStreamMainTrack: microphoneStreamTrack } =
 		storeToRefs(microphoneStore);
-	const { startSelectedDeviceStream: startMicrophoneStream } = microphoneStore;
+	const {
+		startSelectedDeviceStream: startMicrophoneStream,
+		cleanup: clearMicrophoneStream,
+	} = microphoneStore;
 
 	const cameraStore = useCameraStore();
-	const { deviceStreamMainTrack: cameraStreamTrack } = storeToRefs(cameraStore);
-	const { startSelectedDeviceStream: startCameraStream } = cameraStore;
+	const { deviceCallStreamMainTrack: cameraStreamTrack } =
+		storeToRefs(cameraStore);
+	const {
+		startSelectedDeviceStream: startCameraStream,
+		cleanup: clearCameraStream,
+	} = cameraStore;
 
 	const speakerStore = useSpeakerStore();
 	const { selectedDeviceId: speakerDeviceId } = storeToRefs(speakerStore);
@@ -152,7 +160,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		}
 	}
 
-	function createCallMediaStream() {
+	async function createCallMediaStream() {
 		if (callMediaStream.value) {
 			clearCallMediaStream();
 		}
@@ -160,14 +168,38 @@ export const useCallStore = defineStore('meeting/call', () => {
 		const stream = new MediaStream();
 		callMediaStream.value = stream;
 
+		await setupCallMediaStreamTracks();
+
 		return stream;
+	}
+
+	/**
+	 * @author: @dlohvinov
+	 *
+	 *
+	 */
+	async function setupCallMediaStreamTracks() {
+		await Promise.all([
+			startCameraStream(),
+			startMicrophoneStream(),
+		]);
+
+		/*
+		 * values are "!" coz tracks should be initialized
+		 * after startCameraStream() and startMicrophoneStream() above
+		 */
+		callMediaStream.value!.addTrack(cameraStreamTrack.value!);
+		callMediaStream.value!.addTrack(microphoneStreamTrack.value!);
 	}
 
 	function clearCallMediaStream() {
 		if (callMediaStream.value) {
-			callMediaStream.value.getTracks().forEach((track) => track.stop());
+			cleanupStream(callMediaStream.value);
 			callMediaStream.value = null;
 		}
+
+		clearCameraStream();
+		clearMicrophoneStream();
 	}
 
 	/**
@@ -243,6 +275,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 			remoteVideoStream.value = null;
 		}
 
+		clearCallMediaStream();
+
 		// Reset state
 		session.value = null;
 
@@ -267,16 +301,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 				await startUserAgent();
 			}
 
-			createCallMediaStream();
-
-			await Promise.all([
-				startCameraStream(),
-				startMicrophoneStream(),
-			]);
-
-			// values are "!" coz tracks should be initialized after startCameraStream() and startMicrophoneStream()
-			callMediaStream.value!.addTrack(cameraStreamTrack.value!.clone());
-			callMediaStream.value!.addTrack(microphoneStreamTrack.value!.clone());
+			await createCallMediaStream();
 
 			const eventHandlers = {
 				progress: () => {
@@ -321,10 +346,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 			const callOptions = {
 				eventHandlers,
-				mediaConstraints: {
-					audio: true,
-					video: true,
-				},
 				mediaStream: callMediaStream.value!,
 				extraHeaders: [
 					`X-Webitel-Meeting: ${meetingId.value}`,

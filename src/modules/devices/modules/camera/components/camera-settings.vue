@@ -13,8 +13,7 @@
 
       <camera-preview
         v-if="selectedDeviceId"
-        :stream="deviceStream" 
-        @request-stream="startSelectedDeviceStream" 
+        :call-stream="deviceCallStream"
       />
     </div>
 </template>
@@ -22,26 +21,30 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
-import { onUnmounted } from 'vue';
+import { ref, onUnmounted } from 'vue';
 
 import CameraPreview from './camera-preview.vue';
 import { useCameraStore } from '../stores/camera';
+import { cleanupStream } from '../../../../devices/scripts/mediaStreamUtils';
 
-const cameraStore = useCameraStore();
 const { t } = useI18n();
+const cameraStore = useCameraStore();
 
-const { devicesList, selectedDeviceId, deviceStream } =
+const { devicesList, selectedDeviceId, deviceCallStream } =
 	storeToRefs(cameraStore);
 
-const { startSelectedDeviceStream, setPreferredDevice, cleanup } = cameraStore;
+const { startSelectedDeviceStream, setPreferredDevice } = cameraStore;
 
-/**
- * @author: @dlohvinov
- *
- * i guess won't be needed coz we'll reuse this stream for call / camera preview on "join" dialog
- */
+const localStream = ref<MediaStream | null>(null);
+
+const previewStream = computed(() => {
+	return localStream.value?.clone();
+});
+
 onUnmounted(() => {
-	cleanup();
+	if (localStream.value) {
+		cleanupStream(localStream.value);
+	}
 });
 </script>
 
