@@ -83,7 +83,7 @@ const contentComponent = computed(() => {
 			return AllowDevicesDialog;
 		case MeetingState.JoinDialog:
 			return JoinDialog;
-		case MeetingState.CallEnded:
+		case MeetingState.CallEndedDialog:
 			return CallEndedDialog;
 		default:
 			return null;

@@ -26,7 +26,7 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 			return MeetingState.AllowDevicesDialog;
 		}
 		if (alreadyCalled.value) {
-			return MeetingState.CallEnded;
+			return MeetingState.CallEndedDialog;
 		}
 		return MeetingState.JoinDialog;
 	});

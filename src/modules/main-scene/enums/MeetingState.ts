@@ -2,7 +2,7 @@ export const MeetingState = {
 	AllowDevicesDialog: 'allowDevicesDialog',
 	JoinDialog: 'joinDialog',
 	ActiveMeeting: 'activeMeeting',
-	CallEnded: 'callEnded',
+	CallEndedDialog: 'callEndedDialog',
 } as const;
 
 export type MeetingState = (typeof MeetingState)[keyof typeof MeetingState];
