@@ -50,6 +50,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 	// User Agent
 	const userAgent = ref<UA | null>(null);
 
+	const isStartingCall = ref(false);
+
 	// Session
 	const session = ref<RTCSession | null>(null);
 	const sessionAudio = ref<HTMLAudioElement | null>(null);
@@ -274,6 +276,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 		withAudio?: boolean;
 		withVideo?: boolean;
 	}): Promise<void> {
+		isStartingCall.value = true;
+
 		const startWithAudio = options?.withAudio ?? initCallWithMicrophone.value;
 		const startWithVideo = options?.withVideo ?? initCallWithVideo.value;
 
@@ -365,6 +369,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 			console.error('Failed to make call:', err);
 			sessionState.value = SessionState.FAILED;
 			throw err;
+		} finally {
+			isStartingCall.value = false;
 		}
 	}
 
@@ -537,6 +543,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		sessionState,
 		microphoneEnabled,
 		videoEnabled,
+		isStartingCall,
 
 		// Computed
 		isSessionStateFinished,
