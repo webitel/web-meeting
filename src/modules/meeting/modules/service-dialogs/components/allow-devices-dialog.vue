@@ -8,7 +8,7 @@
             color="error"
             @click="allowAccess"
         >
-             {{ t('call.allow').toUpperCase() }}
+             {{ t('call.allow') }}
         </wt-button>
     </meeting-service-dialog>
 </template>

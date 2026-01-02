@@ -5,7 +5,7 @@
       :disabled="!deviceId || isPlaying"
       @click="playBeep"
     >
-      {{ t('reusable.check').toUpperCase() }}
+      {{ t('reusable.check') }}
     </wt-button>
 </template>
 

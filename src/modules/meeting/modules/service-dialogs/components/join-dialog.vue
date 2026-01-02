@@ -6,7 +6,7 @@
             :loading="isStartingCall"
              @click="makeCall"
             >
-            {{t('call.join').toUpperCase()}}
+            {{t('call.join')}}
         </wt-button>
     </meeting-service-dialog>
 </template>

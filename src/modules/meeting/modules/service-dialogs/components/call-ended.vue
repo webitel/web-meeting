@@ -9,7 +9,7 @@
         color="success"
         :loading="isStartingCall"
         @click="makeCall"
-      >{{t('call.joinAgain').toUpperCase()}}
+      >{{t('call.joinAgain')}}
       </wt-button>
   </meeting-service-dialog>
 </template>
