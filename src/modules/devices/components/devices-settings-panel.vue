@@ -76,8 +76,7 @@ watch(microphoneStream, (newStream) => {
 		[
 			SessionState.ACTIVE,
 			SessionState.RINGING,
-		].includes(sessionState.value!) &&
-		microphoneEnabled.value
+		].includes(sessionState.value!)
 	) {
 		changeMicrophone(newStream);
 	}
@@ -94,8 +93,7 @@ watch(cameraStream, (newStream) => {
 		[
 			SessionState.ACTIVE,
 			SessionState.RINGING,
-		].includes(sessionState.value!) &&
-		videoEnabled.value
+		].includes(sessionState.value!)
 	) {
 		changeCamera(newStream);
 	}
@@ -108,8 +106,7 @@ watch(selectedSpeakerId, (newDeviceId) => {
 		[
 			SessionState.ACTIVE,
 			SessionState.RINGING,
-		].includes(sessionState.value!) &&
-		videoEnabled.value
+		].includes(sessionState.value!)
 	) {
 		changeSpeaker(newDeviceId);
 	}

@@ -445,7 +445,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 */
 	function changeMicrophone(newStream: MediaStream) {
 		/**
-		 * @author: @dlohvinov
+		 * @author: dlohvinov
 		 *
 		 * not sure if newStream param is needed,
 		 * if stream track is used from device store
@@ -462,7 +462,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 */
 	function changeCamera(newStream: MediaStream) {
 		/**
-		 * @author: @dlohvinov
+		 * @author: dlohvinov
 		 *
 		 * not sure if newStream param is needed,
 		 * if stream track is used from device store
@@ -493,6 +493,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		}
 
 		const oldTrack = constraintSender.track;
+		newTrack.enabled = oldTrack?.enabled ?? true; // preserve mute state while changing device track
 
 		// Replace the old track with the new one
 		await constraintSender.replaceTrack(newTrack);

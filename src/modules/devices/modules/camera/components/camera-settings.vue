@@ -10,7 +10,6 @@
       <camera-preview
         v-if="selectedDeviceId"
         :device-id="selectedDeviceId"
-        :stream="deviceStream"
       />
     </div>
 </template>
@@ -26,8 +25,7 @@ import { useCameraStore } from '../stores/camera';
 const cameraStore = useCameraStore();
 const { t } = useI18n();
 
-const { devicesList, selectedDeviceId, deviceStream } =
-	storeToRefs(cameraStore);
+const { devicesList, selectedDeviceId } = storeToRefs(cameraStore);
 
 const { setPreferredDevice } = cameraStore;
 </script>

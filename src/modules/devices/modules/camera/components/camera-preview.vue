@@ -16,21 +16,14 @@ import {
 } from '../../../scripts/mediaStreamUtils';
 import { UserDeviceType } from '../../../enums/UserDeviceType';
 
-const { stream: callStream, deviceId } = defineProps<{
+const { deviceId } = defineProps<{
 	deviceId: string;
-	/**
-	 * @author: dlohvinov
-	 *
-	 * active call stream to use as preview,
-	 * if present!
-	 */
-	stream?: MediaStream | null;
 }>();
 
 const localStream = ref<MediaStream | null>(null);
 
 const previewStream = computed(() => {
-	return callStream || localStream.value;
+	return localStream.value;
 });
 
 function tryCleanupLocalStream() {

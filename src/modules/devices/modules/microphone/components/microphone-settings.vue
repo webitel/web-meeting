@@ -10,7 +10,6 @@
       <microphone-preview
         v-if="selectedDeviceId"
         :device-id="selectedDeviceId"
-        :stream="deviceStream"
       />
     </div>
 </template>
@@ -26,8 +25,7 @@ import MicrophonePreview from './microphone-preview.vue';
 const microphoneStore = useMicrophoneStore();
 const { t } = useI18n();
 
-const { devicesList, selectedDeviceId, deviceStream } =
-	storeToRefs(microphoneStore);
+const { devicesList, selectedDeviceId } = storeToRefs(microphoneStore);
 
 const { setPreferredDevice } = microphoneStore;
 </script>
