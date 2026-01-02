@@ -75,7 +75,12 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	const microphoneEnabled = computed(() => {
 		// https://webitel.atlassian.net/browse/WTEL-8385
-		if (sessionState.value === SessionState.ACTIVE) {
+		if (
+			[
+				SessionState.ACTIVE,
+				SessionState.RINGING,
+			].includes(sessionState.value!)
+		) {
 			return !session.value?.isMuted().audio;
 		}
 		return initCallWithMicrophone.value;
@@ -83,7 +88,12 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	const videoEnabled = computed(() => {
 		// https://webitel.atlassian.net/browse/WTEL-8385
-		if (sessionState.value === SessionState.ACTIVE) {
+		if (
+			[
+				SessionState.ACTIVE,
+				SessionState.RINGING,
+			].includes(sessionState.value!)
+		) {
 			return !session.value?.isMuted().video;
 		}
 		return initCallWithVideo.value;
@@ -308,6 +318,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 					if (!startWithAudio) {
 						disableMicrophone();
 					}
+					sessionState.value = SessionState.RINGING;
 				},
 
 				confirmed: () => {
