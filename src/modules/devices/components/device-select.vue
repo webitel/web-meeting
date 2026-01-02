@@ -3,6 +3,7 @@
         :value="deviceId"
         :options="devicesList"
         :label="label"
+        :clearable="false"
         option-label="label"
         track-by="deviceId"
         use-value-from-options-by-prop="deviceId"
