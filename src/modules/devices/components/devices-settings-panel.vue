@@ -73,7 +73,10 @@ const { changeMicrophone, changeCamera, changeSpeaker } = callStore;
 watch(microphoneStream, (newStream) => {
 	if (
 		newStream &&
-		sessionState.value === SessionState.ACTIVE &&
+		[
+			SessionState.ACTIVE,
+			SessionState.RINGING,
+		].includes(sessionState.value!) &&
 		microphoneEnabled.value
 	) {
 		changeMicrophone(newStream);
@@ -88,7 +91,10 @@ watch(microphoneStream, (newStream) => {
 watch(cameraStream, (newStream) => {
 	if (
 		newStream &&
-		sessionState.value === SessionState.ACTIVE &&
+		[
+			SessionState.ACTIVE,
+			SessionState.RINGING,
+		].includes(sessionState.value!) &&
 		videoEnabled.value
 	) {
 		changeCamera(newStream);
@@ -99,7 +105,10 @@ watch(cameraStream, (newStream) => {
 watch(selectedSpeakerId, (newDeviceId) => {
 	if (
 		newDeviceId &&
-		sessionState.value === SessionState.ACTIVE &&
+		[
+			SessionState.ACTIVE,
+			SessionState.RINGING,
+		].includes(sessionState.value!) &&
 		videoEnabled.value
 	) {
 		changeSpeaker(newDeviceId);
