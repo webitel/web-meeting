@@ -122,8 +122,4 @@ const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
     align-items: center;
     justify-content: center;
   }
-
-  .video-call :deep(.video-call-overlay) {
-    /* display: none; */
-    }
 </style>

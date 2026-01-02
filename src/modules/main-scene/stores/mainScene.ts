@@ -1,10 +1,8 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { computed } from 'vue';
+import { computed, watch, ref } from 'vue';
+
 import { useDevicesPermissionsStore } from '../../devices/modules/permissions/stores/permissions';
-import {
-	useCallStore,
-	SessionState,
-} from '../../meeting/modules/call/store/call';
+import { useCallStore } from '../../meeting/modules/call/store/call';
 import { MeetingState } from '../enums/MeetingState';
 
 export const useMainSceneStore = defineStore('mainScene', () => {
@@ -12,7 +10,9 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 	const { permissionGranted } = storeToRefs(devicesStore);
 
 	const callStore = useCallStore();
-	const { session, sessionState } = storeToRefs(callStore);
+	const { session } = storeToRefs(callStore);
+
+	const alreadyCalled = ref(false);
 
 	const shouldShowAllowDevicesDialog = computed(() => {
 		return !permissionGranted.value;
@@ -25,13 +25,17 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 		if (shouldShowAllowDevicesDialog.value) {
 			return MeetingState.AllowDevicesDialog;
 		}
-		if (
-			sessionState.value === SessionState.CANCELED ||
-			sessionState.value === SessionState.FAILED
-		) {
+		if (alreadyCalled.value) {
 			return MeetingState.CallEnded;
 		}
 		return MeetingState.JoinDialog;
+	});
+
+	const unwatchSession = watch(session, () => {
+		if (session.value) {
+			alreadyCalled.value = true;
+			unwatchSession();
+		}
 	});
 
 	return {
