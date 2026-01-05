@@ -115,7 +115,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		});
 	});
 
-	const receiverVideoEnabled = computed(
+	const hasAnyVideoStream = computed(
 		() => remoteVideoActive.value || videoEnabled.value,
 	);
 
@@ -565,7 +565,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 		// Computed
 		isSessionStateFinished,
-		receiverVideoEnabled,
+		hasAnyVideoStream,
 
 		// Actions
 		startUserAgent,

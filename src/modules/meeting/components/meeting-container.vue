@@ -9,7 +9,7 @@
       :sender:mic:accessed="microphoneAccessed"
       :sender:video:accessed="videoAccessed"
 
-      :receiver:video:enabled="receiverVideoEnabled"
+      :receiver:video:enabled="hasAnyVideoStream"
       :receiver:mic:enabled="!!remoteVideoStream"
 
       :actions="currentVideoContainerActions"
@@ -68,7 +68,7 @@ const {
 	localVideoStream,
 	microphoneEnabled,
 	videoEnabled,
-	receiverVideoEnabled,
+	hasAnyVideoStream,
 } = storeToRefs(callStore);
 
 const { toggleMute, toggleVideo, hangup } = callStore;
