@@ -11,6 +11,14 @@ export interface AppConfig {
 	call: {
 		host: string;
 		target: string;
+		videoDeviceResolution?: {
+			width?: {
+				ideal?: number;
+			};
+			height?: {
+				ideal?: number;
+			};
+		};
 	};
 	chat: {
 		host: string;

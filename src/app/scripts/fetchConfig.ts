@@ -2,9 +2,18 @@ import merge from 'lodash/merge';
 import jsoncParser from 'tiny-jsonc';
 import type { AppConfig } from '../../types/config';
 
-export const fetchConfig = async (): Promise<AppConfig> => {
+let config: AppConfig;
+
+export async function getConfig(): Promise<AppConfig> {
+	if (!config) {
+		config = await fetchConfig();
+	}
+	return config;
+}
+
+export async function fetchConfig(): Promise<AppConfig> {
 	return await fetchWithLocalConfigPriority();
-};
+}
 
 async function fetchWithLocalConfigPriority() {
 	const localConfig = await fetchSupportedExtConfig('config.local');

@@ -1,3 +1,4 @@
+import { getConfig } from '../../../app/scripts/fetchConfig';
 import { UserDeviceType } from '../enums/UserDeviceType';
 
 export async function getStreamFromDeviceId({
@@ -7,17 +8,18 @@ export async function getStreamFromDeviceId({
 	deviceId: string;
 	deviceType: UserDeviceType;
 }): Promise<MediaStream | null> {
+	const $config = await getConfig();
+
 	const stream = await navigator.mediaDevices.getUserMedia({
 		[deviceType]: {
 			deviceId: {
 				exact: deviceId,
 			},
 			width: {
-				// todo: make configurable
-				ideal: 1920,
+				ideal: $config.call.videoDeviceResolution?.width?.ideal ?? 1920,
 			},
 			height: {
-				ideal: 1080,
+				ideal: $config.call.videoDeviceResolution?.height?.ideal ?? 1080,
 			},
 		},
 	});

@@ -9,7 +9,15 @@
 	// Call configuration
 	"call": {
 		"host": "wss://webitel.example.com/wssip/",
-		"target": "service"
+		"target": "service",
+		"videoDeviceResolution": {
+			"width": {
+				"ideal": 1920 // note! only "ideal" is supported
+			},
+			"height": {
+				"ideal": 1080 // note! only "ideal" is supported
+			}
+		}
 	},
 
 	// Assets configuration
