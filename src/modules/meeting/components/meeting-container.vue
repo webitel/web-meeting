@@ -20,6 +20,7 @@
       static
 
       :actions:settings:pressed="settingsOpened"
+      :actions:settings:disabled="disabledSettings"
       :actions:chat:pressed="chatOpened"
 
       @[`action:${VideoCallAction.Mic}`]="toggleMute"
@@ -57,7 +58,7 @@ import { useMainSceneStore } from '../../main-scene/stores/mainScene';
 import { MeetingState } from '../../main-scene/enums/MeetingState';
 import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devices-dialog.vue';
 import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
-import CallEndedDialog from '../modules/service-dialogs/components/call-ended.vue';
+import CallEndedDialog from '../modules/service-dialogs/components/call-ended-dialog.vue';
 import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
 
 const callStore = useCallStore();
@@ -88,11 +89,15 @@ const contentComponent = computed(() => {
 			return AllowDevicesDialog;
 		case MeetingState.JoinDialog:
 			return JoinDialog;
-		case MeetingState.CallEnded:
+		case MeetingState.CallEndedDialog:
 			return CallEndedDialog;
 		default:
 			return null;
 	}
+});
+
+const disabledSettings = computed(() => {
+	return meetingState.value === MeetingState.AllowDevicesDialog;
 });
 
 const { actions: currentVideoContainerActions } = useVideoContainerActionsList({
@@ -127,8 +132,4 @@ const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
     align-items: center;
     justify-content: center;
   }
-
-  .video-call :deep(.video-call-overlay) {
-    /* display: none; */
-    }
 </style>

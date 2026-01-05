@@ -1,13 +1,14 @@
 <template>
-    <meeting-service-dialog>
-          <p>{{ t('call.allowMessage' )}}</p>
+    <meeting-service-dialog
+      class="allow-devices-dialog">
+          <p class="allow-devices-dialog__title">{{ t('call.allowMessage' )}}</p>
 
         <wt-button
             :loading="isRequesting"
             color="error"
             @click="allowAccess"
         >
-             {{ t('call.allow').toUpperCase() }}
+             {{ t('call.allow') }}
         </wt-button>
     </meeting-service-dialog>
 </template>
@@ -41,4 +42,10 @@ const allowAccess = async () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+@use '@webitel/styleguide/typography' as *;
+
+.allow-devices-dialog__title {
+  @extend %typo-heading-3;
+}
+</style>

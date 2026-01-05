@@ -10,6 +10,7 @@ import { useCameraStore } from '../../../../devices/modules/camera/stores/camera
 import { useMicrophoneStore } from '../../../../devices/modules/microphone/stores/microphone';
 import { useSpeakerStore } from '../../../../devices/modules/speaker/stores/speaker';
 import { UserMediaConstraintType } from '../../../../devices/enums/UserDeviceType';
+import { forceSenderVideoHighQuality } from '../scripts/forceSenderVideoHighQuality';
 
 /**
  * Session states for the call
@@ -49,6 +50,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 	// User Agent
 	const userAgent = ref<UA | null>(null);
 
+	const isStartingCall = ref(false);
+
 	// Session
 	const session = ref<RTCSession | null>(null);
 	const sessionAudio = ref<HTMLAudioElement | null>(null);
@@ -72,15 +75,31 @@ export const useCallStore = defineStore('meeting/call', () => {
 			sessionState.value === SessionState.FAILED,
 	);
 
-	const microphoneEnabled = computed(() =>
-		session.value
-			? !session.value.isMuted().audio
-			: initCallWithMicrophone.value,
-	);
+	const microphoneEnabled = computed(() => {
+		// https://webitel.atlassian.net/browse/WTEL-8385
+		if (
+			[
+				SessionState.ACTIVE,
+				SessionState.RINGING,
+			].includes(sessionState.value!)
+		) {
+			return !session.value?.isMuted().audio;
+		}
+		return initCallWithMicrophone.value;
+	});
 
-	const videoEnabled = computed(() =>
-		session.value ? !session.value.isMuted().video : initCallWithVideo.value,
-	);
+	const videoEnabled = computed(() => {
+		// https://webitel.atlassian.net/browse/WTEL-8385
+		if (
+			[
+				SessionState.ACTIVE,
+				SessionState.RINGING,
+			].includes(sessionState.value!)
+		) {
+			return !session.value?.isMuted().video;
+		}
+		return initCallWithVideo.value;
+	});
 
 	const remoteVideoActive = computed(() => {
 		if (!session.value?.connection) return false;
@@ -235,6 +254,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			senders.forEach((sender) => {
 				if (sender.track && sender.track.kind === 'video') {
 					localStream.addTrack(sender.track);
+					forceSenderVideoHighQuality(sender);
 				}
 			});
 			localVideoStream.value = localStream;
@@ -274,6 +294,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 		withAudio?: boolean;
 		withVideo?: boolean;
 	}): Promise<void> {
+		isStartingCall.value = true;
+
 		const startWithAudio = options?.withAudio ?? initCallWithMicrophone.value;
 		const startWithVideo = options?.withVideo ?? initCallWithVideo.value;
 
@@ -293,24 +315,22 @@ export const useCallStore = defineStore('meeting/call', () => {
 			]);
 
 			// values are "!" coz tracks should be initialized after startCameraStream() and startMicrophoneStream()
-			callMediaStream.value!.addTrack(cameraStreamTrack.value!.clone());
-			callMediaStream.value!.addTrack(microphoneStreamTrack.value!.clone());
+			callMediaStream.value!.addTrack(cameraStreamTrack.value!);
+			callMediaStream.value!.addTrack(microphoneStreamTrack.value!);
 
 			const eventHandlers = {
 				progress: () => {
 					// Call is ringing
-					console.log('Call progress (ringing)');
-					sessionState.value = SessionState.RINGING;
-					initAudio();
-				},
-				confirmed: () => {
-					// Call is confirmed (200 OK)
-					console.log('Call confirmed');
-					sessionState.value = SessionState.ACTIVE;
+					console.log('1: Call progress (ringing)');
 
 					initAudio();
 					initVideo();
 
+					/**
+					 * @author: dlohvinov
+					 * initial mute should be applied before call is confirmed,
+					 * @see https://webitel.atlassian.net/browse/WTEL-8385
+					 */
 					// apply initial video mute if requested
 					if (!startWithVideo) {
 						disableVideo();
@@ -320,6 +340,13 @@ export const useCallStore = defineStore('meeting/call', () => {
 					if (!startWithAudio) {
 						disableMicrophone();
 					}
+					sessionState.value = SessionState.RINGING;
+				},
+
+				confirmed: () => {
+					// Call is confirmed (200 OK)
+					console.log('2: Call confirmed');
+					sessionState.value = SessionState.ACTIVE;
 				},
 				failed: (event: any) => {
 					console.error('Call failed:', event);
@@ -347,7 +374,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 				extraHeaders: [
 					`X-Webitel-Meeting: ${meetingId.value}`,
 				],
-				sessionTimersExpires: 300,
+				sessionTimersExpires: 120, // https://webitel.atlassian.net/browse/WTEL-8364
 			};
 
 			const rtcSession = userAgent.value!.call(
@@ -355,12 +382,13 @@ export const useCallStore = defineStore('meeting/call', () => {
 				callOptions,
 			);
 			session.value = rtcSession;
-
-			(window as any).jssipSession = rtcSession; // For debugging
+			(window as any).currentCallRTCSession = rtcSession; // For debugging
 		} catch (err) {
 			console.error('Failed to make call:', err);
 			sessionState.value = SessionState.FAILED;
 			throw err;
+		} finally {
+			isStartingCall.value = false;
 		}
 	}
 
@@ -441,7 +469,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 */
 	function changeMicrophone(newStream: MediaStream) {
 		/**
-		 * @author: @dlohvinov
+		 * @author: dlohvinov
 		 *
 		 * not sure if newStream param is needed,
 		 * if stream track is used from device store
@@ -458,7 +486,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 */
 	function changeCamera(newStream: MediaStream) {
 		/**
-		 * @author: @dlohvinov
+		 * @author: dlohvinov
 		 *
 		 * not sure if newStream param is needed,
 		 * if stream track is used from device store
@@ -489,6 +517,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		}
 
 		const oldTrack = constraintSender.track;
+		newTrack.enabled = oldTrack?.enabled ?? true; // preserve mute state while changing device track
 
 		// Replace the old track with the new one
 		await constraintSender.replaceTrack(newTrack);
@@ -532,6 +561,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		sessionState,
 		microphoneEnabled,
 		videoEnabled,
+		isStartingCall,
 
 		// Computed
 		isSessionStateFinished,

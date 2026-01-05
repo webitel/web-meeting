@@ -18,9 +18,7 @@ export const useDeviceSelection = ({
 			: UserMediaConstraintType.Audio;
 
 	const { audioInputs, videoInputs, audioOutputs } = useDevicesList({
-		constraints: {
-			[constraint]: true,
-		},
+		requestPermissions: true, // !! – https://webitel.atlassian.net/browse/WTEL-8511
 	});
 
 	const allDevicesList = computed(() => {

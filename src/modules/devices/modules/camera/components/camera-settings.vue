@@ -1,20 +1,15 @@
 <template>
     <div class="camera-settings">
-      <wt-select
-        :value="selectedDeviceId"
+      <device-select
+        :device-id="selectedDeviceId"
         :options="devicesList"
         :label="t('devices.camera')"
-        :clearable="false"
-        option-label="label"
-        track-by="deviceId"
-        use-value-from-options-by-prop="deviceId"
-        @update:model-value="setPreferredDevice"
+        @update:device-id="setPreferredDevice"
       />
 
       <camera-preview
         v-if="selectedDeviceId"
-        :stream="deviceStream" 
-        @request-stream="startSelectedDeviceStream" 
+        :device-id="selectedDeviceId"
       />
     </div>
 </template>
@@ -22,27 +17,17 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
-import { onUnmounted } from 'vue';
 
+import DeviceSelect from '../../../components/device-select.vue';
 import CameraPreview from './camera-preview.vue';
 import { useCameraStore } from '../stores/camera';
 
 const cameraStore = useCameraStore();
 const { t } = useI18n();
 
-const { devicesList, selectedDeviceId, deviceStream } =
-	storeToRefs(cameraStore);
+const { devicesList, selectedDeviceId } = storeToRefs(cameraStore);
 
-const { startSelectedDeviceStream, setPreferredDevice, cleanup } = cameraStore;
-
-/**
- * @author: @dlohvinov
- *
- * i guess won't be needed coz we'll reuse this stream for call / camera preview on "join" dialog
- */
-onUnmounted(() => {
-	cleanup();
-});
+const { setPreferredDevice } = cameraStore;
 </script>
 
 <style scoped>

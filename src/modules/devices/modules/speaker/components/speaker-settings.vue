@@ -1,14 +1,10 @@
 <template>
   <div class="speaker-settings">
-    <wt-select
+    <device-select
+      :device-id="selectedDeviceId"
       :options="devicesList"
-      :clearable="false"
       :label="t('devices.speaker')"
-      :value="selectedDeviceId"
-      option-label="label"
-      track-by="deviceId"
-      use-value-from-options-by-prop="deviceId"
-      @update:model-value="setPreferredDevice"
+      @update:device-id="setPreferredDevice"
     />
 
     <speaker-preview
@@ -20,6 +16,8 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+
+import DeviceSelect from '../../../components/device-select.vue';
 import { useSpeakerStore } from '../stores/speaker';
 import SpeakerPreview from './speaker-preview.vue';
 

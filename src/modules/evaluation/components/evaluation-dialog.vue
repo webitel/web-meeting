@@ -61,7 +61,7 @@ const sendEvaluation = async (value: EvaluationValuesType) => {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .wt-button {
   width: 100%;
 }

@@ -12,6 +12,13 @@ export async function getStreamFromDeviceId({
 			deviceId: {
 				exact: deviceId,
 			},
+			width: {
+				// todo: make configurable
+				ideal: 1920,
+			},
+			height: {
+				ideal: 1080,
+			},
 		},
 	});
 

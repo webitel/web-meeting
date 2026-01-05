@@ -15,6 +15,7 @@ export const useDevicesPermissionsStore = defineStore(
 					audio: true,
 					video: true,
 				},
+				requestPermissions: true,
 			});
 
 		const hasAnyMicrophones = computed(() => {

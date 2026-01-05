@@ -26,10 +26,17 @@ import {
 	useCallStore,
 	SessionState,
 } from '../../meeting/modules/call/store/call';
+import UnsupportedUserAgentErrorBlock from '../modules/error-blocks/components/unsupported-user-agent-error-block.vue';
+import { isUnsupportedUserAgent } from '../modules/error-blocks/scripts/isUnsupportedUserAgent';
+import InvalidLinkErrorBlock from '../modules/error-blocks/components/invalid-link-error-block.vue';
+import { useAuthStore } from '../../auth/stores/auth';
 
 const $config = inject<AppConfig>('$config')!;
 
 const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
+
+const authStore = useAuthStore();
+const { isInvalidLink, isAuthorizingInProgress } = storeToRefs(authStore);
 
 const sidebarStore = useSidebarStore();
 const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
@@ -42,6 +49,18 @@ const closeSidebarPanel = () => {
 };
 
 const mainSceneComponent = computed(() => {
+	if (isUnsupportedUserAgent()) {
+		return UnsupportedUserAgentErrorBlock;
+	}
+
+	if (isAuthorizingInProgress.value) {
+		return null; // todo: add loading component
+	}
+
+	if (isInvalidLink.value) {
+		return InvalidLinkErrorBlock;
+	}
+
 	return sessionState.value === SessionState.COMPLETED
 		? EvaluationWrapper
 		: MeetingContainer;
