@@ -19,11 +19,11 @@ export const useDevicesPermissionsStore = defineStore(
 			});
 
 		const hasAnyMicrophones = computed(() => {
-			return audioInputs.value.length > 0;
+			return !!(audioInputs.value.length > 0 && audioInputs.value[0].deviceId);
 		});
 
 		const hasAnyCameras = computed(() => {
-			return videoInputs.value.length > 0;
+			return !!(videoInputs.value.length > 0 && videoInputs.value[0].deviceId);
 		});
 
 		const isRequesting = ref<boolean>(false);
