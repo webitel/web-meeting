@@ -1,4 +1,4 @@
-import { getConfig } from '../../../app/scripts/fetchConfig';
+import { getConfig } from '../../appConfig/config';
 import { UserDeviceType } from '../enums/UserDeviceType';
 
 export async function getStreamFromDeviceId({

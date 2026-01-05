@@ -1,3 +1,5 @@
+// config docs: https://github.com/webitel/web-meeting/blob/main/README.md
+
 {
 	// Token configuration
 	"token": {
@@ -25,5 +27,14 @@
 		"logoPicture": "/meet/assets/web-logo.svg",
 		"mainBackground": "/meet/assets/web-background.svg"
 	},
+
+	// Evaluation configuration
+	"evaluation": {
+		"endpointUrl": "https://webitel.example.com/api/evaluation",
+		"goodGrade": 10,
+		"badGrade": 5
+	},
+
+	// Language configuration
 	"lang": "en" // ['en', 'ru', 'uk']
 }
