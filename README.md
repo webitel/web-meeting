@@ -1,54 +1,73 @@
 # web-meeting
 
-This template should help get you started developing with Vue 3 in Vite.
+## Config file
 
-## Recommended IDE Setup
+```jsonc
+{
+  // auth and portal related configuration
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+  "token": {
+    "iss": "string", // webitel portal url
+    "endpointUrl": "string", // url for portal auth token http request
+    "appToken": "string", // unique key
+  },
 
-## Recommended Browser Setup
+  // call configuration
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+  "call": {
+    "host": "string", // WebSocket host for sip
+    "target": "string", // sip call target
+      /*
+        desired video device resolution for web-meeting app user (end-client)
+        basically, it's a resolution from which webrtc video call stream will try
+        to start.
 
-## Type Support for `.vue` Imports in TS
+        for more info, see http://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#examples
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+        NOTE! resolution may be decreased during the call if user's device resolution or network conditions are worse.
+      */
+    "videoDeviceResolution": {
+      "width": {
+        "ideal": number, // 1920 by default. note! only "ideal" is supported
+      },
+      "height": {
+        "ideal": number, // 1080 by default. note! only "ideal" is supported
+      },
+    },
+  },
 
-## Customize configuration
+  // static assets URLs
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+  "assets": {
+    "logoPicture": "string", // logo picture URL. Webitel logo by default.
+    "mainBackground": "string", // app background image URL. Webitel brand gradient by default.
+  },
 
-## Project Setup
+  "lang": "string", // lang of user interface. en by default. supported languages: en, uk, ru.
 
-```sh
-npm install
+  // call result form config
+
+  "evaluation": {
+    "endpointUrl": "string", // http request url to send evaluation results
+    "goodGrade": number, // good grade ("success"-colored button) value
+    "badGrade": number, // bad grade ("error"-colored button) value
+  },
+},
 ```
 
-### Compile and Hot-Reload for Development
+<!-- ### Configurable properties -->
 
-```sh
-npm run dev
-```
 
-### Type-Check, Compile and Minify for Production
 
-```sh
-npm run build
-```
+### Supported config file formats
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+* `.json`
+* `.jsonc`
 
-```sh
-npm run test:unit
-```
+### Useful links
 
-### Lint with [ESLint](https://eslint.org/)
+* Example config: [config.example.jsonc](./public/config.example.jsonc)
 
-```sh
-npm run lint
-```
+* TypeScript type definition for config: [AppConfig.ts](./src/modules/appConfig/types/AppConfig.ts)
+
+* Default config, merged with user config: [defaultConfig.ts](./src/modules/appConfig/defaults/defaultConfig.ts)

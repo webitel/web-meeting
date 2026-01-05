@@ -1,3 +1,5 @@
+// config docs: https://github.com/webitel/web-meeting/blob/main/README.md
+
 {
 	// Token configuration
 	"token": {
@@ -28,6 +30,7 @@
 
 	// Evaluation configuration
 	"evaluation": {
+		"endpointUrl": "https://webitel.example.com/api/evaluation",
 		"goodGrade": 10,
 		"badGrade": 5
 	},
