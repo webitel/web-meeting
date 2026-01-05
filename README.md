@@ -36,6 +36,12 @@
     },
   },
 
+  // chat configuration
+
+  "chat": {
+    "host": "string", // WebSocket URL for chat
+  },
+
   // static assets URLs
 
   "assets": {

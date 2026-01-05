@@ -22,6 +22,11 @@
 		}
 	},
 
+	// Chat configuration
+	"chat": {
+		"host": "wss://webitel.example.com/chat"
+	},
+
 	// Assets configuration
 	"assets": {
 		"logoPicture": "/meet/assets/web-logo.svg",
