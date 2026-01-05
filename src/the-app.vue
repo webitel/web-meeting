@@ -7,10 +7,13 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
 import { inject, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
 import { useAuthStore } from './modules/auth/stores/auth';
 import MainScene from './modules/main-scene/components/main-scene.vue';
 import type { AppConfig } from './types/config';
-import { useRouter } from 'vue-router';
+import { isUnsupportedUserAgent } from './modules/main-scene/modules/error-blocks/scripts/isUnsupportedUserAgent';
+
 import packageJson from '../package.json' with { type: 'json' };
 
 const authStore = useAuthStore();
@@ -24,6 +27,10 @@ const build = import.meta.env.VITE_BUILD_NUMBER;
 window.buildVersion = `v${packageJson.version}-${build}`;
 
 onMounted(async () => {
+	if (isUnsupportedUserAgent()) {
+		return;
+	}
+
 	await router.isReady();
 
 	await authStore.initialize();

@@ -31,5 +31,15 @@ export default {
 			message: 'Something went wrong',
 		},
 	},
-	invalidLinkMessage: 'Unfortunately, the link is incorrect',
+	errors: {
+		unsupportedUserAgent: {
+			title: 'Not supported on mobile!',
+			message:
+				'This page is not available on mobile. Please switch to desktop.',
+		},
+		invalidLink: {
+			title: 'Invalid link!',
+			message: 'Unfortunately, the link is incorrect.',
+		},
+	},
 };
