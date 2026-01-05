@@ -18,6 +18,7 @@
         @load="loadFile"
         @[`action:${ChatAction.SendMessage}`]="localSendMessage"
         @[`action:${ChatAction.AttachFiles}`]="localSendFile"
+        @[MessageAction.ClickOnImage]="loadFile($event.file.id);"
       />
     </template>
   </sidebar-content-wrapper>
@@ -30,6 +31,7 @@ import { storeToRefs } from 'pinia';
 import {
 	ChatAction,
 	ChatContainer,
+	MessageAction,
 	type ChatMessageType as UiChatMessageType,
 } from '@webitel/ui-chats/ui';
 import type { Message as PortalChatMessageType } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
