@@ -25,5 +25,13 @@
 		"logoPicture": "/meet/assets/web-logo.svg",
 		"mainBackground": "/meet/assets/web-background.svg"
 	},
+
+	// Evaluation configuration
+	"evaluation": {
+		"goodGrade": 10,
+		"badGrade": 5
+	},
+
+	// Language configuration
 	"lang": "en" // ['en', 'ru', 'uk']
 }

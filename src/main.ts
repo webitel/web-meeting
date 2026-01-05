@@ -6,7 +6,7 @@ import {
 	webitelUiPlugin,
 } from './app/plugins/@webitel/ui-sdk';
 import router from './app/router';
-import { fetchConfig } from './app/scripts/fetchConfig';
+import { initializeConfig } from './modules/appConfig/config';
 import App from './the-app.vue';
 
 const pinia = createPinia();
@@ -22,7 +22,7 @@ const initApp = async () => {
 };
 
 (async () => {
-	const config = await fetchConfig();
+	const config = await initializeConfig();
 	const app = await initApp();
 	await router.isReady();
 	app.provide('$config', config);

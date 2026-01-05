@@ -34,10 +34,3 @@ export interface AppConfig {
 		badGrade: number;
 	};
 }
-
-// Make it available globally for Vue's inject system
-declare module '@vue/runtime-core' {
-	interface ComponentCustomProperties {
-		$config: AppConfig;
-	}
-}
