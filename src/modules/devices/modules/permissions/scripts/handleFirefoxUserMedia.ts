@@ -1,3 +1,5 @@
+import { shouldRequestPermissions } from './shouldRequestPermissions';
+
 export const isFirefox = () => navigator.userAgent.includes('Firefox');
 
 /**
@@ -10,7 +12,7 @@ export const isFirefox = () => navigator.userAgent.includes('Firefox');
  * @see [WTEL-8544](https://webitel.atlassian.net/browse/WTEL-8544?focusedCommentId=717571)
  */
 export async function forceFirefoxToEnumerateDevices() {
-	if (!isFirefox()) return;
+	if (!isFirefox() || !shouldRequestPermissions()) return;
 
 	await navigator.mediaDevices.getUserMedia({
 		audio: true,
