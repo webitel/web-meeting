@@ -4,7 +4,7 @@ import type { RTCSession } from 'jssip/lib/RTCSession';
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, inject, markRaw, ref } from 'vue';
 
-import type { AppConfig } from '../../../../../types/config';
+import type { AppConfig } from '../../../../appConfig/types/AppConfig';
 import { useAuthStore } from '../../../../auth/stores/auth';
 import { useCameraStore } from '../../../../devices/modules/camera/stores/camera';
 import { useMicrophoneStore } from '../../../../devices/modules/microphone/stores/microphone';
@@ -147,7 +147,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 				ua.start();
 
 				/**
-				 * @author: @dlohvinov
+				 * @author: dlohvinov
 				 *
 				 * dont remove "markRaw" here!!
 				 * coz najibnetsya
@@ -219,8 +219,11 @@ export const useCallStore = defineStore('meeting/call', () => {
 		const stream = new MediaStream();
 		const receivers = session.value.connection?.getReceivers();
 
-		if (receivers && receivers.length > 0 && receivers[0]?.track) {
-			stream.addTrack(receivers[0].track);
+		const audioTrack = receivers?.find(
+			(receiver) => receiver.track?.kind === 'audio',
+		)?.track;
+		if (audioTrack) {
+			stream.addTrack(audioTrack);
 		}
 
 		audio.srcObject = stream;
@@ -531,8 +534,13 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 * Change speaker (audio output)
 	 */
 	async function changeSpeaker(deviceId: string) {
+		console.info('Changing speaker to:', deviceId);
 		// Use setSinkId to change the audio output device
-		await (sessionAudio.value as HTMLAudioElement).setSinkId(deviceId);
+		await (sessionAudio.value as HTMLAudioElement)
+			.setSinkId(deviceId)
+			.finally(() => {
+				console.info('Speaker changed to:', deviceId);
+			});
 	}
 
 	function cleanup() {
