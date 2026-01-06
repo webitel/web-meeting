@@ -20,6 +20,8 @@ const authStore = useAuthStore();
 const config = inject<AppConfig>('$config')!;
 
 const { locale } = useI18n();
+locale.value = config.lang;
+
 const router = useRouter();
 
 // To check current build version
@@ -34,8 +36,6 @@ onMounted(async () => {
 	await router.isReady();
 
 	await authStore.initialize();
-
-	locale.value = config.lang || 'en';
 });
 </script>
 
