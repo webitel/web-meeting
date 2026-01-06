@@ -4,7 +4,10 @@
     @close="emit('close')"
   >
     <template #title>
-        <wt-icon icon="settings" color="info"></wt-icon>
+        <wt-icon 
+			icon="settings"
+			color="info"
+		/>
         <p>{{ t('vocabulary.settings')}}</p>
     </template>
 
@@ -66,7 +69,7 @@ const { sessionState, videoEnabled, microphoneEnabled } =
 const { changeMicrophone, changeCamera, changeSpeaker } = callStore;
 
 /**
- * @author: @dlohvinov
+ * @author: dlohvinov
  *
  * Watch for stream change, coz its changed with deviceId, and call store needs stream, not deviceId
  */
@@ -83,7 +86,7 @@ watch(microphoneStream, (newStream) => {
 });
 
 /**
- * @author: @dlohvinov
+ * @author: dlohvinov
  *
  * Watch for stream change, coz its changed with deviceId, and call store needs stream, not deviceId
  */
@@ -114,11 +117,9 @@ watch(selectedSpeakerId, (newDeviceId) => {
 
 onMounted(async () => {
 	if (!permissionGranted.value) {
-		await requestDeviceAccess();
+		await requestDeviceAccess(); // useful for requesting permissions after first request -> revoke
 	}
 });
-
-onUnmounted(() => {});
 </script>
 
 

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import {
 	cleanupStream,
@@ -26,7 +26,7 @@ export const createUserMediaStore = (
 			devicesList,
 			selectedDevice,
 			selectedDeviceId,
-			setPreferredDevice: setPreferredDeviceSelection,
+			setPreferredDevice,
 		} = useDeviceSelection({
 			deviceType: constraint,
 		});
@@ -34,7 +34,7 @@ export const createUserMediaStore = (
 		/**
 		 * stream of the selected device
 		 *
-		 * used both for device preview in settings and for call
+		 * used ONLY for call, device preview are local!
 		 */
 		const deviceStream = ref<MediaStream | null>(null);
 
@@ -47,27 +47,15 @@ export const createUserMediaStore = (
 			});
 		});
 
-		/**
-		 * Set user-preferred device,
-		 */
-		function setPreferredDevice(
-			deviceId: string,
-			{
-				updateStream = true,
-			}: {
-				updateStream?: boolean;
-			} = {},
-		) {
-			setPreferredDeviceSelection(deviceId);
+		watch(selectedDeviceId, (newDeviceId) => {
+			if (!deviceStream.value) return;
 
-			if (!updateStream) return;
-
-			if (deviceId) {
+			if (newDeviceId) {
 				startSelectedDeviceStream();
 			} else {
 				cleanup();
 			}
-		}
+		});
 
 		/**
 		 * Start camera stream for testing
@@ -117,7 +105,6 @@ export const createUserMediaStore = (
 			// Actions
 			setPreferredDevice,
 			startSelectedDeviceStream,
-			// getDeviceStreamTrack,
 
 			cleanup,
 		};

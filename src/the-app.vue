@@ -1,6 +1,6 @@
 <template>
   <main-scene>
-    <router-view />
+    <!-- <router-view /> useless for now --> 
   </main-scene>
 </template>
 
