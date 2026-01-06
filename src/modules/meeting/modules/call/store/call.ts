@@ -366,10 +366,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 			const callOptions = {
 				eventHandlers,
-				mediaConstraints: {
-					audio: true,
-					video: true,
-				},
 				mediaStream: callMediaStream.value!,
 				extraHeaders: [
 					`X-Webitel-Meeting: ${meetingId.value}`,

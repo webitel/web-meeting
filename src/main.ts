@@ -8,6 +8,10 @@ import {
 import router from './app/router';
 import { initializeConfig } from './modules/appConfig/config';
 import App from './the-app.vue';
+import {
+	forceFirefoxToEnumerateDevices,
+	isFirefox,
+} from './modules/devices/modules/permissions/scripts/handleFirefoxUserMedia';
 
 const pinia = createPinia();
 
@@ -22,6 +26,9 @@ const initApp = async () => {
 };
 
 (async () => {
+	if (isFirefox()) {
+		await forceFirefoxToEnumerateDevices(); // https://webitel.atlassian.net/browse/WTEL-8544?focusedCommentId=717571
+	}
 	const config = await initializeConfig();
 	const app = await initApp();
 	await router.isReady();
