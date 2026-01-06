@@ -6,6 +6,7 @@ import {
 	UserDeviceType,
 	UserMediaConstraintType,
 } from '../enums/UserDeviceType';
+import { shouldRequestPermissions } from '../modules/permissions/scripts/shouldRequestPermissions';
 
 export const useDeviceSelection = ({
 	deviceType,
@@ -18,7 +19,7 @@ export const useDeviceSelection = ({
 			: UserMediaConstraintType.Audio;
 
 	const { audioInputs, videoInputs, audioOutputs } = useDevicesList({
-		requestPermissions: true, // !! – https://webitel.atlassian.net/browse/WTEL-8511
+		requestPermissions: shouldRequestPermissions(), // !! – https://webitel.atlassian.net/browse/WTEL-8511?focusedCommentId=717602
 	});
 
 	const allDevicesList = computed(() => {

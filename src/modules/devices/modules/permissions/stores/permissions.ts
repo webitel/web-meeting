@@ -1,7 +1,9 @@
 import { useDevicesList } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+
 import { DeviceErrors } from '../../../enums/DeviceErrors';
+import { shouldRequestPermissions } from '../scripts/shouldRequestPermissions';
 
 /**
  * Handles device access and permissions for devices
@@ -15,15 +17,19 @@ export const useDevicesPermissionsStore = defineStore(
 					audio: true,
 					video: true,
 				},
-				requestPermissions: true,
+				requestPermissions: shouldRequestPermissions(), // !! – https://webitel.atlassian.net/browse/WTEL-8511?focusedCommentId=717602
 			});
 
 		const hasAnyMicrophones = computed(() => {
-			return !!(audioInputs.value.length > 0 && audioInputs.value[0].deviceId);
+			return !!(
+				audioInputs.value?.length > 0 && audioInputs.value?.[0]?.deviceId
+			);
 		});
 
 		const hasAnyCameras = computed(() => {
-			return !!(videoInputs.value.length > 0 && videoInputs.value[0].deviceId);
+			return !!(
+				videoInputs.value?.length > 0 && videoInputs.value?.[0]?.deviceId
+			);
 		});
 
 		const isRequesting = ref<boolean>(false);
