@@ -16,7 +16,7 @@
 
       :key="videoContainerSize"
       :size="videoContainerSize"
-      hide-header
+      hide-video-display-panel
       static
 
       :actions:settings:pressed="settingsOpened"
