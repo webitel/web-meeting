@@ -15,6 +15,7 @@
           ChatAction.AttachFiles,
           ChatAction.EmojiPicker,
           ]"
+        without-avatars
         @load="loadFile"
         @[`action:${ChatAction.SendMessage}`]="localSendMessage"
         @[`action:${ChatAction.AttachFiles}`]="localSendFile"
