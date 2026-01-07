@@ -7,7 +7,8 @@ import { MeetingState } from '../enums/MeetingState';
 
 export const useMainSceneStore = defineStore('mainScene', () => {
 	const devicesStore = useDevicesPermissionsStore();
-	const { permissionGranted } = storeToRefs(devicesStore);
+	const { permissionGranted, hasAnyMicrophones, hasAnyCameras } =
+		storeToRefs(devicesStore);
 
 	const callStore = useCallStore();
 	const { session } = storeToRefs(callStore);
@@ -15,7 +16,11 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 	const alreadyCalled = ref(false);
 
 	const shouldShowAllowDevicesDialog = computed(() => {
-		return !permissionGranted.value;
+		return (
+			!permissionGranted.value ||
+			!hasAnyMicrophones.value ||
+			!hasAnyCameras.value
+		);
 	});
 
 	const meetingState = computed<MeetingState>(() => {

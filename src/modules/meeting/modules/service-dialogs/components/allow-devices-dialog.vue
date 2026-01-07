@@ -1,14 +1,14 @@
 <template>
     <meeting-service-dialog
       class="allow-devices-dialog">
-          <p class="allow-devices-dialog__title">{{ t('call.allowMessage' )}}</p>
+          <p class="allow-devices-dialog__title">{{ t('devices.allowMessage' )}}</p>
 
         <wt-button
             :loading="isRequesting"
             color="error"
             @click="allowAccess"
         >
-             {{ t('call.allow') }}
+             {{ t('devices.allow') }}
         </wt-button>
     </meeting-service-dialog>
 </template>
@@ -36,7 +36,7 @@ const allowAccess = async () => {
 		// @ts-expect-error todo: add eventBus types
 		eventBus.$emit('notification', {
 			type: 'error',
-			text: t('call.accessDeniedMessage'),
+			text: t('devices.accessDeniedNotificationText'),
 		});
 	}
 };
@@ -47,5 +47,7 @@ const allowAccess = async () => {
 
 .allow-devices-dialog__title {
   @extend %typo-heading-3;
+  text-align: center;
+  padding: 0 var(--spacing-md);
 }
 </style>

@@ -1,21 +1,22 @@
 export default {
-	call: {
-		allowMessage: 'Allow microphone and camera!',
+	devices: {
+		allowMessage:
+			'Please check if your microphone and camera are connected, and allow access to them in your browser!',
 		allow: 'Allow',
+		microphone: 'Microphone',
+		camera: 'Camera',
+		speaker: 'Speaker',
+		accessDeniedNotificationText:
+			'Please allow to use your camera or microphone in browser settings',
+	},
+	call: {
 		joinMessage: 'Ready to join?',
 		join: 'Join now',
 		joinAgain: 'Join again',
 		ended: 'Call ended',
-		accessDeniedMessage:
-			'Please allow to use your camera or microphone in browser settings',
 	},
 	chat: {
 		chat: 'Meeting chat',
-	},
-	devices: {
-		microphone: 'Microphone',
-		camera: 'Camera',
-		speaker: 'Speaker',
 	},
 	evaluation: {
 		title: 'We’d love your feedback',
