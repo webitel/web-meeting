@@ -10,9 +10,9 @@ import { inject, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useAuthStore } from './modules/auth/stores/auth';
-import MainScene from './modules/main-scene/components/main-scene.vue';
+import MainScene from './modules/mainScene/components/the-main-scene.vue';
 import type { AppConfig } from './types/config';
-import { isUnsupportedUserAgent } from './modules/main-scene/modules/error-blocks/scripts/isUnsupportedUserAgent';
+import { isUnsupportedUserAgent } from './modules/mainScene/modules/error-blocks/scripts/isUnsupportedUserAgent';
 
 import packageJson from '../package.json' with { type: 'json' };
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="meeting-container">
+  <div class="the-meeting-container">
     <video-call
       :sender:stream="localVideoStream"
       :receiver:stream="remoteVideoStream"
@@ -54,8 +54,8 @@ import { useDevicesPermissionsStore } from '../../devices/modules/permissions/st
 import { SidebarMode } from '../../sidebar/enums/SidebarMode';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
 import { useCallStore } from '../modules/call/store/call';
-import { useMainSceneStore } from '../../main-scene/stores/mainScene';
-import { MeetingState } from '../../main-scene/enums/MeetingState';
+import { useMainSceneStore } from '../../mainScene/stores/mainScene';
+import { MeetingState } from '../../mainScene/enums/MeetingState';
 import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devices-dialog.vue';
 import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
 import CallEndedDialog from '../modules/service-dialogs/components/call-ended-dialog.vue';
@@ -126,7 +126,7 @@ const { hasAnyMicrophones: microphoneAccessed, hasAnyCameras: videoAccessed } =
 </script>
 
 <style scoped>
-  .meeting-container {
+  .the-meeting-container {
     display: flex;
     flex: 1;
     align-items: center;

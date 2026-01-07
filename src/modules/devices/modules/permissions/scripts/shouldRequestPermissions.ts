@@ -1,4 +1,4 @@
-import { isUnsupportedUserAgent } from '../../../../main-scene/modules/error-blocks/scripts/isUnsupportedUserAgent';
+import { isUnsupportedUserAgent } from '../../../../mainScene/modules/error-blocks/scripts/isUnsupportedUserAgent';
 
 /**
  * @author: dlohvinov

@@ -1,8 +1,8 @@
 <template>
-  <main class="main-scene">
+  <main class="the-main-scene">
     <wt-notifications-bar />
     <brand-logo />
-    <div class="main-scene__contents">
+    <div class="the-main-scene__contents">
       <component
         :is="mainSceneComponent"
       />
@@ -17,7 +17,7 @@
 import { storeToRefs } from 'pinia';
 import { inject, computed, watch } from 'vue';
 import type { AppConfig } from '../../../types/config';
-import MeetingContainer from '../../meeting/components/meeting-container.vue';
+import MeetingContainer from '../../meeting/components/the-meeting-container.vue';
 import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
 import BrandLogo from './shared/brand-logo.vue';
@@ -72,7 +72,7 @@ watch(isSessionStateFinished, (value) => {
 </script>
 
 <style scoped>
-.main-scene {
+.the-main-scene {
   position: relative;
   width: 100%;
   height: 100%;
@@ -89,7 +89,7 @@ watch(isSessionStateFinished, (value) => {
   transform: translateX(-50%);
 }
 
-.main-scene__contents {
+.the-main-scene__contents {
   z-index: 1;
   position: relative;
   display: flex;

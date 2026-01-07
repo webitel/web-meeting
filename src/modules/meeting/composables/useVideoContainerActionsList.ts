@@ -1,7 +1,7 @@
 import { computed, toRef, type MaybeRef } from 'vue';
 import { VideoCallAction } from '@webitel/ui-sdk/modules/CallSession';
 
-import { MeetingState } from '../../main-scene/enums/MeetingState';
+import { MeetingState } from '../../mainScene/enums/MeetingState';
 
 const MeetingStateToVideoActionsMap: Record<MeetingState, VideoCallAction[]> = {
 	[MeetingState.AllowDevicesDialog]: [
