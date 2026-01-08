@@ -64,7 +64,7 @@ import { useVideoContainerActionsList } from '../composables/useVideoContainerAc
 const callStore = useCallStore();
 
 const {
-	remoteVideoStreamValue,
+	remoteVideoStream: remoteVideoStreamValue,
 	localVideoStream,
 	microphoneEnabled,
 	videoEnabled,
