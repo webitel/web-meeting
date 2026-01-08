@@ -2,7 +2,7 @@
   <div class="the-meeting-container">
     <video-call
       :sender:stream="localVideoStream"
-      :receiver:stream="remoteVideoStreamValue"
+      :receiver:stream="remoteVideoStream"
 
       :sender:mic:enabled="microphoneEnabled"
       :sender:video:enabled="videoEnabled"
@@ -64,7 +64,7 @@ import { useVideoContainerActionsList } from '../composables/useVideoContainerAc
 const callStore = useCallStore();
 
 const {
-	remoteVideoStream,
+	remoteVideoStreamValue,
 	localVideoStream,
 	microphoneEnabled,
 	videoEnabled,
@@ -103,12 +103,13 @@ const disabledSettings = computed(() => {
 
 const showRemoteStream = computed(() => {
 	return (
-		sessionState.value !== SessionState.RINGING && !!remoteVideoStream.value
+		sessionState.value !== SessionState.RINGING &&
+		!!remoteVideoStreamValue.value
 	);
 });
 
-const remoteVideoStreamValue = computed(() => {
-	return showRemoteStream.value ? remoteVideoStream.value : undefined;
+const remoteVideoStream = computed(() => {
+	return showRemoteStream.value ? remoteVideoStreamValue.value : null;
 });
 
 const { actions: currentVideoContainerActions } = useVideoContainerActionsList({

@@ -58,7 +58,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	// Video streams
 	const localVideoStream = ref<MediaStream | null>(null);
-	const remoteVideoStream = ref<MediaStream | null>(null);
+	const remoteVideoStreamValue = ref<MediaStream | null>(null);
 
 	const initCallWithMicrophone = ref<boolean>(true);
 	const initCallWithVideo = ref<boolean>(true);
@@ -239,7 +239,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 		const receivers = session.value.connection?.getReceivers();
 
-		if (receivers && !remoteVideoStream.value) {
+		if (receivers && !remoteVideoStreamValue.value) {
 			// Create remote video stream from received tracks
 			const remoteStream = new MediaStream();
 			receivers.forEach((receiver) => {
@@ -247,7 +247,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 					remoteStream.addTrack(receiver.track);
 				}
 			});
-			remoteVideoStream.value = remoteStream;
+			remoteVideoStreamValue.value = remoteStream;
 		}
 
 		// Get local stream from senders
@@ -279,9 +279,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 			localVideoStream.value.getTracks().forEach((track) => track.stop());
 			localVideoStream.value = null;
 		}
-		if (remoteVideoStream.value) {
-			remoteVideoStream.value.getTracks().forEach((track) => track.stop());
-			remoteVideoStream.value = null;
+		if (remoteVideoStreamValue.value) {
+			remoteVideoStreamValue.value.getTracks().forEach((track) => track.stop());
+			remoteVideoStreamValue.value = null;
 		}
 
 		// Reset state
@@ -561,7 +561,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		session,
 		sessionAudio,
 		localVideoStream,
-		remoteVideoStream,
+		remoteVideoStreamValue,
 		sessionState,
 		microphoneEnabled,
 		videoEnabled,
