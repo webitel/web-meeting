@@ -2,7 +2,7 @@
   <div class="the-meeting-container">
     <video-call
       :sender:stream="localVideoStream"
-      :receiver:stream="remoteVideoStream"
+      :receiver:stream="remoteVideoStreamValue"
 
       :sender:mic:enabled="microphoneEnabled"
       :sender:video:enabled="videoEnabled"
@@ -10,13 +10,13 @@
       :sender:video:accessed="videoAccessed"
 
       :receiver:video:enabled="hasAnyVideoStream"
-      :receiver:mic:enabled="!!remoteVideoStream"
+      :receiver:mic:enabled="showRemoteStream"
 
       :actions="currentVideoContainerActions"
 
       :key="videoContainerSize"
       :size="videoContainerSize"
-      hide-header
+      hide-video-display-panel
       static
 
       :actions:settings:pressed="settingsOpened"
@@ -53,7 +53,7 @@ import { ComponentSize } from '@webitel/ui-sdk/enums';
 import { useDevicesPermissionsStore } from '../../devices/modules/permissions/stores/permissions';
 import { SidebarMode } from '../../sidebar/enums/SidebarMode';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
-import { useCallStore } from '../modules/call/store/call';
+import { SessionState, useCallStore } from '../modules/call/store/call';
 import { useMainSceneStore } from '../../mainScene/stores/mainScene';
 import { MeetingState } from '../../mainScene/enums/MeetingState';
 import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devices-dialog.vue';
@@ -69,6 +69,7 @@ const {
 	microphoneEnabled,
 	videoEnabled,
 	hasAnyVideoStream,
+	sessionState,
 } = storeToRefs(callStore);
 
 const { toggleMute, toggleVideo, hangup } = callStore;
@@ -98,6 +99,16 @@ const contentComponent = computed(() => {
 
 const disabledSettings = computed(() => {
 	return meetingState.value === MeetingState.AllowDevicesDialog;
+});
+
+const showRemoteStream = computed(() => {
+	return (
+		sessionState.value !== SessionState.RINGING && !!remoteVideoStream.value
+	);
+});
+
+const remoteVideoStreamValue = computed(() => {
+	return showRemoteStream.value ? remoteVideoStream.value : undefined;
 });
 
 const { actions: currentVideoContainerActions } = useVideoContainerActionsList({
