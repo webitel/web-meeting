@@ -1,7 +1,9 @@
 import { computed, toRef, type MaybeRef } from 'vue';
+import { storeToRefs } from 'pinia';
 import { VideoCallAction } from '@webitel/ui-sdk/modules/CallSession';
 
 import { MeetingState } from '../../mainScene/enums/MeetingState';
+import { SessionState, useCallStore } from '../modules/call/store/call';
 
 const MeetingStateToVideoActionsMap: Record<MeetingState, VideoCallAction[]> = {
 	[MeetingState.AllowDevicesDialog]: [
@@ -18,7 +20,6 @@ const MeetingStateToVideoActionsMap: Record<MeetingState, VideoCallAction[]> = {
 		VideoCallAction.Mic,
 		VideoCallAction.Video,
 		VideoCallAction.Settings,
-		VideoCallAction.Chat,
 		VideoCallAction.Hangup,
 	],
 	[MeetingState.CallEndedDialog]: [
@@ -35,8 +36,23 @@ export const useVideoContainerActionsList = ({
 }) => {
 	const meetingStateRef = toRef(meetingState);
 
+	const callStore = useCallStore();
+	const { sessionState } = storeToRefs(callStore);
+
 	const actions = computed(() => {
-		return MeetingStateToVideoActionsMap[meetingStateRef.value];
+		const arrayActions = MeetingStateToVideoActionsMap[meetingStateRef.value];
+		if (
+			meetingStateRef.value === MeetingState.ActiveMeeting &&
+			sessionState.value === SessionState.ACTIVE
+		) {
+			return [
+				...arrayActions,
+				VideoCallAction.Chat,
+			];
+		}
+		return [
+			...arrayActions,
+		];
 	});
 
 	return {
