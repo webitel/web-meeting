@@ -1,4 +1,4 @@
-import { computed, toRef, type MaybeRef } from 'vue';
+import { computed, toRef, ref, type MaybeRef } from 'vue';
 import { storeToRefs } from 'pinia';
 import { VideoCallAction } from '@webitel/ui-sdk/modules/CallSession';
 
@@ -40,19 +40,20 @@ export const useVideoContainerActionsList = ({
 	const { sessionState } = storeToRefs(callStore);
 
 	const actions = computed(() => {
-		const arrayActions = MeetingStateToVideoActionsMap[meetingStateRef.value];
+		const base = MeetingStateToVideoActionsMap[meetingStateRef.value];
+
+		const arrayActions = [
+			...base,
+		];
+
 		if (
 			meetingStateRef.value === MeetingState.ActiveMeeting &&
 			sessionState.value === SessionState.ACTIVE
 		) {
-			return [
-				...arrayActions,
-				VideoCallAction.Chat,
-			];
+			arrayActions.push(VideoCallAction.Chat);
 		}
-		return [
-			...arrayActions,
-		];
+
+		return arrayActions;
 	});
 
 	return {
