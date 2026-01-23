@@ -1,7 +1,7 @@
 <template>
   <meeting-service-dialog class="call-ended">
 
-    <p class="call-ended__title">
+    <p class="call-ended__title typo-heading-3">
       {{ t('call.ended') }}
     </p>
 
@@ -31,9 +31,4 @@ const { makeCall } = callStore;
 
 
 <style scoped lang="scss">
-@use '@webitel/styleguide/typography' as *;
-
-.call-ended__title {
-  @extend %typo-heading-3;
-}
 </style>

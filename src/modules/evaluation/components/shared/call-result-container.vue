@@ -1,6 +1,6 @@
 <template>
   <div class="call-result-container">
-    <div class="call-result-container__header">
+    <div class="call-result-container__header typo-subtitle-1">
       <slot name="title"></slot>
     </div>
 
@@ -14,12 +14,16 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 </script>
 
-<style scoped lang="scss">
-@use '@webitel/styleguide/typography' as *;
-
+<style
+  scoped
+  lang="scss"
+>
 .call-result-container {
   width: 300px;
   height: 300px;
@@ -31,12 +35,13 @@
   gap: var(--spacing-xs);
   border-radius: var(--spacing-xs);
 }
+
 .call-result-container__header {
-  @extend %typo-subtitle-1;
   background-color: var(--dp-18-surface-color);
   padding: var(--spacing-xs);
   border-radius: var(--spacing-xs);
 }
+
 .call-result-container__main {
   display: flex;
   justify-content: center;

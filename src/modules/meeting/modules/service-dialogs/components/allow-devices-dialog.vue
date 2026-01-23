@@ -1,19 +1,21 @@
 <template>
-    <meeting-service-dialog
-      class="allow-devices-dialog">
-          <p class="allow-devices-dialog__title">{{ t('devices.allowMessage' )}}</p>
+  <meeting-service-dialog class="allow-devices-dialog">
+    <p class="allow-devices-dialog__title typo-heading-3">{{ t('devices.allowMessage') }}</p>
 
-        <wt-button
-            :loading="isRequesting"
-            color="error"
-            @click="allowAccess"
-        >
-             {{ t('devices.allow') }}
-        </wt-button>
-    </meeting-service-dialog>
+    <wt-button
+      :loading="isRequesting"
+      color="error"
+      @click="allowAccess"
+    >
+      {{ t('devices.allow') }}
+    </wt-button>
+  </meeting-service-dialog>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { WtButton } from '@webitel/ui-sdk/components';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
@@ -42,11 +44,11 @@ const allowAccess = async () => {
 };
 </script>
 
-<style scoped lang="scss">
-@use '@webitel/styleguide/typography' as *;
-
+<style
+  scoped
+  lang="scss"
+>
 .allow-devices-dialog__title {
-  @extend %typo-heading-3;
   text-align: center;
   padding: 0 var(--spacing-md);
 }

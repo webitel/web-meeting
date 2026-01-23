@@ -35,6 +35,13 @@ export default defineConfig({
 		],
 	},
 	// fixes "has no export named "default" (or not default)
+	css: {
+		preprocessorOptions: {
+			scss: {
+				api: 'modern',
+			},
+		},
+	},
 	optimizeDeps: {
 		include: [
 			'ee-ts',
