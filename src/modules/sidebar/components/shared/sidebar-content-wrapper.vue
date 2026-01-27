@@ -2,8 +2,8 @@
   <div class="sidebar-content-wrapper">
     <div class="sidebar-content-wrapper__header">
 
-      <div class="sidebar-content-wrapper__title">
-        <slot name="title"/>
+      <div class="sidebar-content-wrapper__title typo-subtitle-1">
+        <slot name="title" />
       </div>
 
       <wt-icon-btn
@@ -15,20 +15,24 @@
 
 
     <div class="sidebar-content-wrapper__main">
-      <slot name="main"/>
+      <slot name="main" />
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 const emit = defineEmits<{
 	close: [];
 }>();
 </script>
 
-<style scoped lang="scss">
-@use '@webitel/styleguide/typography' as *;
-
+<style
+  scoped
+  lang="scss"
+>
 .sidebar-content-wrapper {
   height: 100%;
   display: flex;
@@ -43,7 +47,6 @@ const emit = defineEmits<{
 }
 
 .sidebar-content-wrapper__title {
-  @extend %typo-subtitle-1;
   display: flex;
   gap: var(--spacing-xs);
 }
