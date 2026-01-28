@@ -381,6 +381,31 @@ export const useCallStore = defineStore('meeting/call', () => {
 				callOptions,
 			);
 			session.value = rtcSession;
+			rtcSession.on('newInfo', (e) => {
+				if (e.originator !== 'remote') return;
+
+				try {
+					const data = JSON.parse(e.request.body);
+
+					console.log('отримано INFO від іншої сторони →', data);
+
+					// ─── тут обробляємо те що прийшло ─────────────────
+					if (typeof data.videoMuted === 'boolean') {
+						// remoteVideoMuted.value = data.videoMuted;
+						console.log('відділене видео muted →', data.videoMuted);
+					}
+
+					if (typeof data.audioMuted === 'boolean') {
+						console.log('віддалений микрофон muted →', data.audioMuted);
+					}
+
+					if (typeof data.hold === 'boolean') {
+						console.log('віддалена сторона на hold →', data.hold);
+					}
+				} catch (err) {
+					console.error('INFO пришло, но не JSON!', e.request.body, err);
+				}
+			});
 			(window as any).currentCallRTCSession = rtcSession; // For debugging
 		} catch (err) {
 			console.error('Failed to make call:', err);
@@ -397,6 +422,25 @@ export const useCallStore = defineStore('meeting/call', () => {
 	function hangup(): void {
 		if (session.value) {
 			session.value.terminate();
+		}
+	}
+	function sendInfo(payload: {
+		videoMuted?: boolean;
+		audioMuted?: boolean;
+		hold?: boolean;
+	}) {
+		if (!session.value) {
+			console.warn('нема сессії → INFO не відправляємо');
+			return;
+		}
+
+		try {
+			const message = JSON.stringify(payload);
+			session.value.sendInfo('application/json', message);
+
+			console.log('відправили INFO →', payload);
+		} catch (err) {
+			console.error('помилка при відправці INFO', err);
 		}
 	}
 
@@ -423,22 +467,26 @@ export const useCallStore = defineStore('meeting/call', () => {
 	function disableVideo(): void {
 		if (!session.value) {
 			initCallWithVideo.value = false;
-		} else {
-			session.value!.mute({
-				video: true,
-			});
 		}
+		session.value!.mute({
+			video: true,
+		});
+		sendInfo({
+			videoMuted: true,
+		});
 	}
 
 	function enableVideo(): void {
 		if (!session.value) {
 			initCallWithVideo.value = true;
-		} else {
-			session.value!.unmute({
-				video: true,
-			});
-			initVideo();
 		}
+		session.value!.unmute({
+			video: true,
+		});
+		initVideo();
+		sendInfo({
+			videoMuted: false,
+		});
 	}
 
 	/**

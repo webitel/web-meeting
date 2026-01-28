@@ -22,15 +22,16 @@
 		"@webitel/ui-chats": "^0.1.2",
 		"@webitel/ui-sdk": "~26.2",
 		"axios": "^1.13",
-		"jssip": "^3.10.1",
 		"clipboard-copy": "^4.x",
+		"jssip": "^3.10.1",
 		"lodash": "npm:lodash-es@latest",
 		"pinia": "^3.0.3",
 		"tiny-jsonc": "^1.0.2",
 		"uuid": "^13.0.0",
 		"vue": "^3.5.x",
 		"vue-i18n": "^11.x",
-		"vue-router": "^4.x"
+		"vue-router": "^4.x",
+		"webitel-sdk": "^26.1.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.11",
