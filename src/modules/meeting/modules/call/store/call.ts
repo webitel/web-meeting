@@ -30,6 +30,7 @@ export enum SessionState {
  */
 export const useCallStore = defineStore('meeting/call', () => {
 	const appConfig = inject<AppConfig>('$config')!;
+	JsSIP.debug.disable();
 
 	const authStore = useAuthStore();
 	const { xPortalDevice, meetingId, accessToken, callAccount } =
@@ -59,6 +60,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	// Video streams
 	const localVideoStream = ref<MediaStream | null>(null);
 	const remoteVideoStream = ref<MediaStream | null>(null);
+	const remoteVideoMuted = ref(false);
 
 	const initCallWithMicrophone = ref<boolean>(true);
 	const initCallWithVideo = ref<boolean>(true);
@@ -381,6 +383,14 @@ export const useCallStore = defineStore('meeting/call', () => {
 				callOptions,
 			);
 			session.value = rtcSession;
+			rtcSession.on('newInfo', (e) => {
+				if (e.originator !== 'remote') return;
+
+				const data = JSON.parse(e.request.body);
+				if (typeof data.videoMuted === 'boolean') {
+					remoteVideoMuted.value = data.videoMuted;
+				}
+			});
 			(window as any).currentCallRTCSession = rtcSession; // For debugging
 		} catch (err) {
 			console.error('Failed to make call:', err);
@@ -398,6 +408,16 @@ export const useCallStore = defineStore('meeting/call', () => {
 		if (session.value) {
 			session.value.terminate();
 		}
+	}
+	function sendInfo(payload: { videoMuted?: boolean }) {
+		if (!session.value) return;
+
+		const message = JSON.stringify({
+			...payload,
+			hold: false,
+			audioMuted: !microphoneEnabled.value,
+		});
+		session.value.sendInfo('application/json', message);
 	}
 
 	function enableMicrophone(): void {
@@ -427,6 +447,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 			session.value!.mute({
 				video: true,
 			});
+			sendInfo({
+				videoMuted: true,
+			});
 		}
 	}
 
@@ -438,6 +461,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 				video: true,
 			});
 			initVideo();
+			sendInfo({
+				videoMuted: false,
+			});
 		}
 	}
 
@@ -562,6 +588,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		sessionAudio,
 		localVideoStream,
 		remoteVideoStream,
+		remoteVideoMuted,
 		sessionState,
 		microphoneEnabled,
 		videoEnabled,
