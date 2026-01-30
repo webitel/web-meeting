@@ -30,6 +30,7 @@ export enum SessionState {
  */
 export const useCallStore = defineStore('meeting/call', () => {
 	const appConfig = inject<AppConfig>('$config')!;
+	JsSIP.debug.disable();
 
 	const authStore = useAuthStore();
 	const { xPortalDevice, meetingId, accessToken, callAccount } =
@@ -59,6 +60,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	// Video streams
 	const localVideoStream = ref<MediaStream | null>(null);
 	const remoteVideoStream = ref<MediaStream | null>(null);
+	const remoteVideoMuted = ref(false);
 
 	const initCallWithMicrophone = ref<boolean>(true);
 	const initCallWithVideo = ref<boolean>(true);
@@ -384,26 +386,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 			rtcSession.on('newInfo', (e) => {
 				if (e.originator !== 'remote') return;
 
-				try {
-					const data = JSON.parse(e.request.body);
-
-					console.log('отримано INFO від іншої сторони →', data);
-
-					// ─── тут обробляємо те що прийшло ─────────────────
-					if (typeof data.videoMuted === 'boolean') {
-						// remoteVideoMuted.value = data.videoMuted;
-						console.log('відділене видео muted →', data.videoMuted);
-					}
-
-					if (typeof data.audioMuted === 'boolean') {
-						console.log('віддалений микрофон muted →', data.audioMuted);
-					}
-
-					if (typeof data.hold === 'boolean') {
-						console.log('віддалена сторона на hold →', data.hold);
-					}
-				} catch (err) {
-					console.error('INFO пришло, но не JSON!', e.request.body, err);
+				const data = JSON.parse(e.request.body);
+				if (typeof data.videoMuted === 'boolean') {
+					remoteVideoMuted.value = data.videoMuted;
 				}
 			});
 			(window as any).currentCallRTCSession = rtcSession; // For debugging
@@ -424,24 +409,15 @@ export const useCallStore = defineStore('meeting/call', () => {
 			session.value.terminate();
 		}
 	}
-	function sendInfo(payload: {
-		videoMuted?: boolean;
-		audioMuted?: boolean;
-		hold?: boolean;
-	}) {
-		if (!session.value) {
-			console.warn('нема сессії → INFO не відправляємо');
-			return;
-		}
+	function sendInfo(payload: { videoMuted?: boolean }) {
+		if (!session.value) return;
 
-		try {
-			const message = JSON.stringify(payload);
-			session.value.sendInfo('application/json', message);
-
-			console.log('відправили INFO →', payload);
-		} catch (err) {
-			console.error('помилка при відправці INFO', err);
-		}
+		const message = JSON.stringify({
+			...payload,
+			hold: false,
+			audioMuted: !microphoneEnabled.value,
+		});
+		session.value.sendInfo('application/json', message);
 	}
 
 	function enableMicrophone(): void {
@@ -467,26 +443,28 @@ export const useCallStore = defineStore('meeting/call', () => {
 	function disableVideo(): void {
 		if (!session.value) {
 			initCallWithVideo.value = false;
+		} else {
+			session.value!.mute({
+				video: true,
+			});
+			sendInfo({
+				videoMuted: true,
+			});
 		}
-		session.value!.mute({
-			video: true,
-		});
-		sendInfo({
-			videoMuted: true,
-		});
 	}
 
 	function enableVideo(): void {
 		if (!session.value) {
 			initCallWithVideo.value = true;
+		} else {
+			session.value!.unmute({
+				video: true,
+			});
+			initVideo();
+			sendInfo({
+				videoMuted: false,
+			});
 		}
-		session.value!.unmute({
-			video: true,
-		});
-		initVideo();
-		sendInfo({
-			videoMuted: false,
-		});
 	}
 
 	/**
@@ -610,6 +588,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		sessionAudio,
 		localVideoStream,
 		remoteVideoStream,
+		remoteVideoMuted,
 		sessionState,
 		microphoneEnabled,
 		videoEnabled,
