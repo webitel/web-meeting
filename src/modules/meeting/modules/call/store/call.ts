@@ -392,8 +392,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 		}
 	}
 	function sendInfo(payload: { videoMuted?: boolean }) {
-		if (!session.value) return;
-
 		const message = JSON.stringify({
 			...payload,
 			hold: false,
