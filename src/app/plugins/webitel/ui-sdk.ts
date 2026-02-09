@@ -4,7 +4,7 @@ import WebitelUI from '@webitel/ui-sdk';
 import * as locales from '@webitel/ui-sdk/locale';
 import { eventBus } from '@webitel/ui-sdk/scripts';
 
-import i18n from '../../locale/i18n';
+import { i18n } from '../../locale/i18n';
 
 const globals = {
 	$baseURL: import.meta.env.BASE_URL,

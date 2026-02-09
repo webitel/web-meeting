@@ -5,7 +5,7 @@ import {
 	plugin as WebitelUi,
 	options as WebitelUiOptions,
 } from './app/plugins/webitel/ui-sdk';
-import './app/plugins/@webitel/ui-chats';
+import './app/plugins/webitel/ui-chats';
 import { initRouter, router } from './app/router';
 import { initializeConfig } from './modules/appConfig/config';
 import App from './the-app.vue';
