@@ -3,7 +3,6 @@ import {
 	createWebHistory,
 	type RouteRecordRaw,
 } from 'vue-router';
-import { WtApplication } from '@webitel/ui-sdk/enums';
 import TheApp from '../../the-app.vue';
 
 const routes: RouteRecordRaw[] = [
@@ -11,9 +10,6 @@ const routes: RouteRecordRaw[] = [
 		path: '/:meetingId',
 		name: 'meeting',
 		component: TheApp,
-		meta: {
-			WtApplication: WtApplication.Meet,
-		},
 	},
 ];
 
