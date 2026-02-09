@@ -13,9 +13,17 @@ const routes: RouteRecordRaw[] = [
 	},
 ];
 
-const router = createRouter({
-	history: createWebHistory(import.meta.env.BASE_URL),
-	routes,
-});
+export let router = null;
 
-export default router;
+export const initRouter = async ({ beforeEach = [] } = {}) => {
+	router = createRouter({
+		history: createWebHistory(import.meta.env.BASE_URL),
+		routes,
+	});
+
+	beforeEach.forEach((guard) => {
+		router.beforeEach(guard);
+	});
+
+	return router;
+};
