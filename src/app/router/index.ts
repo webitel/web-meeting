@@ -12,7 +12,7 @@ const routes: RouteRecordRaw[] = [
 		name: 'meeting',
 		component: TheApp,
 		meta: {
-			app: WtApplication.Meet,
+			WtApplication: WtApplication.Meet,
 		},
 	},
 ];
