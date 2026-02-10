@@ -49,6 +49,7 @@
   flex-direction: column;
   flex: 1;
   text-align: center;
+  gap: var(--spacing-xs);
 }
 
 .call-result-container__actions {
