@@ -36,6 +36,10 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 		return MeetingState.JoinDialog;
 	});
 
+	const isActiveMeeting = computed(() => {
+		return meetingState.value === MeetingState.ActiveMeeting;
+	});
+
 	const unwatchSession = watch(session, () => {
 		if (session.value) {
 			alreadyCalled.value = true;
@@ -44,6 +48,7 @@ export const useMainSceneStore = defineStore('mainScene', () => {
 	});
 
 	return {
+		isActiveMeeting,
 		meetingState,
 	};
 });

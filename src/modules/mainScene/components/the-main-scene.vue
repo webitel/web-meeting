@@ -8,6 +8,7 @@
       />
       <sidebar-panel
       v-if="sidebarPanelOpened"
+      :class="{ 'sidebar-panel--overlay': !isActiveMeeting }"
       />
      </div>
   </main>
@@ -30,6 +31,7 @@ import UnsupportedUserAgentErrorBlock from '../modules/error-blocks/components/u
 import { isUnsupportedUserAgent } from '../modules/error-blocks/scripts/isUnsupportedUserAgent';
 import InvalidLinkErrorBlock from '../modules/error-blocks/components/invalid-link-error-block.vue';
 import { useAuthStore } from '../../auth/stores/auth';
+import { useMainSceneStore } from './../stores/mainScene';
 
 const $config = inject<AppConfig>('$config')!;
 
@@ -43,6 +45,9 @@ const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
 const callStore = useCallStore();
 const { sessionState, isSessionStateFinished } = storeToRefs(callStore);
+
+const mainSceneStore = useMainSceneStore();
+const { isActiveMeeting } = storeToRefs(mainSceneStore);
 
 const closeSidebarPanel = () => {
 	if (sidebarPanelOpened) sidebarStore.close();
@@ -100,5 +105,10 @@ watch(isSessionStateFinished, (value) => {
 
 .meeting-component {
   flex: 1 1 auto;
+}
+
+.sidebar-panel--overlay {
+  position: absolute;
+  right: 0;
 }
 </style>
