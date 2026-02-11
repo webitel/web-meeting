@@ -16,6 +16,7 @@
 
       :key="videoContainerSize"
       :size="videoContainerSize"
+      :call:on-hold="callOnHold"
       hide-video-display-panel
       static
 
@@ -65,6 +66,7 @@ const callStore = useCallStore();
 
 const {
 	remoteVideoStream: remoteVideoStreamValue,
+	callOnHold,
 	localVideoStream,
 	microphoneEnabled,
 	videoEnabled,
