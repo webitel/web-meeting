@@ -19,8 +19,7 @@ export default defineConfig({
 		}),
 	],
 	server: {
-		port: 8080,
-		// https: true,
+		// host: true,  // uncomment me to enable localhost access by IP (including from other devices in the network)
 	},
 	resolve: {
 		alias: {
