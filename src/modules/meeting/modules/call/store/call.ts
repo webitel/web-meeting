@@ -221,19 +221,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 	function initVideo(): void {
 		if (!session.value || localVideoStream.value) return;
 
-		const receivers = session.value.connection?.getReceivers();
-
-		if (receivers && !remoteVideoStream.value) {
-			// Create remote video stream from received tracks
-			const remoteStream = new MediaStream();
-			receivers.forEach((receiver) => {
-				if (receiver.track && receiver.track.kind === 'video') {
-					remoteStream.addTrack(receiver.track);
-				}
-			});
-			remoteVideoStream.value = remoteStream;
-		}
-
 		// Get local stream from senders
 		const senders = session.value.connection?.getSenders();
 		if (senders && !localVideoStream.value) {
@@ -334,6 +321,21 @@ export const useCallStore = defineStore('meeting/call', () => {
 					// Call is confirmed (200 OK)
 					console.log('2: Call confirmed');
 					sessionState.value = SessionState.ACTIVE;
+
+					if (!session.value || localVideoStream.value) return;
+
+					const receivers = session.value.connection?.getReceivers();
+
+					if (receivers && !remoteVideoStream.value) {
+						// Create remote video stream from received tracks
+						const remoteStream = new MediaStream();
+						receivers.forEach((receiver) => {
+							if (receiver.track && receiver.track.kind === 'video') {
+								remoteStream.addTrack(receiver.track);
+							}
+						});
+						remoteVideoStream.value = remoteStream;
+					}
 				},
 				failed: (event: any) => {
 					console.error('Call failed:', event);
