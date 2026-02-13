@@ -323,7 +323,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 					console.log('2: Call confirmed');
 					sessionState.value = SessionState.ACTIVE;
 
-					if (!session.value || localVideoStream.value) return;
+					if (!session.value) return;
 
 					const receivers = session.value.connection?.getReceivers();
 
@@ -369,7 +369,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			);
 			session.value = rtcSession;
 			rtcSession.on('newInfo', (e) => {
-				if (e.originator !== 'remote') return;
+				if (e.originator !== 'remote' || !e.request.body) return;
 
 				const data = JSON.parse(e.request.body);
 				if (typeof data.videoMuted === 'boolean') {

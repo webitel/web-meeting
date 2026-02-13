@@ -17,6 +17,7 @@
       :key="videoContainerSize"
       :size="videoContainerSize"
       :call:on-hold="callOnHold"
+      hide-sender-on-hold
       hide-video-display-panel
       static
 
