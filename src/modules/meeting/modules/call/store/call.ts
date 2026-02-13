@@ -61,6 +61,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	const localVideoStream = ref<MediaStream | null>(null);
 	const remoteVideoStream = ref<MediaStream | null>(null);
 	const remoteVideoMuted = ref(false);
+	const callOnHold = ref(false);
 
 	const initCallWithMicrophone = ref<boolean>(true);
 	const initCallWithVideo = ref<boolean>(true);
@@ -322,7 +323,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 					console.log('2: Call confirmed');
 					sessionState.value = SessionState.ACTIVE;
 
-					if (!session.value || localVideoStream.value) return;
+					if (!session.value) return;
 
 					const receivers = session.value.connection?.getReceivers();
 
@@ -368,11 +369,15 @@ export const useCallStore = defineStore('meeting/call', () => {
 			);
 			session.value = rtcSession;
 			rtcSession.on('newInfo', (e) => {
-				if (e.originator !== 'remote') return;
+				if (e.originator !== 'remote' || !e.request.body) return;
 
 				const data = JSON.parse(e.request.body);
 				if (typeof data.videoMuted === 'boolean') {
 					remoteVideoMuted.value = data.videoMuted;
+				}
+
+				if (typeof data.hold === 'boolean') {
+					callOnHold.value = data.hold;
 				}
 			});
 			(window as any).currentCallRTCSession = rtcSession; // For debugging
@@ -571,6 +576,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		localVideoStream,
 		remoteVideoStream,
 		remoteVideoMuted,
+		callOnHold,
 		sessionState,
 		microphoneEnabled,
 		videoEnabled,
