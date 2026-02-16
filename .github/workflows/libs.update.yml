@@ -9,6 +9,7 @@ on:
         type: choice
         options:
           - '@webitel/ui-sdk'
+          - '@webitel/styleguide'
 #      version:
 #        description: 'Target version (optional: latest or x.y.z)'
 #        required: false
