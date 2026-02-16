@@ -88,10 +88,4 @@ async function localSendFile(files: File[], options?: ResultCallbacks) {
 	await sendFiles(files);
 	options?.onSuccess?.();
 }
-
-onMounted(() => {
-	if (!isConnected.value) {
-		connect();
-	}
-});
 </script>

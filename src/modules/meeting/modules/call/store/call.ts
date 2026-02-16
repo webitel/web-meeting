@@ -11,6 +11,7 @@ import { useMicrophoneStore } from '../../../../devices/modules/microphone/store
 import { useSpeakerStore } from '../../../../devices/modules/speaker/stores/speaker';
 import { UserMediaConstraintType } from '../../../../devices/enums/UserDeviceType';
 import { forceSenderVideoHighQuality } from '../scripts/forceSenderVideoHighQuality';
+import { useChatStore } from '../../chat/store/chat';
 
 /**
  * Session states for the call
@@ -47,6 +48,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	const speakerStore = useSpeakerStore();
 	const { selectedDeviceId: speakerDeviceId } = storeToRefs(speakerStore);
+
+	const chatStore = useChatStore();
 
 	// User Agent
 	const userAgent = ref<UA | null>(null);
@@ -322,6 +325,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 					// Call is confirmed (200 OK)
 					console.log('2: Call confirmed');
 					sessionState.value = SessionState.ACTIVE;
+					chatStore.connect();
 
 					if (!session.value) return;
 
