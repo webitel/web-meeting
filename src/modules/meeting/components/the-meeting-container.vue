@@ -63,6 +63,10 @@ import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
 import CallEndedDialog from '../modules/service-dialogs/components/call-ended-dialog.vue';
 import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
 
+const emit = defineEmits<{
+	'chat-opened': [];
+}>();
+
 const callStore = useCallStore();
 
 const {
@@ -133,6 +137,7 @@ const toggleSettingsPanel = () => {
 
 const toggleChatPanel = () => {
 	changeSidebarMode(SidebarMode.Chat);
+	emit('chat-opened');
 };
 
 const devicesStore = useDevicesPermissionsStore();

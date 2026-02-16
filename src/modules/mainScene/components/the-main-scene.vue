@@ -5,6 +5,7 @@
     <div class="the-main-scene__contents">
       <component
         :is="mainSceneComponent"
+        @chat-opened="openChatConnection"
       />
       <sidebar-panel
       v-if="sidebarPanelOpened"
@@ -30,6 +31,7 @@ import UnsupportedUserAgentErrorBlock from '../modules/error-blocks/components/u
 import { isUnsupportedUserAgent } from '../modules/error-blocks/scripts/isUnsupportedUserAgent';
 import InvalidLinkErrorBlock from '../modules/error-blocks/components/invalid-link-error-block.vue';
 import { useAuthStore } from '../../auth/stores/auth';
+import { useChatStore } from '../../meeting/modules/chat/store/chat';
 
 const $config = inject<AppConfig>('$config')!;
 
@@ -43,6 +45,10 @@ const { opened: sidebarPanelOpened } = storeToRefs(sidebarStore);
 
 const callStore = useCallStore();
 const { sessionState, isSessionStateFinished } = storeToRefs(callStore);
+
+const chatStore = useChatStore();
+const { isConnected: isChatConnected } = storeToRefs(chatStore);
+const { connect: chatConnect } = chatStore;
 
 const closeSidebarPanel = () => {
 	if (sidebarPanelOpened) sidebarStore.close();
@@ -65,6 +71,12 @@ const mainSceneComponent = computed(() => {
 		? EvaluationWrapper
 		: MeetingContainer;
 });
+
+const openChatConnection = () => {
+	if (!isChatConnected.value) {
+		chatConnect();
+	}
+};
 
 watch(isSessionStateFinished, (value) => {
 	if (value) closeSidebarPanel();
