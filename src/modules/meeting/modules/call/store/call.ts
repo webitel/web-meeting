@@ -325,6 +325,10 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 					if (!session.value) return;
 
+					sendInfo({
+						videoMuted: videoEnabled.value,
+					});
+
 					const receivers = session.value.connection?.getReceivers();
 
 					if (receivers && !remoteVideoStream.value) {
@@ -369,6 +373,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			);
 			session.value = rtcSession;
 			rtcSession.on('newInfo', (e) => {
+				console.log(e, ' NEW INFO');
 				if (e.originator !== 'remote' || !e.request.body) return;
 
 				const data = JSON.parse(e.request.body);
@@ -379,6 +384,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 				if (typeof data.hold === 'boolean') {
 					callOnHold.value = data.hold;
 				}
+
+				console.log(data, ' data');
 			});
 			(window as any).currentCallRTCSession = rtcSession; // For debugging
 		} catch (err) {
@@ -403,6 +410,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			...payload,
 			hold: false,
 			audioMuted: !microphoneEnabled.value,
+			syncRequested: true,
 		});
 		session.value.sendInfo('application/json', message);
 	}
