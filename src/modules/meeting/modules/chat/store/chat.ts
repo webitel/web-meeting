@@ -132,11 +132,22 @@ export const useChatStore = defineStore('meeting/chat', () => {
 		);
 	}
 
-	async function loadFile(fileId: string) {
-		await PortalFilesAPI.get({
-			url: `${config!.chat.filesEndpointUrl}/${fileId}`,
+	async function loadFile({ id, name }: { id: string; name: string }) {
+		const response = await PortalFilesAPI.get({
+			url: `${config!.chat.filesEndpointUrl}/${id}/download`,
 			headers: authData.value,
 		});
+
+		const url = window.URL.createObjectURL(response);
+		const a = document.createElement('a');
+
+		a.href = url;
+		a.download = name;
+		document.body.appendChild(a);
+		a.click();
+
+		a.remove();
+		window.URL.revokeObjectURL(url);
 	}
 
 	// reload message history
