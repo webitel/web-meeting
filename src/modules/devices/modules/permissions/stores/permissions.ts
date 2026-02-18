@@ -44,8 +44,14 @@ export const useDevicesPermissionsStore = defineStore(
 
 			try {
 				// for notification only in case of failure to provide access to devices
-				const result = await ensurePermissions();
-				error.value = !result ? DeviceErrors.Denied : '';
+				const hasPermissions = await ensurePermissions();
+				if (
+					!hasPermissions ||
+					!hasAnyMicrophones.value ||
+					!hasAnyCameras.value
+				) {
+					error.value = DeviceErrors.Denied;
+				}
 			} catch (err) {
 				throw error.value;
 			} finally {
