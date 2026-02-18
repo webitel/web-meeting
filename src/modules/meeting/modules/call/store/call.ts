@@ -325,10 +325,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 					if (!session.value) return;
 
-					// sendInfo({
-					// 	videoMuted: !videoEnabled.value,
-					// });
-
 					const receivers = session.value.connection?.getReceivers();
 
 					if (receivers && !remoteVideoStream.value) {
