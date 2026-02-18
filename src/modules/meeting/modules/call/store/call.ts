@@ -369,7 +369,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 			);
 			session.value = rtcSession;
 			rtcSession.on('newInfo', (e) => {
-				if (e.originator !== 'remote' || !e.request.body) return;
+				if (e.originator !== 'remote' || e.contentType !== 'application/json')
+					return;
 
 				const data = JSON.parse(e.request.body);
 				if (typeof data.videoMuted === 'boolean') {
