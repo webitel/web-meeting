@@ -369,7 +369,10 @@ export const useCallStore = defineStore('meeting/call', () => {
 			);
 			session.value = rtcSession;
 			rtcSession.on('newInfo', (e) => {
-				if (e.originator !== 'remote' || e.contentType !== 'application/json')
+				if (
+					e.originator !== 'remote' ||
+					e.info.contentType !== 'application/json'
+				)
 					return;
 
 				const data = JSON.parse(e.request.body);
