@@ -19,7 +19,7 @@
 		"@vueuse/core": "^14.x",
 		"@webitel/api-services": "^0.1.1",
 		"@webitel/styleguide": "~26.2",
-		"@webitel/ui-chats": "^0.1.2",
+		"@webitel/ui-chats": "^0.1.14",
 		"@webitel/ui-sdk": "~26.2",
 		"axios": "^1.13",
 		"clipboard-copy": "^4.x",
