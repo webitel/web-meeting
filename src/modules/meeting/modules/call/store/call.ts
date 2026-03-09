@@ -327,6 +327,12 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 					const receivers = session.value.connection?.getReceivers();
 
+					if (!initCallWithMicrophone.value) {
+						session.value?.mute({
+							audio: true,
+						});
+					}
+
 					if (receivers && !remoteVideoStream.value) {
 						// Create remote video stream from received tracks
 						const remoteStream = new MediaStream();
