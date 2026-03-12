@@ -1,6 +1,6 @@
 {
 	"name": "web-meeting",
-	"version": "25.12.0",
+	"version": "26.2.0",
 	"type": "module",
 	"scripts": {
 		"dev": "vite --force",
