@@ -333,6 +333,12 @@ export const useCallStore = defineStore('meeting/call', () => {
 						});
 					}
 
+					if (!videoEnabled.value) {
+						sendInfo({
+							videoMuted: true,
+						});
+					}
+
 					if (receivers && !remoteVideoStream.value) {
 						// Create remote video stream from received tracks
 						const remoteStream = new MediaStream();
