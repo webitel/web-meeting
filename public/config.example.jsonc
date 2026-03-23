@@ -24,7 +24,7 @@
 
 	// Chat configuration
 	"chat": {
-		"host": "wss://webitel.example.com/chat"
+		"host": "wss://webitel.example.com/portal/ws"
 	},
 
 	// Assets configuration
@@ -35,7 +35,7 @@
 
 	// Evaluation configuration
 	"evaluation": {
-		"endpointUrl": "https://webitel.example.com/api/evaluation",
+		"endpointUrl": "https://webitel.example.com/api/meetings",
 		"goodGrade": 10,
 		"badGrade": 5
 	},
