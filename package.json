@@ -21,7 +21,7 @@
 		"@webitel/styleguide": "~26.2",
 		"@webitel/ui-chats": "0.1.17",
 		"@webitel/ui-sdk": "~26.2",
-		"axios": "^1.13",
+		"axios": "1.13.1",
 		"clipboard-copy": "^4.x",
 		"jssip": "^3.10.1",
 		"lodash": "npm:lodash-es@latest",
