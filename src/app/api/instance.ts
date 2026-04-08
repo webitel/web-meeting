@@ -1,11 +1,10 @@
-import { generateInstance } from '@webitel/api-services/api/axios';
+import { getDefaultInstance } from '@webitel/api-services/api/defaults';
 
-export const instance = generateInstance({
-	baseURL: import.meta.env.VITE_API_URL,
-});
+export const instance = getDefaultInstance();
 
 delete (instance.defaults.headers as Record<string, unknown>)[
 	'X-Webitel-Access'
 ];
+instance.interceptors.request.clear();
 
 export default instance;
