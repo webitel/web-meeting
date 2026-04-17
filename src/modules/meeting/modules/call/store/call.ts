@@ -478,6 +478,10 @@ export const useCallStore = defineStore('meeting/call', () => {
 		} else {
 			enableMicrophone();
 		}
+
+		if (session.value) {
+			sendInfo({});
+		}
 	}
 
 	/**
