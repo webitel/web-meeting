@@ -1,9 +1,9 @@
-name: PR deliver (web-meeting)
-run-name: "web-meeting@${{ github.event.workflow_run.head_branch }} - upload package for #${{ github.event.workflow_run.run_number }}"
+name: PR deliver (webitel-meetings-app)
+run-name: "webitel-meetings-app@${{ github.event.workflow_run.head_branch }} - upload package for #${{ github.event.workflow_run.run_number }}"
 
 on:
   workflow_run:
-    workflows: [ "PR (web-meeting)" ]
+    workflows: [ "PR (webitel-meetings-app)" ]
     types: [ completed ]
 
 permissions: { contents: read }
@@ -30,13 +30,15 @@ jobs:
       DELIVERY_BOT_APP_PEM: ${{ secrets.DELIVERY_BOT_APP_PEM }}
 
     with:
-      deb-package-pattern: "web-meeting*.deb"
+      arch: all
+      deb-package-pattern: "webitel-meetings-app*.deb"
       deb-component: dev
       deb-codename: ${{ vars.DEB_CODENAME }}
       deb-s3-bucket-name: ${{ vars.DEB_S3_BUCKET_NAME }}
       deb-s3-bucket-region: ${{ vars.DEB_S3_DEFAULT_REGION }}
       deb-s3-endpoint: ${{ vars.DEB_S3_ENDPOINT }}
       deb-s3-force-path-style: ${{ vars.DEB_S3_FORCE_PATH_STYLE == 'true' }}
+      github-app-client-id: ${{ vars.DELIVERY_BOT_CLIENT_ID }}
       github-app-id: ${{ vars.DELIVERY_BOT_APP_ID }}
       artifact-repository-owner: ${{ github.repository_owner }}
       artifact-repository: ${{ github.event.repository.name }}

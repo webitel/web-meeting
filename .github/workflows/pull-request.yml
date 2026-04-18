@@ -1,5 +1,5 @@
-name: PR (web-meeting)
-run-name: "web-meeting@pr${{ github.event.pull_request.number }}#${{ github.run_number }} - ${{ github.event.pull_request.title }}"
+name: PR (webitel-meetings-app)
+run-name: "webitel-meetings-app@pr${{ github.event.pull_request.number }}#${{ github.run_number }} - ${{ github.event.pull_request.title }}"
 
 on:
   pull_request:
@@ -43,8 +43,9 @@ jobs:
       arch: all
       version: ${{ needs.prepare.outputs.version }}
       version-build: ${{ github.run_number }}
+      build-timestamp: ${{ needs.prepare.outputs.build-timestamp }}
       prerelease: dev~pr${{ github.event.pull_request.number }}
-      package-name: web-meeting
+      package-name: webitel-meetings-app
       package-description: ${{ github.event.repository.description }}
       app-root: /opt/www/meetings
       package-contents: |
