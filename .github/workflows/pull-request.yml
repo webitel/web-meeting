@@ -49,7 +49,6 @@ jobs:
       package-description: ${{ github.event.repository.description }}
       app-root: /opt/www/meetings
       package-contents: |
-        src=public/config.example.jsonc dst=/opt/www/meetings/config.example.jsonc type=config
         
 
       package-depends: 
