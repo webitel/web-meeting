@@ -20,10 +20,9 @@ updates:
     open-pull-requests-limit: 10
     groups:
       minor-and-patch:
-        patterns: [ * ]
+        patterns: [ "*" ]
         update-types: [ minor, patch ]
 
-    enable-beta-ecosystems: false
     commit-message:
       prefix: deps
       prefix-development: deps-dev
