@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
-
+import { useDeviceSelection } from '../composables/useDeviceSelection';
+import { UserMediaConstraintType } from '../enums/UserDeviceType';
 import {
 	cleanupStream,
 	getMediaStreamMainTrack,
 	getStreamFromDeviceId,
 } from '../scripts/mediaStreamUtils';
-import { useDeviceSelection } from '../composables/useDeviceSelection';
-import { UserMediaConstraintType } from '../enums/UserDeviceType';
 
 /**
  * store factory for microphone / camera devices

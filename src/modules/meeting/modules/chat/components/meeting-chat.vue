@@ -25,19 +25,18 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
-import { computed, onMounted } from 'vue';
-import { storeToRefs } from 'pinia';
+import type { Message as PortalChatMessageType } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
 import {
 	ChatAction,
 	ChatContainer,
 	type ChatMessageType as UiChatMessageType,
 } from '@webitel/ui-chats/ui';
-import type { Message as PortalChatMessageType } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
 import type { ResultCallbacks } from '@webitel/ui-sdk/src/types';
-
-import { useChatStore } from '../store/chat';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import SidebarContentWrapper from '../../../../sidebar/components/shared/sidebar-content-wrapper.vue';
+import { useChatStore } from '../store/chat';
 
 const emit = defineEmits<{
 	close: [];

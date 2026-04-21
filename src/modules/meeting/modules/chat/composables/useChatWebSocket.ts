@@ -1,10 +1,10 @@
 import { useWebSocket } from '@vueuse/core';
-import { ref } from 'vue';
 import isEmpty from '@webitel/ui-sdk/src/scripts/isEmpty';
+import { ref } from 'vue';
 import type {
 	AuthData,
-	SendMessagePayload,
 	ChatWebSocketApi,
+	SendMessagePayload,
 } from '../types/chat';
 
 // в кінці прибрати консоль логи

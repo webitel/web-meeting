@@ -1,9 +1,8 @@
-import merge from 'lodash/merge';
 import cloneDeep from 'lodash/cloneDeep';
-
-import type { AppConfig } from './types/AppConfig';
-import { fetchConfig } from './scripts/fetchConfig';
+import merge from 'lodash/merge';
 import { defaultConfig } from './defaults/defaultConfig';
+import { fetchConfig } from './scripts/fetchConfig';
+import type { AppConfig } from './types/AppConfig';
 
 let config: AppConfig;
 

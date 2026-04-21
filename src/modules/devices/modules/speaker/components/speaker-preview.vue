@@ -10,9 +10,9 @@
 </template>
 
 <script setup lang="ts">
+import { WtButton } from '@webitel/ui-sdk/components';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { WtButton } from '@webitel/ui-sdk/components';
 
 const { deviceId } = defineProps<{
 	deviceId?: string | null;

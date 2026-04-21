@@ -9,12 +9,12 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref, computed, onUnmounted } from 'vue';
+import { computed, onUnmounted, ref, watch } from 'vue';
+import { UserDeviceType } from '../../../enums/UserDeviceType';
 import {
 	cleanupStream,
 	getStreamFromDeviceId,
 } from '../../../scripts/mediaStreamUtils';
-import { UserDeviceType } from '../../../enums/UserDeviceType';
 
 const { deviceId } = defineProps<{
 	deviceId: string;

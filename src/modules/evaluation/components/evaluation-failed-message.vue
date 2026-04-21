@@ -12,8 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { ComponentSize } from '@webitel/ui-sdk/enums';
+import { useI18n } from 'vue-i18n';
 import CallResultContainer from './shared/call-result-container.vue';
 
 const { t } = useI18n();

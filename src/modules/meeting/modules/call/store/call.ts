@@ -6,10 +6,10 @@ import { computed, inject, markRaw, ref } from 'vue';
 
 import type { AppConfig } from '../../../../appConfig/types/AppConfig';
 import { useAuthStore } from '../../../../auth/stores/auth';
+import { UserMediaConstraintType } from '../../../../devices/enums/UserDeviceType';
 import { useCameraStore } from '../../../../devices/modules/camera/stores/camera';
 import { useMicrophoneStore } from '../../../../devices/modules/microphone/stores/microphone';
 import { useSpeakerStore } from '../../../../devices/modules/speaker/stores/speaker';
-import { UserMediaConstraintType } from '../../../../devices/enums/UserDeviceType';
 import { forceSenderVideoHighQuality } from '../scripts/forceSenderVideoHighQuality';
 
 /**

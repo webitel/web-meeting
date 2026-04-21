@@ -18,12 +18,11 @@
 >
 import { WtButton } from '@webitel/ui-sdk/components';
 import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue-i18n';
-import MeetingServiceDialog from './shared/meeting-service-dialog.vue';
-
-import { useDevicesPermissionsStore } from '../../../../devices/modules/permissions/stores/permissions';
-import { DeviceErrors } from '../../../../devices/enums/DeviceErrors';
 import { inject } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { DeviceErrors } from '../../../../devices/enums/DeviceErrors';
+import { useDevicesPermissionsStore } from '../../../../devices/modules/permissions/stores/permissions';
+import MeetingServiceDialog from './shared/meeting-service-dialog.vue';
 
 const { t } = useI18n();
 const eventBus = inject('$eventBus');
