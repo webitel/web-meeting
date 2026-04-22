@@ -43,24 +43,24 @@
 </template>
 
 <script setup lang="ts">
+import { ComponentSize } from '@webitel/ui-sdk/enums';
 import {
 	VideoCall,
 	VideoCallAction,
 } from '@webitel/ui-sdk/modules/CallSession';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
-import { ComponentSize } from '@webitel/ui-sdk/enums';
 
 import { useDevicesPermissionsStore } from '../../devices/modules/permissions/stores/permissions';
+import { MeetingState } from '../../mainScene/enums/MeetingState';
+import { useMainSceneStore } from '../../mainScene/stores/mainScene';
 import { SidebarMode } from '../../sidebar/enums/SidebarMode';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
-import { SessionState, useCallStore } from '../modules/call/store/call';
-import { useMainSceneStore } from '../../mainScene/stores/mainScene';
-import { MeetingState } from '../../mainScene/enums/MeetingState';
-import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devices-dialog.vue';
-import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
-import CallEndedDialog from '../modules/service-dialogs/components/call-ended-dialog.vue';
 import { useVideoContainerActionsList } from '../composables/useVideoContainerActionsList';
+import { SessionState, useCallStore } from '../modules/call/store/call';
+import AllowDevicesDialog from '../modules/service-dialogs/components/allow-devices-dialog.vue';
+import CallEndedDialog from '../modules/service-dialogs/components/call-ended-dialog.vue';
+import JoinDialog from '../modules/service-dialogs/components/join-dialog.vue';
 
 const emit = defineEmits<{
 	'chat-opened': [];

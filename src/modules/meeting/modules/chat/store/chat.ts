@@ -1,19 +1,19 @@
-import { ref, watch, inject, computed } from 'vue';
-import { defineStore, storeToRefs } from 'pinia';
 import type { ChatMessageType as UiChatMessageType } from '@webitel/ui-chats/ui';
-import { useChatWebSocket } from '../composables/useChatWebSocket.ts';
+import { defineStore, storeToRefs } from 'pinia';
+import { computed, inject, ref, watch } from 'vue';
 import type { AppConfig } from '../../../../../types/config';
 import { useAuthStore } from '../../../../auth/stores/auth';
 import { PortalFilesAPI } from '../../chat/api/portalFiles';
-import type { AuthData, ChatWebSocketApi } from '../types/chat';
-import { WebsocketPayloadType } from '../enums/WebsocketPayloadType';
-import { WebsocketMessageType } from '../enums/WebsocketMessageType';
-import {
-	generateProtoType,
-	generateMessage,
-	generateHistoryMessage,
-} from '../scripts/generateMessage';
+import { useChatWebSocket } from '../composables/useChatWebSocket.ts';
 import { useSafeChatMessaging } from '../composables/useSafeChatMessaging';
+import { WebsocketMessageType } from '../enums/WebsocketMessageType';
+import { WebsocketPayloadType } from '../enums/WebsocketPayloadType';
+import {
+	generateHistoryMessage,
+	generateMessage,
+	generateProtoType,
+} from '../scripts/generateMessage';
+import type { AuthData, ChatWebSocketApi } from '../types/chat';
 
 export const useChatStore = defineStore('meeting/chat', () => {
 	const config = inject<AppConfig>('$config')!;

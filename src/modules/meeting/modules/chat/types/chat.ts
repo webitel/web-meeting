@@ -1,6 +1,6 @@
-import type { Ref } from 'vue';
-import type { WebSocketStatus } from '@vueuse/core';
 import type { SendMessageRequest } from '@buf/webitel_portal.community_timostamm-protobuf-ts';
+import type { WebSocketStatus } from '@vueuse/core';
+import type { Ref } from 'vue';
 
 export interface AuthData {
 	'X-Portal-Access': string;

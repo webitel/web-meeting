@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { computed, watch, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { useDevicesPermissionsStore } from '../../devices/modules/permissions/stores/permissions';
 import { useCallStore } from '../../meeting/modules/call/store/call';

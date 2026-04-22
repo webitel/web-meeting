@@ -5,16 +5,14 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from 'vue-i18n';
 import { inject, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-
+import packageJson from '../package.json' with { type: 'json' };
 import { useAuthStore } from './modules/auth/stores/auth';
 import MainScene from './modules/mainScene/components/the-main-scene.vue';
-import type { AppConfig } from './types/config';
 import { isUnsupportedUserAgent } from './modules/mainScene/modules/error-blocks/scripts/isUnsupportedUserAgent';
-
-import packageJson from '../package.json' with { type: 'json' };
+import type { AppConfig } from './types/config';
 
 const authStore = useAuthStore();
 const config = inject<AppConfig>('$config')!;

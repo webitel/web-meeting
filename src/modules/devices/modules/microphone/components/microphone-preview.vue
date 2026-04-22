@@ -8,13 +8,12 @@
 
 <script setup lang="ts">
 import { WtLoadBar } from '@webitel/ui-sdk/components';
-import { watch, ref, computed, onUnmounted } from 'vue';
-
+import { computed, onUnmounted, ref, watch } from 'vue';
+import { UserDeviceType } from '../../../enums/UserDeviceType';
 import {
 	cleanupStream,
 	getStreamFromDeviceId,
 } from '../../../scripts/mediaStreamUtils';
-import { UserDeviceType } from '../../../enums/UserDeviceType';
 
 import { useMicrophoneVolume } from '../composables/useMicrophoneVolume';
 

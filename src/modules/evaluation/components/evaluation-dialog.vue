@@ -19,17 +19,17 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
-import { inject } from 'vue';
 import { storeToRefs } from 'pinia';
+import { inject } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { AppConfig } from '../../../types/config';
+import { useAuthStore } from '../../auth/stores/auth';
 import CallResultContainer from '../../evaluation/components/shared/call-result-container.vue';
 import { EvaluationAPI } from '../api/evaluation';
-import type { AppConfig } from '../../../types/config';
 import {
 	EvaluationValues,
 	type EvaluationValuesType,
 } from '../enums/EvaluationValues';
-import { useAuthStore } from '../../auth/stores/auth';
 
 const emit = defineEmits<{
 	'change-view': [

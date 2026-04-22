@@ -16,22 +16,22 @@
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import { inject, computed, watch } from 'vue';
+import { computed, inject, watch } from 'vue';
 import type { AppConfig } from '../../../types/config';
+import { useAuthStore } from '../../auth/stores/auth';
+import EvaluationWrapper from '../../evaluation/components/evaluation-wrapper.vue';
 import MeetingContainer from '../../meeting/components/the-meeting-container.vue';
+import {
+	SessionState,
+	useCallStore,
+} from '../../meeting/modules/call/store/call';
+import { useChatStore } from '../../meeting/modules/chat/store/chat';
 import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
-import BrandLogo from './shared/brand-logo.vue';
-import EvaluationWrapper from '../../evaluation/components/evaluation-wrapper.vue';
-import {
-	useCallStore,
-	SessionState,
-} from '../../meeting/modules/call/store/call';
+import InvalidLinkErrorBlock from '../modules/error-blocks/components/invalid-link-error-block.vue';
 import UnsupportedUserAgentErrorBlock from '../modules/error-blocks/components/unsupported-user-agent-error-block.vue';
 import { isUnsupportedUserAgent } from '../modules/error-blocks/scripts/isUnsupportedUserAgent';
-import InvalidLinkErrorBlock from '../modules/error-blocks/components/invalid-link-error-block.vue';
-import { useAuthStore } from '../../auth/stores/auth';
-import { useChatStore } from '../../meeting/modules/chat/store/chat';
+import BrandLogo from './shared/brand-logo.vue';
 
 const $config = inject<AppConfig>('$config')!;
 

@@ -1,12 +1,11 @@
-import { computed, ref, watch } from 'vue';
 import { useDevicesList } from '@vueuse/core';
-
-import { useDefaultDevice } from './useDefaultDevice';
+import { computed, ref, watch } from 'vue';
 import {
 	UserDeviceType,
 	UserMediaConstraintType,
 } from '../enums/UserDeviceType';
 import { shouldRequestPermissions } from '../modules/permissions/scripts/shouldRequestPermissions';
+import { useDefaultDevice } from './useDefaultDevice';
 
 export const useDeviceSelection = ({
 	deviceType,

@@ -38,9 +38,9 @@ import CameraSettings from '../modules/camera/components/camera-settings.vue';
 import { useCameraStore } from '../modules/camera/stores/camera';
 import MicrophoneSettings from '../modules/microphone/components/microphone-settings.vue';
 import { useMicrophoneStore } from '../modules/microphone/stores/microphone';
+import { useDevicesPermissionsStore } from '../modules/permissions/stores/permissions';
 import SpeakerSettings from '../modules/speaker/components/speaker-settings.vue';
 import { useSpeakerStore } from '../modules/speaker/stores/speaker';
-import { useDevicesPermissionsStore } from '../modules/permissions/stores/permissions';
 
 const { t } = useI18n();
 

@@ -11,13 +11,13 @@
 </template>
 
 <script setup lang="ts">
-import MeetingChat from '../../meeting/modules/chat/components/meeting-chat.vue';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import DevicesSettingsPanel from '../../devices/components/devices-settings-panel.vue';
+import { useMainSceneStore } from '../../mainScene/stores/mainScene';
+import MeetingChat from '../../meeting/modules/chat/components/meeting-chat.vue';
 import { SidebarMode } from '../../sidebar/enums/SidebarMode';
 import { useSidebarStore } from '../store/sidebar';
-import { useMainSceneStore } from '../../mainScene/stores/mainScene';
 
 const sidebarPanel = useSidebarStore();
 const { close } = sidebarPanel;

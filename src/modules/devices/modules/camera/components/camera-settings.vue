@@ -19,8 +19,8 @@ import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 
 import DeviceSelect from '../../../components/device-select.vue';
-import CameraPreview from './camera-preview.vue';
 import { useCameraStore } from '../stores/camera';
+import CameraPreview from './camera-preview.vue';
 
 const cameraStore = useCameraStore();
 const { t } = useI18n();

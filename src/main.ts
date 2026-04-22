@@ -8,11 +8,11 @@ import {
 import './app/plugins/webitel/ui-chats';
 import { initRouter, router } from './app/router';
 import { initializeConfig } from './modules/appConfig/config';
-import App from './the-app.vue';
 import {
 	forceFirefoxToEnumerateDevices,
 	isFirefox,
 } from './modules/devices/modules/permissions/scripts/handleFirefoxUserMedia';
+import App from './the-app.vue';
 
 const pinia = createPinia();
 
