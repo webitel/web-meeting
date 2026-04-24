@@ -21,7 +21,7 @@ jobs:
     with:
       development-branch: ${{ github.event.repository.default_branch }}
       triggered-branch: ${{ github.ref_name }}
-      arch: all
+      arch: ${{ vars.BUILD_ARCH }}
       codename: ${{ vars.DEB_CODENAME }}
 
   checks:
@@ -59,6 +59,9 @@ jobs:
         
 
       package-depends: 
+      package-conflicts: 
+      package-replaces: 
+      package-provides: 
       scripts: |
         
 
@@ -94,13 +97,3 @@ jobs:
       deb-s3-bucket-region: ${{ vars.DEB_S3_DEFAULT_REGION }}
       deb-s3-endpoint: ${{ vars.DEB_S3_ENDPOINT }}
       deb-s3-force-path-style: ${{ vars.DEB_S3_FORCE_PATH_STYLE == 'true' }}
-
-  release:
-    name: Release
-    needs: [ prepare, publish ]
-    if: github.event.repository.default_branch != github.ref_name && needs.publish.result == 'success'
-    uses: webitel/reusable-workflows/.github/workflows/_release.yml@v2
-    permissions: { contents: write }
-    with:
-      tag: ${{ format('{0}-{1}', needs.prepare.outputs.version, github.run_number) }}
-      tag-target-commitish: ${{ github.sha }}

@@ -52,5 +52,8 @@ jobs:
         
 
       package-depends: 
+      package-conflicts: 
+      package-replaces: 
+      package-provides: 
       scripts: |
         
