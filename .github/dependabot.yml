@@ -17,6 +17,12 @@ updates:
     schedule:
       interval: "weekly"
 
+    ignore:
+      - dependency-name: "@webitel/ui-sdk"
+      - dependency-name: "@webitel/api-services"
+      - dependency-name: "@webitel/flow-ui-sdk"
+      - dependency-name: "@webitel/styleguide"
+
     open-pull-requests-limit: 10
     groups:
       minor-and-patch:
