@@ -12,6 +12,7 @@ on:
           - '@webitel/api-services'
           - '@webitel/flow-ui-sdk'
           - '@webitel/styleguide'
+          - '@webitel/ui-datalist'
 
 permissions:
   contents: write
