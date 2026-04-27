@@ -333,11 +333,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 						});
 					}
 
-					if (!videoEnabled.value) {
-						sendInfo({
-							videoMuted: true,
-						});
-					}
+					sendInfo();
 
 					if (receivers && !remoteVideoStream.value) {
 						// Create remote video stream from received tracks
@@ -413,11 +409,11 @@ export const useCallStore = defineStore('meeting/call', () => {
 			session.value.terminate();
 		}
 	}
-	function sendInfo(payload: { videoMuted?: boolean }) {
+	function sendInfo() {
 		const message = JSON.stringify({
-			...payload,
 			hold: false,
 			audioMuted: !microphoneEnabled.value,
+			videoMuted: !videoEnabled.value,
 		});
 		session.value.sendInfo('application/json', message);
 	}
@@ -449,9 +445,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			session.value!.mute({
 				video: true,
 			});
-			sendInfo({
-				videoMuted: true,
-			});
+			sendInfo();
 		}
 	}
 
@@ -463,9 +457,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 				video: true,
 			});
 			initVideo();
-			sendInfo({
-				videoMuted: false,
-			});
+			sendInfo();
 		}
 	}
 
@@ -480,7 +472,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		}
 
 		if (session.value) {
-			sendInfo({});
+			sendInfo();
 		}
 	}
 
