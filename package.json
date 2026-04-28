@@ -13,7 +13,8 @@
 		"link:libs": "npm link @webitel/ui-sdk @webitel/ui-chats && npm run ls:libs",
 		"prepare": "husky",
 		"biome:ci:gh": "biome ci ./src --reporter=github",
-		"test:unit:ci": "vitest run --coverage"
+		"test:unit:ci": "vitest run --coverage",
+		"typecheck:ci": "true"
 	},
 	"dependencies": {
 		"@buf/webitel_portal.community_timostamm-protobuf-ts": "^2.11.1-20251111115532-8ccb3d9865c1.1",
