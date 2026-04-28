@@ -15,6 +15,7 @@ const getPortalFile = async (params) => {
 
 	const { data } = await instance.get(url, {
 		headers,
+		responseType: 'blob',
 	});
 	return data;
 };
