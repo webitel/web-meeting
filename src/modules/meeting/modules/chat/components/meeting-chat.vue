@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
 	ChatAction,
@@ -46,8 +46,8 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 const chatStore = useChatStore();
-const { messages, isConnected } = storeToRefs(chatStore);
-const { sendTextMessage, sendFiles, connect, loadFile } = chatStore;
+const { messages } = storeToRefs(chatStore);
+const { sendTextMessage, sendFiles, loadFile } = chatStore;
 
 const uiMessages = computed<UiChatMessageType[]>(() => {
 	const portalMessages: PortalChatMessageType[] = messages?.value ?? [];
