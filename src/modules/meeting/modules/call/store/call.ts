@@ -2,7 +2,7 @@ import JsSIP from 'jssip';
 import type { UA, WebSocketInterface } from 'jssip/lib/JsSIP';
 import type { RTCSession } from 'jssip/lib/RTCSession';
 import { defineStore, storeToRefs } from 'pinia';
-import { computed, inject, markRaw, ref } from 'vue';
+import { computed, inject, markRaw, ref, watch } from 'vue';
 
 import type { AppConfig } from '../../../../appConfig/types/AppConfig';
 import { useAuthStore } from '../../../../auth/stores/auth';
@@ -37,12 +37,17 @@ export const useCallStore = defineStore('meeting/call', () => {
 		storeToRefs(authStore);
 
 	const microphoneStore = useMicrophoneStore();
-	const { deviceStreamMainTrack: microphoneStreamTrack } =
-		storeToRefs(microphoneStore);
+	const {
+		deviceStreamMainTrack: microphoneStreamTrack,
+		deviceStream: microphoneDeviceStream,
+	} = storeToRefs(microphoneStore);
 	const { startSelectedDeviceStream: startMicrophoneStream } = microphoneStore;
 
 	const cameraStore = useCameraStore();
-	const { deviceStreamMainTrack: cameraStreamTrack } = storeToRefs(cameraStore);
+	const {
+		deviceStreamMainTrack: cameraStreamTrack,
+		deviceStream: cameraDeviceStream,
+	} = storeToRefs(cameraStore);
 	const { startSelectedDeviceStream: startCameraStream } = cameraStore;
 
 	const speakerStore = useSpeakerStore();
@@ -577,6 +582,54 @@ export const useCallStore = defineStore('meeting/call', () => {
 	// coz hangup ends server connection
 	window.addEventListener('beforeunload', () => {
 		hangup();
+	});
+
+	/**
+	 * @author: dlohvinov
+	 *
+	 * Watch for stream change, coz its changed with deviceId, and call store needs stream, not deviceId
+	 */
+	watch(microphoneDeviceStream, async (newStream) => {
+		if (
+			newStream &&
+			[
+				SessionState.ACTIVE,
+				SessionState.RINGING,
+			].includes(sessionState.value!)
+		) {
+			changeMicrophone(newStream);
+		}
+	});
+
+	/**
+	 * @author: dlohvinov
+	 *
+	 * Watch for stream change, coz its changed with deviceId, and call store needs stream, not deviceId
+	 */
+
+	watch(cameraDeviceStream, (newStream) => {
+		if (
+			newStream &&
+			[
+				SessionState.ACTIVE,
+				SessionState.RINGING,
+			].includes(sessionState.value!)
+		) {
+			changeCamera(newStream);
+		}
+	});
+
+	//  Watch for speaker changes and update active call
+	watch(speakerDeviceId, (newDeviceId) => {
+		if (
+			newDeviceId &&
+			[
+				SessionState.ACTIVE,
+				SessionState.RINGING,
+			].includes(sessionState.value!)
+		) {
+			changeSpeaker(newDeviceId);
+		}
 	});
 
 	return {
