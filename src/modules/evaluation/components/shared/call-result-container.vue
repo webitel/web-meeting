@@ -33,7 +33,7 @@
   background-color: var(--dp-24-surface-color);
   padding: var(--spacing-sm);
   gap: var(--spacing-xs);
-  border-radius: var(--spacing-xs);
+  border-radius: var(--spacing-sm);
 }
 
 .call-result-container__header {
