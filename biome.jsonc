@@ -38,5 +38,25 @@
 				"organizeImports": "on"
 			}
 		}
-	}
+	},
+	// https://biomejs.dev/internals/language-support/#linting-html-ish-languages
+	"overrides": [
+		{
+			"includes": [
+				"**/*.vue"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"useConst": "off",
+						"useImportType": "off"
+					},
+					"correctness": {
+						"noUnusedVariables": "off",
+						"noUnusedImports": "off"
+					}
+				}
+			}
+		}
+	]
 }
