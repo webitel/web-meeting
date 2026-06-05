@@ -111,6 +111,18 @@ export const useChatStore = defineStore('meeting/chat', () => {
 		}
 	}
 
+	function buildFileUrl(fileUrl: string): string {
+		const params = new URLSearchParams(
+			Object.fromEntries(
+				Object.entries(authData.value).map(([key, value]) => [
+					key.toLowerCase(),
+					value,
+				]),
+			),
+		);
+		return `${fileUrl}?${params.toString()}`;
+	}
+
 	async function sendFiles(files: File[]) {
 		const uploadedFiles = await Promise.all(
 			files.map((file) => uploadFile(file)),
@@ -185,5 +197,6 @@ export const useChatStore = defineStore('meeting/chat', () => {
 		sendTextMessage,
 		sendFiles,
 		loadFile,
+		buildFileUrl,
 	};
 });

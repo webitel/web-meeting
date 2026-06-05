@@ -46,7 +46,8 @@ const { t } = useI18n();
 
 const chatStore = useChatStore();
 const { messages, isConnected } = storeToRefs(chatStore);
-const { sendTextMessage, sendFiles, connect, loadFile } = chatStore;
+const { sendTextMessage, sendFiles, connect, loadFile, buildFileUrl } =
+	chatStore;
 
 const uiMessages = computed<UiChatMessageType[]>(() => {
 	const portalMessages: PortalChatMessageType[] = messages?.value ?? [];
@@ -69,7 +70,7 @@ const uiMessages = computed<UiChatMessageType[]>(() => {
 				name: file.name,
 				size: file.size,
 				mime: file.type,
-				url: file.url,
+				url: buildFileUrl(file.url),
 			};
 		if (text) message.text = text;
 		return message;
