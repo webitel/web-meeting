@@ -114,9 +114,9 @@ export const useChatStore = defineStore('meeting/chat', () => {
 	function buildFileUrl(fileUrl: string): string {
 		const params = new URLSearchParams(
 			Object.fromEntries(
-				Object.entries(authData.value).map(([k, v]) => [
-					k.toLowerCase(),
-					v,
+				Object.entries(authData.value).map(([key, value]) => [
+					key.toLowerCase(),
+					value,
 				]),
 			),
 		);
