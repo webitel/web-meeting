@@ -1,12 +1,12 @@
 <template>
-    <wt-select
-        :value="deviceId"
+    <wt-single-select
+        :model-value="deviceId"
         :options="devicesList"
         :label="label"
-        :clearable="false"
+        :show-clear="false"
         option-label="label"
-        track-by="deviceId"
-        use-value-from-options-by-prop="deviceId"
+        data-key="deviceId"
+        option-value="deviceId"
         @update:model-value="deviceId = $event"
     />
 </template>
