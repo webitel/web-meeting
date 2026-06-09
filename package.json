@@ -23,7 +23,7 @@
 		"@webitel/api-services": "^0.1.1",
 		"@webitel/styleguide": "~26.2",
 		"@webitel/ui-chats": "^0.1.34",
-		"@webitel/ui-sdk": "~26.6",
+		"@webitel/ui-sdk": "~26.6.19",
 		"axios": "1.13.2",
 		"clipboard-copy": "^4.x",
 		"jssip": "^3.10.1",
