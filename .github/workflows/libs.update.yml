@@ -9,6 +9,7 @@ on:
         type: choice
         options:
           - '@webitel/ui-sdk'
+          - '@webitel/ui-chats'
           - '@webitel/api-services'
           - '@webitel/flow-ui-sdk'
           - '@webitel/styleguide'
