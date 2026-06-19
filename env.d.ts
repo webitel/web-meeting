@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+	readonly VITE_STAGING_ENV: string;
 	readonly VITE_JSSIP_AUTHORIZATION_USER: string;
 	readonly VITE_JSSIP_DISPLAY_NAME: string;
 	readonly VITE_JSSIP_EXTENSION: string;

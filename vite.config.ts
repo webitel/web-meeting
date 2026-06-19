@@ -7,6 +7,8 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 export default defineConfig({
 	base: '/meet',
 	build: {
+		sourcemap: import.meta.env.VITE_STAGING_ENV,
+		minify: !import.meta.env.VITE_STAGING_ENV, // Disable minification for readable debugging
 		chunkSizeWarningLimit: 20000,
 		// rolldownOptions: {
 		//   external: ['webitel-sdk'],
