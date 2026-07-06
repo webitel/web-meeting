@@ -6,7 +6,7 @@ export function useSafeChatMessaging({ sendMethod }) {
 	async function dispatchMessage(payload) {
 		try {
 			await sendMethod(payload);
-		} catch (error) {
+		} catch (_error) {
 			pendingMessageQueue.value.push(payload);
 		}
 	}
@@ -19,7 +19,9 @@ export function useSafeChatMessaging({ sendMethod }) {
 		];
 		pendingMessageQueue.value = [];
 
-		queueCopy.forEach((msg) => dispatchMessage(msg));
+		queueCopy.forEach((msg) => {
+			dispatchMessage(msg);
+		});
 	}
 
 	return {

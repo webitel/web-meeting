@@ -29,7 +29,7 @@ export enum SessionState {
  * Meeting store for managing JsSIP user agent and call sessions
  */
 export const useCallStore = defineStore('meeting/call', () => {
-	const appConfig = inject<AppConfig>('$config')!;
+	const appConfig = inject<AppConfig>('$config') as AppConfig;
 	JsSIP.debug.disable();
 
 	const authStore = useAuthStore();
@@ -89,7 +89,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			[
 				SessionState.ACTIVE,
 				SessionState.RINGING,
-			].includes(sessionState.value!)
+			].includes(sessionState.value as SessionState)
 		) {
 			return !session.value?.isMuted().audio;
 		}
@@ -102,7 +102,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			[
 				SessionState.ACTIVE,
 				SessionState.RINGING,
-			].includes(sessionState.value!)
+			].includes(sessionState.value as SessionState)
 		) {
 			return !session.value?.isMuted().video;
 		}
@@ -127,9 +127,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 						socket,
 					],
 					authorization_user: xPortalDevice.value,
-					uri: `sip:${callAccount.value!.userId}@${callAccount.value!.realm}`,
-					realm: callAccount.value!.realm,
-					password: accessToken.value!,
+					uri: `sip:${callAccount.value?.userId}@${callAccount.value?.realm}`,
+					realm: callAccount.value?.realm,
+					password: accessToken.value as string,
 					register: false,
 				};
 
@@ -192,7 +192,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	function clearCallMediaStream() {
 		if (callMediaStream.value) {
-			callMediaStream.value.getTracks().forEach((track) => track.stop());
+			callMediaStream.value.getTracks().forEach((track) => {
+				track.stop();
+			});
 			callMediaStream.value = null;
 		}
 	}
@@ -218,7 +220,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 		audio.srcObject = stream;
 		sessionAudio.value = audio;
-		changeSpeaker(speakerDeviceId.value!);
+		changeSpeaker(speakerDeviceId.value as string);
 	}
 
 	/**
@@ -253,11 +255,15 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 		// Cleanup video streams
 		if (localVideoStream.value) {
-			localVideoStream.value.getTracks().forEach((track) => track.stop());
+			localVideoStream.value.getTracks().forEach((track) => {
+				track.stop();
+			});
 			localVideoStream.value = null;
 		}
 		if (remoteVideoStream.value) {
-			remoteVideoStream.value.getTracks().forEach((track) => track.stop());
+			remoteVideoStream.value.getTracks().forEach((track) => {
+				track.stop();
+			});
 			remoteVideoStream.value = null;
 		}
 
@@ -295,8 +301,12 @@ export const useCallStore = defineStore('meeting/call', () => {
 			]);
 
 			// values are "!" coz tracks should be initialized after startCameraStream() and startMicrophoneStream()
-			callMediaStream.value!.addTrack(cameraStreamTrack.value!);
-			callMediaStream.value!.addTrack(microphoneStreamTrack.value!);
+			callMediaStream.value?.addTrack(
+				cameraStreamTrack.value as MediaStreamTrack,
+			);
+			callMediaStream.value?.addTrack(
+				microphoneStreamTrack.value as MediaStreamTrack,
+			);
 
 			const eventHandlers = {
 				progress: () => {
@@ -351,7 +361,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 						remoteVideoStream.value = remoteStream;
 					}
 				},
-				failed: (event: any) => {
+				failed: (event: unknown) => {
 					console.error('Call failed:', event);
 					sessionState.value = SessionState.FAILED;
 					closeSession();
@@ -369,14 +379,14 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 			const callOptions = {
 				eventHandlers,
-				mediaStream: callMediaStream.value!,
+				mediaStream: callMediaStream.value as MediaStream,
 				extraHeaders: [
 					`X-Webitel-Meeting: ${meetingId.value}`,
 				],
 				sessionTimersExpires: 120, // https://webitel.atlassian.net/browse/WTEL-8364
 			};
 
-			const rtcSession = userAgent.value!.call(
+			const rtcSession = userAgent.value?.call(
 				appConfig.call.target,
 				callOptions,
 			);
@@ -396,7 +406,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 					callOnHold.value = data.hold;
 				}
 			});
-			(window as any).currentCallRTCSession = rtcSession; // For debugging
+			(window as unknown as Record<string, unknown>).currentCallRTCSession =
+				rtcSession; // For debugging
 		} catch (err) {
 			console.error('Failed to make call:', err);
 			sessionState.value = SessionState.FAILED;
@@ -427,7 +438,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		if (!session.value) {
 			initCallWithMicrophone.value = true;
 		} else {
-			session.value!.unmute({
+			session.value?.unmute({
 				audio: true,
 			});
 		}
@@ -437,7 +448,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		if (!session.value) {
 			initCallWithMicrophone.value = false;
 		} else {
-			session.value!.mute({
+			session.value?.mute({
 				audio: true,
 			});
 		}
@@ -447,7 +458,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		if (!session.value) {
 			initCallWithVideo.value = false;
 		} else {
-			session.value!.mute({
+			session.value?.mute({
 				video: true,
 			});
 			sendInfo();
@@ -458,7 +469,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		if (!session.value) {
 			initCallWithVideo.value = true;
 		} else {
-			session.value!.unmute({
+			session.value?.unmute({
 				video: true,
 			});
 			initVideo();
@@ -504,7 +515,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		 */
 		return changeUserMediaDevice({
 			stream: newStream,
-			track: microphoneStreamTrack.value!,
+			track: microphoneStreamTrack.value as MediaStreamTrack,
 			constraint: UserMediaConstraintType.Audio,
 		});
 	}
@@ -521,7 +532,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		 */
 		return changeUserMediaDevice({
 			stream: newStream,
-			track: cameraStreamTrack.value!,
+			track: cameraStreamTrack.value as MediaStreamTrack,
 			constraint: UserMediaConstraintType.Video,
 		});
 	}
@@ -536,8 +547,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 		constraint: UserMediaConstraintType;
 	}) {
 		// Find the sender in the peer connection
-		const constraintSender = session
-			.value!.connection.getSenders()
+		const constraintSender = session.value?.connection
+			.getSenders()
 			.find((sender) => sender.track?.kind === constraint);
 
 		if (!constraintSender) {
@@ -595,7 +606,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			[
 				SessionState.ACTIVE,
 				SessionState.RINGING,
-			].includes(sessionState.value!)
+			].includes(sessionState.value as SessionState)
 		) {
 			changeMicrophone(newStream);
 		}
@@ -613,7 +624,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			[
 				SessionState.ACTIVE,
 				SessionState.RINGING,
-			].includes(sessionState.value!)
+			].includes(sessionState.value as SessionState)
 		) {
 			changeCamera(newStream);
 		}
@@ -626,7 +637,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			[
 				SessionState.ACTIVE,
 				SessionState.RINGING,
-			].includes(sessionState.value!)
+			].includes(sessionState.value as SessionState)
 		) {
 			changeSpeaker(newDeviceId);
 		}

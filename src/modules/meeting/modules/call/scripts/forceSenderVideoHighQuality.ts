@@ -16,7 +16,7 @@ export async function forceSenderVideoHighQuality(sender: RTCRtpSender) {
 			];
 		} else {
 			Object.assign(
-				senderParameters.encodings.at(0)!,
+				senderParameters.encodings.at(0) as RTCRtpEncodingParameters,
 				desiredEncodingParameters,
 			);
 		}

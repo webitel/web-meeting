@@ -8,9 +8,9 @@
 <script setup lang="ts">
 import { inject } from 'vue';
 
-import type { AppConfig } from '../../../../types/config';
+import type { AppConfig } from '../../../appConfig/types/AppConfig';
 
-const $config = inject<AppConfig>('$config')!;
+const $config = inject<AppConfig>('$config') as AppConfig;
 </script>
 
 <style scoped>

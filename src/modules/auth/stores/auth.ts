@@ -11,11 +11,11 @@ import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { computed, inject, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import type { AppConfig } from '../../../types/config';
+import type { AppConfig } from '../../appConfig/types/AppConfig';
 import { PortalAPI } from '../api/portal';
 
 export const useAuthStore = defineStore('auth', () => {
-	const config = inject<AppConfig>('$config')!;
+	const config = inject<AppConfig>('$config') as AppConfig;
 
 	const route = useRoute();
 
@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
 	const isInvalidLink = ref(false);
 	const isAuthorizingInProgress = ref(false);
 
-	const meetingId = computed<string>(() => route.params.meetingId! as string);
+	const meetingId = computed<string>(() => route.params.meetingId as string);
 
 	const accessToken = computed<string | null>(
 		() => userinfo.value?.accessToken ?? null,

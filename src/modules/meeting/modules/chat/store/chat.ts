@@ -1,7 +1,7 @@
 import type { ChatMessageType as UiChatMessageType } from '@webitel/ui-chats/ui';
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, inject, ref, watch } from 'vue';
-import type { AppConfig } from '../../../../../types/config';
+import type { AppConfig } from '../../../../appConfig/types/AppConfig';
 import { useAuthStore } from '../../../../auth/stores/auth';
 import { PortalFilesAPI } from '../../chat/api/portalFiles';
 import { useChatWebSocket } from '../composables/useChatWebSocket.ts';
@@ -16,7 +16,7 @@ import {
 import type { AuthData, ChatWebSocketApi } from '../types/chat';
 
 export const useChatStore = defineStore('meeting/chat', () => {
-	const config = inject<AppConfig>('$config')!;
+	const config = inject<AppConfig>('$config') as AppConfig;
 	const messages = ref<UiChatMessageType[]>([]);
 	const controller = ref<ChatWebSocketApi | null>(null);
 	const reconnecting = ref(false);
@@ -28,7 +28,7 @@ export const useChatStore = defineStore('meeting/chat', () => {
 	const authData = computed<AuthData>(() => ({
 		'X-Portal-Access': accessToken.value,
 		'X-Portal-Device': xPortalDevice.value,
-		'X-Portal-Client': config!.token.appToken,
+		'X-Portal-Client': config?.token.appToken,
 	}));
 
 	const lastMessage = computed(() => messages.value.at(-1) || null);
@@ -90,7 +90,7 @@ export const useChatStore = defineStore('meeting/chat', () => {
 	async function uploadFile(file: File, retry = 3): Promise<string> {
 		try {
 			const { uploadId } = await PortalFilesAPI.post({
-				url: config!.chat.filesEndpointUrl,
+				url: config?.chat.filesEndpointUrl,
 				file: {
 					name: file.name,
 					mimeType: file.type,
@@ -99,7 +99,7 @@ export const useChatStore = defineStore('meeting/chat', () => {
 			});
 
 			const fileData = await PortalFilesAPI.put({
-				url: config!.chat.filesEndpointUrl,
+				url: config?.chat.filesEndpointUrl,
 				file,
 				uploadId,
 				headers: authData.value,
@@ -146,7 +146,7 @@ export const useChatStore = defineStore('meeting/chat', () => {
 
 	async function loadFile(fileId: string) {
 		await PortalFilesAPI.get({
-			url: `${config!.chat.filesEndpointUrl}/${fileId}`,
+			url: `${config?.chat.filesEndpointUrl}/${fileId}`,
 			headers: authData.value,
 		});
 	}

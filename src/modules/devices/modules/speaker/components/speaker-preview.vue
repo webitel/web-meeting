@@ -64,7 +64,11 @@ async function generateBeep(deviceId: string) {
 		// Try to set output device (if supported)
 		if ('setSinkId' in audioContext && deviceId) {
 			try {
-				await (audioContext as any).setSinkId(deviceId);
+				await (
+					audioContext as unknown as {
+						setSinkId: (id: string) => Promise<void>;
+					}
+				).setSinkId(deviceId);
 			} catch (err) {
 				console.warn('setSinkId not supported or failed:', err);
 			}

@@ -28,7 +28,9 @@ export async function getStreamFromDeviceId({
 }
 
 export function cleanupStream(stream: MediaStream): void {
-	stream.getTracks().forEach((track) => track.stop());
+	stream.getTracks().forEach((track) => {
+		track.stop();
+	});
 }
 
 /**
@@ -88,5 +90,5 @@ function handleMultipleTracks(
 		);
 	}
 
-	return videoTracks[0]!;
+	return videoTracks[0] ?? null;
 }

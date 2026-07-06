@@ -11,7 +11,7 @@ import type {
 
 export const useChatWebSocket = (url: string): ChatWebSocketApi => {
 	const isConnected = ref(false);
-	const listeners: Array<(data: any) => void> = [];
+	const listeners: Array<(data: unknown) => void> = [];
 	const authRef: AuthData | null = ref(null);
 
 	const { send, open, close } = useWebSocket(url, {
@@ -37,13 +37,15 @@ export const useChatWebSocket = (url: string): ChatWebSocketApi => {
 				return;
 			}
 
-			let parsed;
+			let parsed: unknown;
 			try {
 				parsed = JSON.parse(event.data);
 			} catch (e) {
 				console.error('WS parse error', e);
 			}
-			listeners.forEach((fn) => fn(parsed));
+			listeners.forEach((fn) => {
+				fn(parsed);
+			});
 		},
 		onError(error) {
 			console.error('[WS] error:', error);
@@ -62,7 +64,7 @@ export const useChatWebSocket = (url: string): ChatWebSocketApi => {
 		return send(JSON.stringify(payload));
 	}
 
-	function onMessage(fn: (data: any) => void) {
+	function onMessage(fn: (data: unknown) => void) {
 		listeners.push(fn);
 	}
 

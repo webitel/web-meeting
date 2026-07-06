@@ -52,7 +52,7 @@ export const useDevicesPermissionsStore = defineStore(
 				) {
 					error.value = DeviceErrors.Denied;
 				}
-			} catch (err) {
+			} catch (_err) {
 				throw error.value;
 			} finally {
 				isRequesting.value = false;
