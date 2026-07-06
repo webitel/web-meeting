@@ -42,6 +42,7 @@
 		"@types/lodash": "^4.17.21",
 		"@types/node": "^22.18.6",
 		"@vitejs/plugin-vue": "^6.x",
+		"@vitest/coverage-v8": "^4.1.10",
 		"@vue/test-utils": "^2.x",
 		"@vue/tsconfig": "^0.8.1",
 		"husky": "^9.1.7",

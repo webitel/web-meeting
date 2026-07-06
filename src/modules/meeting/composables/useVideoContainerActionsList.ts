@@ -1,6 +1,6 @@
 import { VideoCallAction } from '@webitel/ui-sdk/modules/CallSession';
 import { storeToRefs } from 'pinia';
-import { computed, type MaybeRef, ref, toRef } from 'vue';
+import { computed, type MaybeRef, toRef } from 'vue';
 
 import { MeetingState } from '../../mainScene/enums/MeetingState';
 import { SessionState, useCallStore } from '../modules/call/store/call';

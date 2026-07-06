@@ -22,7 +22,7 @@
 import { storeToRefs } from 'pinia';
 import { inject } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { AppConfig } from '../../../types/config';
+import type { AppConfig } from '../../appConfig/types/AppConfig';
 import { useAuthStore } from '../../auth/stores/auth';
 import CallResultContainer from '../../evaluation/components/shared/call-result-container.vue';
 import { EvaluationAPI } from '../api/evaluation';
@@ -38,7 +38,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const config = inject<AppConfig>('$config')!;
+const config = inject<AppConfig>('$config') as AppConfig;
 
 const authStore = useAuthStore();
 const { meetingId } = storeToRefs(authStore);
@@ -47,10 +47,10 @@ const sendEvaluation = async (value: EvaluationValuesType) => {
 	try {
 		await EvaluationAPI.post(
 			{
-				url: `${config!.evaluation.endpointUrl}/${meetingId.value}/satisfaction`,
+				url: `${config?.evaluation.endpointUrl}/${meetingId.value}/satisfaction`,
 			},
 			{
-				satisfaction: String(config!.evaluation[`${value.toLowerCase()}Grade`]),
+				satisfaction: String(config?.evaluation[`${value.toLowerCase()}Grade`]),
 			},
 		);
 		emit('change-view', EvaluationValues.Good);

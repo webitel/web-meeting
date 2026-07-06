@@ -61,7 +61,7 @@ const uiMessages = computed<UiChatMessageType[]>(() => {
 				id: from.id,
 				name: from.name,
 				type: from.type,
-				self: from.name === 'You' ? true : false,
+				self: from.name === 'You',
 			},
 		};
 		if (file)

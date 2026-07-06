@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 import { computed, inject, watch } from 'vue';
-import type { AppConfig } from '../../../types/config';
+import type { AppConfig } from '../../appConfig/types/AppConfig';
 import { useAuthStore } from '../../auth/stores/auth';
 import EvaluationWrapper from '../../evaluation/components/evaluation-wrapper.vue';
 import MeetingContainer from '../../meeting/components/the-meeting-container.vue';
@@ -33,7 +33,7 @@ import UnsupportedUserAgentErrorBlock from '../modules/error-blocks/components/u
 import { isUnsupportedUserAgent } from '../modules/error-blocks/scripts/isUnsupportedUserAgent';
 import BrandLogo from './shared/brand-logo.vue';
 
-const $config = inject<AppConfig>('$config')!;
+const $config = inject<AppConfig>('$config') as AppConfig;
 
 const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
 
