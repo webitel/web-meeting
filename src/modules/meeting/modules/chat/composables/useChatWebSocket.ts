@@ -1,5 +1,5 @@
 import { useWebSocket } from '@vueuse/core';
-import isEmpty from '@webitel/ui-sdk/src/scripts/isEmpty';
+import { isEmpty } from '@webitel/ui-sdk/scripts';
 import { ref } from 'vue';
 import type {
 	AuthData,
@@ -12,7 +12,7 @@ import type {
 export const useChatWebSocket = (url: string): ChatWebSocketApi => {
 	const isConnected = ref(false);
 	const listeners: Array<(data: unknown) => void> = [];
-	const authRef: AuthData | null = ref(null);
+	const authRef = ref<AuthData | null>(null);
 
 	const { send, open, close } = useWebSocket(url, {
 		immediate: false,
@@ -68,7 +68,7 @@ export const useChatWebSocket = (url: string): ChatWebSocketApi => {
 		listeners.push(fn);
 	}
 
-	function openConnection(authData) {
+	function openConnection(authData: AuthData) {
 		authRef.value = authData;
 		open();
 	}

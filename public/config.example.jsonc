@@ -24,7 +24,8 @@
 
 	// Chat configuration
 	"chat": {
-		"host": "wss://webitel.example.com/portal/ws"
+		"host": "wss://webitel.example.com/portal/ws",
+		"filesEndpointUrl": "https://webitel.example.com/api/portal/file"
 	},
 
 	// Assets configuration

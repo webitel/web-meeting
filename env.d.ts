@@ -9,8 +9,13 @@ interface ImportMetaEnv {
 	readonly VITE_JSSIP_REALM: string;
 	readonly VITE_JSSIP_SERVER: string;
 	readonly VITE_JSSIP_URI: string;
+	readonly VITE_BUILD_NUMBER?: string;
 }
 
 interface ImportMeta {
 	readonly env: ImportMetaEnv;
+}
+
+interface Window {
+	buildVersion?: string;
 }

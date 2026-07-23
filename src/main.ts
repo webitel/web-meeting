@@ -6,7 +6,7 @@ import {
 	options as WebitelUiOptions,
 } from './app/plugins/webitel/ui-sdk';
 import './app/plugins/webitel/ui-chats';
-import { initRouter, router } from './app/router';
+import { initRouter } from './app/router';
 import { initializeConfig } from './modules/appConfig/config';
 import {
 	forceFirefoxToEnumerateDevices,
@@ -19,11 +19,7 @@ const pinia = createPinia();
 const initApp = async () => {
 	const app = createApp(App).use(i18n).use(pinia);
 
-	try {
-		await initRouter();
-	} catch (err) {
-		console.error('Error initializing router', err);
-	}
+	const router = await initRouter();
 
 	app.use(router);
 	app.use(WebitelUi, {
@@ -31,7 +27,10 @@ const initApp = async () => {
 		router,
 	}); // setup webitel ui after router init
 
-	return app;
+	return {
+		app,
+		router,
+	};
 };
 
 (async () => {
@@ -39,7 +38,7 @@ const initApp = async () => {
 		await forceFirefoxToEnumerateDevices(); // https://webitel.atlassian.net/browse/WTEL-8544?focusedCommentId=717571
 	}
 	const config = await initializeConfig();
-	const app = await initApp();
+	const { app, router } = await initApp();
 	await router.isReady();
 	app.provide('$config', config);
 	app.mount('#app');

@@ -1,10 +1,10 @@
+import { resolve } from 'node:path';
 import vue from '@vitejs/plugin-vue';
-import { resolve } from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import { type ConfigEnv, defineConfig, loadEnv } from 'vite';
 import vueDevTools from 'vite-plugin-vue-devtools';
 
 // https://vite.dev/config/
-export default ({ mode }) => {
+export default ({ mode }: ConfigEnv) => {
 	const env = loadEnv(mode, process.cwd(), '');
 	const isStagingEnv = !!env.VITE_STAGING_ENV;
 
@@ -38,14 +38,6 @@ export default ({ mode }) => {
 			dedupe: [
 				'vue',
 			],
-		},
-		// fixes "has no export named "default" (or not default)
-		css: {
-			preprocessorOptions: {
-				scss: {
-					api: 'modern',
-				},
-			},
 		},
 		optimizeDeps: {
 			include: [

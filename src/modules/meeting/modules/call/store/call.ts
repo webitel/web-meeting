@@ -390,22 +390,36 @@ export const useCallStore = defineStore('meeting/call', () => {
 				appConfig.call.target,
 				callOptions,
 			);
+			if (!rtcSession) {
+				throw new Error('Failed to create RTC session');
+			}
 			session.value = rtcSession;
-			rtcSession.on('newInfo', (e) => {
-				const localAnswerOrWrongContentType =
-					e.originator !== 'remote' ||
-					e.info.contentType !== 'application/json';
-				if (localAnswerOrWrongContentType) return;
+			rtcSession.on(
+				'newInfo',
+				(e: {
+					originator: string;
+					info: {
+						contentType: string;
+					};
+					request: {
+						body: string;
+					};
+				}) => {
+					const localAnswerOrWrongContentType =
+						e.originator !== 'remote' ||
+						e.info.contentType !== 'application/json';
+					if (localAnswerOrWrongContentType) return;
 
-				const data = JSON.parse(e.request.body);
-				if (typeof data.videoMuted === 'boolean') {
-					remoteVideoMuted.value = data.videoMuted;
-				}
+					const data = JSON.parse(e.request.body);
+					if (typeof data.videoMuted === 'boolean') {
+						remoteVideoMuted.value = data.videoMuted;
+					}
 
-				if (typeof data.hold === 'boolean') {
-					callOnHold.value = data.hold;
-				}
-			});
+					if (typeof data.hold === 'boolean') {
+						callOnHold.value = data.hold;
+					}
+				},
+			);
 			(window as unknown as Record<string, unknown>).currentCallRTCSession =
 				rtcSession; // For debugging
 		} catch (err) {
@@ -431,7 +445,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 			audioMuted: !microphoneEnabled.value,
 			videoMuted: !videoEnabled.value,
 		});
-		session.value.sendInfo('application/json', message);
+		session.value?.sendInfo('application/json', message);
 	}
 
 	function enableMicrophone(): void {

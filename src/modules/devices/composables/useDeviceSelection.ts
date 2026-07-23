@@ -84,7 +84,8 @@ export const useDeviceSelection = ({
 	/**
 	 * Set user-preferred device,
 	 */
-	function setPreferredDevice(deviceId: string) {
+	function setPreferredDevice(deviceId: string | null) {
+		if (deviceId == null) return;
 		prefferedDeviceId.value = deviceId;
 	}
 
