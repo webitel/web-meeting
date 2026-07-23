@@ -30,7 +30,8 @@ export function useMicrophoneVolume() {
 
 			let sumSquares = 0;
 			for (let i = 0; i < dataArray.length; i++) {
-				const value = (dataArray[i] - 128) / 128;
+				const sample = dataArray[i] ?? 128;
+				const value = (sample - 128) / 128;
 				sumSquares += value * value;
 			}
 

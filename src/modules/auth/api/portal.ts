@@ -12,7 +12,13 @@ import type { AxiosRequestConfig } from 'axios';
 import { instance } from '../../../app/api/instance';
 
 const postPortalToken = async (
-	{ url, headers }: Pick<AxiosRequestConfig<TokenRequest>, 'url' | 'headers'>,
+	{
+		url,
+		headers,
+	}: {
+		url: string;
+		headers?: AxiosRequestConfig['headers'];
+	},
 	credentials: TokenRequest,
 ): Promise<AccessToken> => {
 	const sentCredentials = applyTransform(credentials, [

@@ -1,9 +1,14 @@
 import { ref } from 'vue';
+import type { SendMessagePayload } from '../types/chat';
 
-export function useSafeChatMessaging({ sendMethod }) {
-	const pendingMessageQueue = ref([]);
+export function useSafeChatMessaging({
+	sendMethod,
+}: {
+	sendMethod: (payload: SendMessagePayload) => unknown;
+}) {
+	const pendingMessageQueue = ref<SendMessagePayload[]>([]);
 
-	async function dispatchMessage(payload) {
+	async function dispatchMessage(payload: SendMessagePayload) {
 		try {
 			await sendMethod(payload);
 		} catch (_error) {

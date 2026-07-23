@@ -44,13 +44,14 @@ const authStore = useAuthStore();
 const { meetingId } = storeToRefs(authStore);
 
 const sendEvaluation = async (value: EvaluationValuesType) => {
+	const gradeKey = value === EvaluationValues.Good ? 'goodGrade' : 'badGrade';
 	try {
 		await EvaluationAPI.post(
 			{
 				url: `${config?.evaluation.endpointUrl}/${meetingId.value}/satisfaction`,
 			},
 			{
-				satisfaction: String(config?.evaluation[`${value.toLowerCase()}Grade`]),
+				satisfaction: String(config?.evaluation[gradeKey]),
 			},
 		);
 		emit('change-view', EvaluationValues.Good);

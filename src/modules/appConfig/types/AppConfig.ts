@@ -22,6 +22,7 @@ export interface AppConfig {
 	};
 	chat: {
 		host: string;
+		filesEndpointUrl: string;
 	};
 	assets: {
 		logoPicture: string;

@@ -1,6 +1,8 @@
 import {
 	createRouter,
 	createWebHistory,
+	type NavigationGuardWithThis,
+	type Router,
 	type RouteRecordRaw,
 } from 'vue-router';
 import TheApp from '../../the-app.vue';
@@ -13,17 +15,22 @@ const routes: RouteRecordRaw[] = [
 	},
 ];
 
-export let router = null;
+export let router: Router | null = null;
 
-export const initRouter = async ({ beforeEach = [] } = {}) => {
-	router = createRouter({
+export const initRouter = async ({
+	beforeEach = [],
+}: {
+	beforeEach?: NavigationGuardWithThis<undefined>[];
+} = {}) => {
+	const routerInstance = createRouter({
 		history: createWebHistory(import.meta.env.BASE_URL),
 		routes,
 	});
+	router = routerInstance;
 
 	beforeEach.forEach((guard) => {
-		router.beforeEach(guard);
+		routerInstance.beforeEach(guard);
 	});
 
-	return router;
+	return routerInstance;
 };

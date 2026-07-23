@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Message as PortalChatMessageType } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
+import type { UpdateNewMessage } from '@buf/webitel_portal.community_timostamm-protobuf-ts/data/messages_pb';
 import {
 	ChatAction,
 	ChatContainer,
@@ -33,7 +33,7 @@ import {
 } from '@webitel/ui-chats/ui';
 import type { ResultCallbacks } from '@webitel/ui-sdk/src/types';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import SidebarContentWrapper from '../../../../sidebar/components/shared/sidebar-content-wrapper.vue';
 import { useChatStore } from '../store/chat';
@@ -45,38 +45,40 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 const chatStore = useChatStore();
-const { messages, isConnected } = storeToRefs(chatStore);
-const { sendTextMessage, sendFiles, connect, loadFile, buildFileUrl } =
-	chatStore;
+const { messages } = storeToRefs(chatStore);
+const { sendTextMessage, sendFiles, loadFile, buildFileUrl } = chatStore;
 
 const uiMessages = computed<UiChatMessageType[]>(() => {
-	const portalMessages: PortalChatMessageType[] = messages?.value ?? [];
-	const uiMsgs: UiChatMessageType[] = portalMessages.map((msg) => {
-		const { id, date: createdAt, from, file, text } = msg.message;
+	const portalUpdates: UpdateNewMessage[] = messages.value ?? [];
+	return portalUpdates.flatMap((update) => {
+		const msg = update.message;
+		if (!msg?.from) return [];
 
-		const message = {
-			id,
-			createdAt,
+		const uiMessage: UiChatMessageType = {
+			id: Number(msg.id),
+			createdAt: Number(msg.date) || 0,
 			member: {
-				id: from.id,
-				name: from.name,
-				type: from.type,
-				self: from.name === 'You',
+				id: Number(msg.from.id),
+				name: msg.from.name,
+				type: msg.from.type,
+				self: msg.from.name === 'You',
 			},
 		};
-		if (file)
-			message.file = {
-				id: file.id,
-				name: file.name,
-				size: file.size,
-				mime: file.type,
-				url: buildFileUrl(file.url),
-			};
-		if (text) message.text = text;
-		return message;
-	});
 
-	return uiMsgs;
+		if (msg.file) {
+			uiMessage.file = {
+				id: msg.file.id,
+				name: msg.file.name,
+				size: msg.file.size,
+				mime: msg.file.type,
+				url: buildFileUrl(msg.file.url),
+			};
+		}
+		if (msg.text) uiMessage.text = msg.text;
+		return [
+			uiMessage,
+		];
+	});
 });
 
 async function localSendMessage(text: string, options?: ResultCallbacks) {

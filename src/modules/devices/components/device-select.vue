@@ -18,7 +18,7 @@
  * This component is shared,
  * coz devices codebase are shared too
  */
-const deviceId = defineModel<string>('deviceId', {
+const deviceId = defineModel<string | null>('deviceId', {
 	required: true,
 });
 

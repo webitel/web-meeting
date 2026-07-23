@@ -1,11 +1,12 @@
-import type { SendMessageRequest } from '@buf/webitel_portal.community_timostamm-protobuf-ts';
-import type { WebSocketStatus } from '@vueuse/core';
+import type { SendMessageRequest } from '@buf/webitel_portal.community_timostamm-protobuf-ts/data/messages_pb';
+import type { Message as PortalMessage } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
 import type { Ref } from 'vue';
 
 export interface AuthData {
 	'X-Portal-Access': string;
 	'X-Portal-Device': string;
 	'X-Portal-Client': string;
+	[key: string]: string;
 }
 
 export interface WSMessage {
@@ -17,14 +18,17 @@ export interface WSMessage {
 export interface SendMessagePayload {
 	id: string;
 	path: string;
-	data: SendMessageRequest;
+	data: Record<string, unknown> & {
+		'@type'?: string;
+	};
 }
 
 export interface ChatWebSocketApi {
-	status: WebSocketStatus;
-	data: string | null;
-	sendMessage: (payload: SendMessagePayload) => boolean;
-	close: () => void;
-	messageHandlers: Ref<WSMessage[]>;
 	isConnected: Ref<boolean>;
+	sendMessage: (payload: SendMessagePayload) => boolean;
+	onMessage: (fn: (data: unknown) => void) => void;
+	open: (auth: AuthData) => void;
+	close: () => void;
 }
+
+export type { PortalMessage, SendMessageRequest };

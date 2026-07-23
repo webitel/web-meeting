@@ -6,6 +6,7 @@
 		"dev": "vite --force",
 		"build": "vite build",
 		"type-check": "vue-tsc --build",
+		"typecheck": "vue-tsc --build",
 		"lint:biome": "biome check --write",
 		"lint": "run-s lint:*",
 		"up:libs": "npm up @webitel/ui-sdk @webitel/ui-chats && npm run ls:libs",
@@ -14,7 +15,7 @@
 		"prepare": "husky",
 		"biome:ci:gh": "biome ci ./src --reporter=github",
 		"test:unit:ci": "vitest run --coverage",
-		"typecheck:ci": "true"
+		"typecheck:ci": "npm run typecheck"
 	},
 	"dependencies": {
 		"@buf/webitel_portal.community_timostamm-protobuf-ts": "^2.11.1-20251111115532-8ccb3d9865c1.1",
@@ -22,8 +23,8 @@
 		"@vueuse/core": "^14.x",
 		"@webitel/api-services": "^0.1.1",
 		"@webitel/styleguide": "~26.2",
-		"@webitel/ui-chats": "^0.1.37",
-		"@webitel/ui-sdk": "~26.6",
+		"@webitel/ui-chats": "^0.1.45",
+		"@webitel/ui-sdk": "~26.8",
 		"axios": "^1.18.1",
 		"clipboard-copy": "^4.x",
 		"jssip": "^3.10.1",
