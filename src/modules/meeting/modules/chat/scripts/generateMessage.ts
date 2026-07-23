@@ -1,5 +1,5 @@
-import type { SendMessageRequest } from '@buf/webitel_portal.community_timostamm-protobuf-ts/data/messages_pb';
 import type { Message as PortalMessage } from '@buf/webitel_chat.community_timostamm-protobuf-ts/messages/message_pb';
+import type { SendMessageRequest } from '@buf/webitel_portal.community_timostamm-protobuf-ts/data/messages_pb';
 import { v4 as uuidv4 } from 'uuid';
 import { WebsocketMessageType } from '../enums/WebsocketMessageType';
 import type { SendMessagePayload } from '../types/chat';

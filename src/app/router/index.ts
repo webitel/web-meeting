@@ -2,8 +2,8 @@ import {
 	createRouter,
 	createWebHistory,
 	type NavigationGuardWithThis,
-	type Router,
 	type RouteRecordRaw,
+	type Router,
 } from 'vue-router';
 import TheApp from '../../the-app.vue';
 

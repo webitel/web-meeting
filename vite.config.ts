@@ -1,6 +1,6 @@
+import { resolve } from 'node:path';
 import vue from '@vitejs/plugin-vue';
-import { resolve } from 'path';
-import { defineConfig, loadEnv, type ConfigEnv } from 'vite';
+import { type ConfigEnv, defineConfig, loadEnv } from 'vite';
 import vueDevTools from 'vite-plugin-vue-devtools';
 
 // https://vite.dev/config/
