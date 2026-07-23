@@ -3,7 +3,7 @@ export async function forceSenderVideoHighQuality(sender: RTCRtpSender) {
 		const desiredEncodingParameters: RTCRtpEncodingParameters = {
 			priority: 'high',
 			networkPriority: 'high',
-			maxBitrate: 4000 * 100 * 1000, // 4000kbps
+			maxBitrate: 4000 * 1000, // 4 Mbps
 		};
 
 		const senderParameters = sender.getParameters();
