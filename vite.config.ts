@@ -6,7 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 // https://vite.dev/config/
 export default ({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), '');
-	const isStagingEnv = !!env.VITE_STAGING_ENV;
+	const isStagingEnv = env.VITE_STAGING_ENV === 'true';
 
 	return defineConfig({
 		base: '/meet',
