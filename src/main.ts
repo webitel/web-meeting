@@ -1,5 +1,7 @@
+import { setDefaultAxiosInstance } from '@webitel/api-services/api/axios';
 import { createPinia } from 'pinia';
 import { createApp } from 'vue';
+import { instance } from './app/api/instance';
 import { i18n } from './app/locale/i18n';
 import {
 	plugin as WebitelUi,
@@ -13,6 +15,13 @@ import {
 	isFirefox,
 } from './modules/devices/modules/permissions/scripts/handleFirefoxUserMedia';
 import App from './the-app.vue';
+
+/*
+ * This app strips X-Webitel-Access and clears the request interceptors, so
+ * generated api-services clients must call through this instance, not the
+ * package default.
+ */
+setDefaultAxiosInstance(instance);
 
 const pinia = createPinia();
 

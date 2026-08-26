@@ -1,4 +1,3 @@
-import { resolve } from 'node:path';
 import vue from '@vitejs/plugin-vue';
 import { type ConfigEnv, defineConfig, loadEnv } from 'vite';
 import vueDevTools from 'vite-plugin-vue-devtools';
@@ -29,10 +28,6 @@ export default ({ mode }: ConfigEnv) => {
 		},
 		resolve: {
 			alias: {
-				'@aliasedDeps/api-services/axios': resolve(
-					__dirname,
-					'src/app/api/instance',
-				),
 				lodash: 'lodash-es',
 			},
 			dedupe: [
