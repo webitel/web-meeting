@@ -32,6 +32,10 @@ export const useDevicesPermissionsStore = defineStore(
 			);
 		});
 
+		const hasMultipleCameras = computed(() => {
+			return videoInputs.value?.filter((device) => device.deviceId).length >= 2;
+		});
+
 		const isRequesting = ref<boolean>(false);
 		const error = ref<string>('');
 
@@ -63,6 +67,7 @@ export const useDevicesPermissionsStore = defineStore(
 			// State
 			hasAnyMicrophones,
 			hasAnyCameras,
+			hasMultipleCameras,
 			permissionGranted,
 			isRequesting,
 			error,

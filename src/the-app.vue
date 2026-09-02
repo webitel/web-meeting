@@ -12,7 +12,7 @@ import packageJson from '../package.json' with { type: 'json' };
 import type { AppConfig } from './modules/appConfig/types/AppConfig';
 import { useAuthStore } from './modules/auth/stores/auth';
 import MainScene from './modules/mainScene/components/the-main-scene.vue';
-import { isUnsupportedUserAgent } from './modules/mainScene/modules/error-blocks/scripts/isUnsupportedUserAgent';
+import { isInAppWebView } from './modules/mainScene/scripts/isInAppWebView';
 
 const authStore = useAuthStore();
 const config = inject<AppConfig>('$config') as AppConfig;
@@ -27,7 +27,7 @@ const build = import.meta.env.VITE_BUILD_NUMBER;
 window.buildVersion = `v${packageJson.version}-${build}`;
 
 onMounted(async () => {
-	if (isUnsupportedUserAgent()) {
+	if (isInAppWebView()) {
 		return;
 	}
 

@@ -1,6 +1,7 @@
 <template>
   <sidebar-content-wrapper
     class="meeting-chat"
+				:class="{'meeting-chat--mobile': isMobileDevice}"
     @close="emit('close')">
     <template #title>
       <wt-icon icon="chat--filled" color="info"></wt-icon>
@@ -10,11 +11,7 @@
     <template #main>
       <chat-container
         :messages="uiMessages"
-        :chat-actions="[
-          ChatAction.SendMessage,
-          ChatAction.AttachFiles,
-          ChatAction.EmojiPicker,
-          ]"
+        :chat-actions="chatActions"
         without-avatars
         @load="loadFile"
         @[`action:${ChatAction.SendMessage}`]="localSendMessage"
@@ -35,6 +32,7 @@ import type { ResultCallbacks } from '@webitel/ui-sdk/src/types';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { isMobile } from '../../../../mainScene/scripts/isMobile';
 import SidebarContentWrapper from '../../../../sidebar/components/shared/sidebar-content-wrapper.vue';
 import { useChatStore } from '../store/chat';
 
@@ -47,6 +45,19 @@ const { t } = useI18n();
 const chatStore = useChatStore();
 const { messages } = storeToRefs(chatStore);
 const { sendTextMessage, sendFiles, loadFile, buildFileUrl } = chatStore;
+
+const isMobileDevice = isMobile();
+
+const chatActions = isMobileDevice
+	? [
+			ChatAction.SendMessage,
+			ChatAction.EmojiPicker,
+		]
+	: [
+			ChatAction.SendMessage,
+			ChatAction.AttachFiles,
+			ChatAction.EmojiPicker,
+		];
 
 const uiMessages = computed<UiChatMessageType[]>(() => {
 	const portalUpdates: UpdateNewMessage[] = messages.value ?? [];
@@ -91,3 +102,9 @@ async function localSendFile(files: File[], options?: ResultCallbacks) {
 	options?.onSuccess?.();
 }
 </script>
+
+<style scoped>
+.meeting-chat--mobile :deep(textarea) {
+		font-size: initial;
+}
+</style>
