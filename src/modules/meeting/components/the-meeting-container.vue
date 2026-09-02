@@ -16,6 +16,9 @@
 
       :key="videoContainerSize"
       :size="videoContainerSize"
+      :sender-preview-position="senderPreviewPosition"
+      :sender-preview-orientation="senderPreviewOrientation"
+      :video-object-fit="videoObjectFit"
       :call:on-hold="callOnHold"
       hide-video-display-panel
       static
@@ -28,6 +31,7 @@
       @[`action:${VideoCallAction.Video}`]="toggleVideo"
       @[`action:${VideoCallAction.Settings}`]="toggleSettingsPanel"
       @[`action:${VideoCallAction.Chat}`]="toggleChatPanel"
+      @[`action:${VideoCallAction.FlipCamera}`]="flipCamera"
       @[`action:${VideoCallAction.Hangup}`]="hangup"
     >
       <template
@@ -51,8 +55,10 @@ import {
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
+import { useCameraFlip } from '../../devices/modules/camera/composables/useCameraFlip';
 import { useDevicesPermissionsStore } from '../../devices/modules/permissions/stores/permissions';
 import { MeetingState } from '../../mainScene/enums/MeetingState';
+import { isMobile } from '../../mainScene/scripts/isMobile';
 import { useMainSceneStore } from '../../mainScene/stores/mainScene';
 import { SidebarMode } from '../../sidebar/enums/SidebarMode';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
@@ -68,6 +74,8 @@ const emit = defineEmits<{
 
 const callStore = useCallStore();
 
+const { flipCamera } = useCameraFlip();
+
 const {
 	remoteVideoStream: remoteVideoStreamValue,
 	callOnHold,
@@ -79,6 +87,13 @@ const {
 } = storeToRefs(callStore);
 
 const { toggleMute, toggleVideo, hangup } = callStore;
+
+const isMobileDevice = isMobile();
+const videoObjectFit: 'cover' | 'contain' = isMobileDevice
+	? 'cover'
+	: 'contain';
+const senderPreviewPosition = isMobileDevice ? 'right-top' : 'left-bottom';
+const senderPreviewOrientation = isMobileDevice ? 'portrait' : 'landscape';
 
 const mainSceneStore = useMainSceneStore();
 const { meetingState } = storeToRefs(mainSceneStore);

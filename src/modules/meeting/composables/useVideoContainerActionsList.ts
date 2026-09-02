@@ -2,7 +2,9 @@ import { VideoCallAction } from '@webitel/ui-sdk/modules/CallSession';
 import { storeToRefs } from 'pinia';
 import { computed, type MaybeRef, toRef } from 'vue';
 
+import { useDevicesPermissionsStore } from '../../devices/modules/permissions/stores/permissions';
 import { MeetingState } from '../../mainScene/enums/MeetingState';
+import { isMobile } from '../../mainScene/scripts/isMobile';
 import { SessionState, useCallStore } from '../modules/call/store/call';
 
 const MeetingStateToVideoActionsMap: Record<MeetingState, VideoCallAction[]> = {
@@ -36,8 +38,12 @@ export const useVideoContainerActionsList = ({
 }) => {
 	const meetingStateRef = toRef(meetingState);
 
+	const isMobileDevice = isMobile();
 	const callStore = useCallStore();
+	const devicesStore = useDevicesPermissionsStore();
 	const { sessionState } = storeToRefs(callStore);
+	const { hasMultipleCameras } = storeToRefs(devicesStore);
+	const { videoEnabled } = storeToRefs(callStore);
 
 	const actions = computed(() => {
 		const base = MeetingStateToVideoActionsMap[meetingStateRef.value];
@@ -51,6 +57,21 @@ export const useVideoContainerActionsList = ({
 			sessionState.value === SessionState.ACTIVE
 		) {
 			arrayActions.push(VideoCallAction.Chat);
+		}
+
+		if (
+			isMobileDevice &&
+			meetingStateRef.value === MeetingState.ActiveMeeting &&
+			hasMultipleCameras.value &&
+			videoEnabled.value
+		) {
+			arrayActions.push(VideoCallAction.FlipCamera);
+		}
+
+		if (isMobileDevice) {
+			return arrayActions.filter(
+				(action) => action !== VideoCallAction.Settings,
+			);
 		}
 
 		return arrayActions;

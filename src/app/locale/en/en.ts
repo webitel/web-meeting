@@ -33,14 +33,16 @@ export default {
 		},
 	},
 	errors: {
-		unsupportedUserAgent: {
-			title: 'Not supported on mobile!',
-			message:
-				'This page is not available on mobile. Please switch to desktop.',
+		openInBrowser: {
+			title: 'Open the link in your browser',
+			message: 'Please open this page in an external browser.',
 		},
 		invalidLink: {
 			title: 'Invalid link!',
 			message: 'Unfortunately, the link is incorrect.',
+		},
+		rotateDevice: {
+			message: 'Please put your phone back to vertical orientation.',
 		},
 	},
 };

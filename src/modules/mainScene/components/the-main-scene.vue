@@ -10,6 +10,7 @@
       <sidebar-panel
       v-if="sidebarPanelOpened"
       />
+      <orientation-overlay v-if="showOrientationOverlay" />
      </div>
   </main>
 </template>
@@ -28,14 +29,19 @@ import {
 import { useChatStore } from '../../meeting/modules/chat/store/chat';
 import SidebarPanel from '../../sidebar/components/sidebar-panel.vue';
 import { useSidebarStore } from '../../sidebar/store/sidebar';
+import { useIsLandscape } from '../composables/useIsLandscape';
 import InvalidLinkErrorBlock from '../modules/error-blocks/components/invalid-link-error-block.vue';
-import UnsupportedUserAgentErrorBlock from '../modules/error-blocks/components/unsupported-user-agent-error-block.vue';
-import { isUnsupportedUserAgent } from '../modules/error-blocks/scripts/isUnsupportedUserAgent';
+import OpenInBrowserErrorBlock from '../modules/error-blocks/components/open-in-browser-error-block.vue';
+import { isInAppWebView } from '../scripts/isInAppWebView';
+import { isMobile } from '../scripts/isMobile';
+import OrientationOverlay from './orientation-overlay.vue';
 import BrandLogo from './shared/brand-logo.vue';
 
 const $config = inject<AppConfig>('$config') as AppConfig;
 
 const mainBackground = `url(${new URL($config.assets.mainBackground, import.meta.url).href})`;
+
+const { isLandscape } = useIsLandscape();
 
 const authStore = useAuthStore();
 const { isInvalidLink, isAuthorizingInProgress } = storeToRefs(authStore);
@@ -55,8 +61,8 @@ const closeSidebarPanel = () => {
 };
 
 const mainSceneComponent = computed(() => {
-	if (isUnsupportedUserAgent()) {
-		return UnsupportedUserAgentErrorBlock;
+	if (isInAppWebView()) {
+		return OpenInBrowserErrorBlock;
 	}
 
 	if (isAuthorizingInProgress.value) {
@@ -71,6 +77,8 @@ const mainSceneComponent = computed(() => {
 		? EvaluationWrapper
 		: MeetingContainer;
 });
+
+const showOrientationOverlay = computed(() => isMobile() && isLandscape.value);
 
 const openChatConnection = () => {
 	if (!isChatConnected.value) {
