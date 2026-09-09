@@ -588,13 +588,16 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 * Change speaker (audio output)
 	 */
 	async function changeSpeaker(deviceId: string) {
+		const audio = sessionAudio.value;
+		if (!audio || typeof audio.setSinkId !== 'function' || !deviceId) {
+			return;
+		}
+
 		console.info('Changing speaker to:', deviceId);
 		// Use setSinkId to change the audio output device
-		await (sessionAudio.value as HTMLAudioElement)
-			.setSinkId(deviceId)
-			.finally(() => {
-				console.info('Speaker changed to:', deviceId);
-			});
+		await audio.setSinkId(deviceId).finally(() => {
+			console.info('Speaker changed to:', deviceId);
+		});
 	}
 
 	function cleanup() {

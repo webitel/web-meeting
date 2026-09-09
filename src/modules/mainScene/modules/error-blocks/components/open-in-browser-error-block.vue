@@ -1,23 +1,19 @@
 <template>
     <call-result-container>
       <template #title>
-        {{ t('errors.unsupportedUserAgent.title') }}
+        {{ t('errors.openInBrowser.title') }}
       </template>
       <template #main>
         <wt-icon
           icon="attention--filled" 
           color="error"
         />
-        <p>{{ t('errors.unsupportedUserAgent.message') }}</p>
+        <p>{{ t('errors.openInBrowser.message') }}</p>
       </template>
     </call-result-container>
   </template>
   
-  <script setup lang="ts">
-/**
- * e.g. user physical device (mobile, tablet, desktop)
- */
-
+<script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
 import CallResultContainer from '../../../../evaluation/components/shared/call-result-container.vue';

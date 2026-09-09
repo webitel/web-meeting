@@ -50,14 +50,16 @@ function useDefaultAudioDevice({
 			(device) => device.deviceId === 'default',
 		);
 
-		if (!defaultDeviceDuplicate) return allDevicesList.value.at(0); // 0-index device is the most "native" to machine => is "default" one
+		if (!defaultDeviceDuplicate) return deduplicatedDevicesList.value.at(0); // 0-index device is the most "native" to machine => is "default" one
 
 		// then, get it's groupId (one hardware device has same groupId for all "virtual" devices)
 		const defaultGroupId = defaultDeviceDuplicate.groupId;
 
 		// then, find and return "default" device from deviceslist by groupId
-		return deduplicatedDevicesList.value.find(
-			(device) => device.groupId === defaultGroupId,
+		return (
+			deduplicatedDevicesList.value.find(
+				(device) => device.groupId === defaultGroupId,
+			) ?? deduplicatedDevicesList.value.at(0)
 		);
 	});
 
