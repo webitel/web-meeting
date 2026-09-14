@@ -12,6 +12,7 @@
       <chat-container
         :messages="uiMessages"
         :chat-actions="chatActions"
+        :submit-on-enter="!isMobileDevice"
         without-avatars
         @load="loadFile"
         @[`action:${ChatAction.SendMessage}`]="localSendMessage"
