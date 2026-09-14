@@ -18,7 +18,6 @@
       :size="videoContainerSize"
       :sender-preview-position="senderPreviewPosition"
       :sender-preview-orientation="senderPreviewOrientation"
-      :video-object-fit="videoObjectFit"
       :call:on-hold="callOnHold"
       hide-video-display-panel
       static
@@ -89,9 +88,7 @@ const {
 const { toggleMute, toggleVideo, hangup } = callStore;
 
 const isMobileDevice = isMobile();
-const videoObjectFit: 'cover' | 'contain' = isMobileDevice
-	? 'cover'
-	: 'contain';
+
 const senderPreviewPosition = isMobileDevice ? 'right-top' : 'left-bottom';
 const senderPreviewOrientation = isMobileDevice ? 'portrait' : 'landscape';
 
