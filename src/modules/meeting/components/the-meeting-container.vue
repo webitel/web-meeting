@@ -18,6 +18,7 @@
       :size="videoContainerSize"
       :sender-preview-position="senderPreviewPosition"
       :sender-preview-orientation="senderPreviewOrientation"
+      :sender:mirror="!isBackCamera"
       :call:on-hold="callOnHold"
       hide-video-display-panel
       static
@@ -83,6 +84,7 @@ const {
 	videoEnabled,
 	remoteVideoMuted,
 	sessionState,
+  isBackCamera,
 } = storeToRefs(callStore);
 
 const { toggleMute, toggleVideo, hangup } = callStore;

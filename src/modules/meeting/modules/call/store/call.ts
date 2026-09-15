@@ -109,6 +109,10 @@ export const useCallStore = defineStore('meeting/call', () => {
 		return initCallWithVideo.value;
 	});
 
+	const isBackCamera = computed(() => {
+		return cameraStreamTrack.value?.getSettings().facingMode === 'environment';
+	});
+
 	/**
 	 * Initialize the JsSIP User Agent
 	 */
@@ -676,6 +680,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 		// Computed
 		isSessionStateFinished,
+		isBackCamera,
 
 		// Actions
 		startUserAgent,
