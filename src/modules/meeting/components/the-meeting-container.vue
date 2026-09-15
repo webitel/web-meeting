@@ -84,7 +84,7 @@ const {
 	videoEnabled,
 	remoteVideoMuted,
 	sessionState,
-  isBackCamera,
+	isBackCamera,
 } = storeToRefs(callStore);
 
 const { toggleMute, toggleVideo, hangup } = callStore;
