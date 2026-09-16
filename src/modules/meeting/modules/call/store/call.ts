@@ -159,8 +159,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 				 */
 				userAgent.value = markRaw(ua);
 
-				// Handle beforeunload to cleanup
-				window.addEventListener('beforeunload', async () => {
+				// Handle pagehide to cleanup
+				window.addEventListener('pagehide', async () => {
 					await closeUserAgent();
 				});
 
@@ -623,7 +623,16 @@ export const useCallStore = defineStore('meeting/call', () => {
 	}
 
 	// coz hangup ends server connection
-	window.addEventListener('beforeunload', () => {
+	/**
+	 * @author PolinaSukhorukova-webitel
+	 *
+	 * [WTEL-10451](https://webitel.atlassian.net/browse/WTEL-10451)
+	 * iOS WebKit does not fire `beforeunload`, so refreshing the page during an
+	 * outgoing call left it ringing on the operator side. `pagehide` fires
+	 * reliably across engines and only on actual page teardown, unlike
+	 * `visibilitychange`, which also fires on backgrounding an active call.
+	 */
+	window.addEventListener('pagehide', () => {
 		hangup();
 	});
 
