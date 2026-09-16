@@ -454,7 +454,16 @@ export const useCallStore = defineStore('meeting/call', () => {
 			session.value.terminate();
 		}
 	}
+
 	function sendInfo() {
+		/**
+		 * @author PolinaSukhorukova-webitel
+		 *
+		 * [WTEL-10452](https://webitel.atlassian.net/browse/WTEL-10452)
+		 * jssip throws 'INVALID_STATE_ERROR: Invalid status' if INFO is sent before the session is ACTIVE
+		 */
+		if (sessionState.value !== SessionState.ACTIVE) return;
+
 		const message = JSON.stringify({
 			hold: false,
 			audioMuted: !microphoneEnabled.value,
