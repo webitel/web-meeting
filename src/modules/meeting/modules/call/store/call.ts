@@ -109,6 +109,17 @@ export const useCallStore = defineStore('meeting/call', () => {
 		return initCallWithVideo.value;
 	});
 
+	/**
+ * @author PolinaSukhorukova-webitel
+ *
+ * [WTEL-10391](https://webitel.atlassian.net/browse/WTEL-10391)
+ * Back camera must not be mirrored in the self-view, while the front camera
+ * stays mirrored. Mirror is kept on by default and turned off only when the
+ * active track explicitly reports the back camera (`environment`). Unknown or
+ * missing facingMode (some Android devices) falls back to mirrored, so nothing
+ * that currently works regresses.
+ */
+
 	const isBackCamera = computed(() => {
 		return cameraStreamTrack.value?.getSettings().facingMode === 'environment';
 	});
