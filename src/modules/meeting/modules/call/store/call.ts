@@ -161,6 +161,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 				 */
 				userAgent.value = markRaw(ua);
 
+				// Handle pagehide to cleanup
 				window.addEventListener('pagehide', async () => {
 					await closeUserAgent();
 				});
@@ -455,7 +456,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 * Hangup the current call
 	 */
 	function hangup(manual = true): void {
-		if (manual) wasManuallyHungUp.value = true;
+		wasManuallyHungUp.value = manual;
 		if (session.value) {
 			session.value.terminate();
 		}
