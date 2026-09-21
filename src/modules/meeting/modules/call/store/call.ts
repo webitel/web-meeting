@@ -74,6 +74,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 	// Session state
 	const sessionState = ref<SessionState | null>(null);
 
+	const wasManuallyHungUp = ref(false);
+
 	const callMediaStream = ref<MediaStream | null>(null);
 
 	const isSessionStateFinished = computed(
@@ -159,7 +161,6 @@ export const useCallStore = defineStore('meeting/call', () => {
 				 */
 				userAgent.value = markRaw(ua);
 
-				// Handle pagehide to cleanup
 				window.addEventListener('pagehide', async () => {
 					await closeUserAgent();
 				});
@@ -302,6 +303,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 		try {
 			sessionState.value = SessionState.CONNECTING;
+			wasManuallyHungUp.value = false;
 
 			// Start user agent if not already started
 			if (!userAgent.value) {
@@ -384,7 +386,10 @@ export const useCallStore = defineStore('meeting/call', () => {
 				},
 				ended: () => {
 					console.log('Call ended');
-					if (sessionState.value === SessionState.ACTIVE) {
+					if (
+						sessionState.value === SessionState.ACTIVE &&
+						wasManuallyHungUp.value
+					) {
 						sessionState.value = SessionState.COMPLETED;
 					} else sessionState.value = SessionState.CANCELED;
 					closeSession();
@@ -449,7 +454,8 @@ export const useCallStore = defineStore('meeting/call', () => {
 	/**
 	 * Hangup the current call
 	 */
-	function hangup(): void {
+	function hangup(manual = true): void {
+		if (manual) wasManuallyHungUp.value = true;
 		if (session.value) {
 			session.value.terminate();
 		}
@@ -626,7 +632,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 
 	function cleanup() {
 		if (session.value) {
-			hangup();
+			hangup(false);
 		}
 		closeUserAgent();
 	}
@@ -642,7 +648,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 	 * `visibilitychange`, which also fires on backgrounding an active call.
 	 */
 	window.addEventListener('pagehide', () => {
-		hangup();
+		hangup(false);
 	});
 
 	/**
@@ -703,6 +709,7 @@ export const useCallStore = defineStore('meeting/call', () => {
 		remoteVideoMuted,
 		callOnHold,
 		sessionState,
+		wasManuallyHungUp,
 		microphoneEnabled,
 		videoEnabled,
 		isStartingCall,

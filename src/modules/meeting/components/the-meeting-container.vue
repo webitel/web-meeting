@@ -32,7 +32,7 @@
       @[`action:${VideoCallAction.Settings}`]="toggleSettingsPanel"
       @[`action:${VideoCallAction.Chat}`]="toggleChatPanel"
       @[`action:${VideoCallAction.FlipCamera}`]="flipCamera"
-      @[`action:${VideoCallAction.Hangup}`]="hangup"
+      @[`action:${VideoCallAction.Hangup}`]="() => hangup()"
     >
       <template
         #content
