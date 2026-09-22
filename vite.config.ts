@@ -25,6 +25,7 @@ export default ({ mode }: ConfigEnv) => {
 		],
 		server: {
 			// host: true,  // uncomment me to enable localhost access by IP (including from other devices in the network)
+			// allowedHosts: true, // allow any Host header (needed to open the dev server via ngrok tunnel) — WTEL-10398
 		},
 		resolve: {
 			alias: {

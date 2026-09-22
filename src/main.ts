@@ -42,6 +42,8 @@ const initApp = async () => {
 	};
 };
 
+window.addEventListener('unload', () => {});
+
 (async () => {
 	if (isFirefox()) {
 		await forceFirefoxToEnumerateDevices(); // https://webitel.atlassian.net/browse/WTEL-8544?focusedCommentId=717571
