@@ -5,23 +5,30 @@ export async function getStreamFromDeviceId({
 	deviceId,
 	deviceType,
 }: {
-	deviceId: string;
+	deviceId: string | null;
 	deviceType: UserDeviceType;
 }): Promise<MediaStream | null> {
 	const $config = await getConfig();
 
+	const constraints: MediaTrackConstraints = {};
+
+	if (deviceId) {
+		constraints.deviceId = {
+			exact: deviceId,
+		};
+	}
+
+	if (deviceType === UserDeviceType.Video) {
+		constraints.width = {
+			ideal: $config.call.videoDeviceResolution?.width?.ideal ?? 1920,
+		};
+		constraints.height = {
+			ideal: $config.call.videoDeviceResolution?.height?.ideal ?? 1080,
+		};
+	}
+
 	const stream = await navigator.mediaDevices.getUserMedia({
-		[deviceType]: {
-			deviceId: {
-				exact: deviceId,
-			},
-			width: {
-				ideal: $config.call.videoDeviceResolution?.width?.ideal ?? 1920,
-			},
-			height: {
-				ideal: $config.call.videoDeviceResolution?.height?.ideal ?? 1080,
-			},
-		},
+		[deviceType]: constraints,
 	});
 
 	return stream;

@@ -1,5 +1,5 @@
 import { useDevicesList } from '@vueuse/core';
-import { computed, ref, watch } from 'vue';
+import { computed, type Ref, ref, watch } from 'vue';
 import {
 	UserDeviceType,
 	UserMediaConstraintType,
@@ -9,17 +9,20 @@ import { useDefaultDevice } from './useDefaultDevice';
 
 export const useDeviceSelection = ({
 	deviceType,
+	systemDefaultDeviceId,
 }: {
 	deviceType: UserDeviceType;
+	systemDefaultDeviceId?: Ref<string | null>;
 }) => {
 	const constraint =
 		deviceType === UserDeviceType.Video
 			? UserMediaConstraintType.Video
 			: UserMediaConstraintType.Audio;
 
-	const { audioInputs, videoInputs, audioOutputs } = useDevicesList({
-		requestPermissions: shouldRequestPermissions(), // !! – https://webitel.atlassian.net/browse/WTEL-8511?focusedCommentId=717602
-	});
+	const { audioInputs, videoInputs, audioOutputs, permissionGranted } =
+		useDevicesList({
+			requestPermissions: shouldRequestPermissions(), // !! – https://webitel.atlassian.net/browse/WTEL-8511?focusedCommentId=717602
+		});
 
 	const allDevicesList = computed(() => {
 		switch (deviceType) {
@@ -55,8 +58,16 @@ export const useDeviceSelection = ({
 			(device) => device.deviceId === prefferedDeviceId.value,
 		);
 
+		if (prefferredDevice) return prefferredDevice;
+
+		const systemDefaultDevice = systemDefaultDeviceId?.value
+			? devicesList.value.find(
+					(device) => device.deviceId === systemDefaultDeviceId.value,
+				)
+			: undefined;
+
 		// if no manually selected, fallback to last device
-		return prefferredDevice || defaultDevice.value;
+		return systemDefaultDevice || defaultDevice.value;
 	});
 
 	/**
@@ -94,6 +105,7 @@ export const useDeviceSelection = ({
 		prefferedDeviceId,
 
 		// computed
+		permissionGranted,
 		devicesList,
 		defaultDevice,
 		selectedDevice,

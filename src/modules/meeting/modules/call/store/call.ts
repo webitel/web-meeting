@@ -236,7 +236,13 @@ export const useCallStore = defineStore('meeting/call', () => {
 		}
 
 		audio.srcObject = stream;
+		document.body.appendChild(audio);
 		sessionAudio.value = audio;
+
+		audio.play().catch((err) => {
+			console.warn('Failed to start session audio playback:', err);
+		});
+
 		changeSpeaker(speakerDeviceId.value as string);
 	}
 
@@ -266,7 +272,9 @@ export const useCallStore = defineStore('meeting/call', () => {
 	function closeSession(): void {
 		// Cleanup audio
 		if (sessionAudio.value) {
+			sessionAudio.value.pause();
 			sessionAudio.value.srcObject = null;
+			sessionAudio.value.remove();
 			sessionAudio.value = null;
 		}
 

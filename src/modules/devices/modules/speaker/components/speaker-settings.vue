@@ -1,5 +1,8 @@
 <template>
-  <div class="speaker-settings">
+  <div
+    v-if="devicesList.length"
+    class="speaker-settings"
+  >
     <device-select
       :device-id="selectedDeviceId"
       :options="devicesList"
