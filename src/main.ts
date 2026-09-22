@@ -42,7 +42,11 @@ const initApp = async () => {
 	};
 };
 
-window.addEventListener('unload', () => {});
+window.addEventListener('pageshow', (event) => {
+	if (event.persisted) {
+		window.location.reload();
+	}
+});
 
 (async () => {
 	if (isFirefox()) {
