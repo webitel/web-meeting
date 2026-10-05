@@ -4,7 +4,7 @@ version: 1
 source:
   repository: webitel/reusable-configs
   config: node/sync.yml
-  sha: 6ed0e26c5d9dcb16b726ce35732d97b633e0aa1c
+  sha: ef4e42032ca6d3cd02a819e6978ed645e2e227b3
 files:
   .github/dependabot.yml:
     source: node/configs/dependabot.yml
@@ -26,10 +26,10 @@ files:
     sha256: 75535b41cb6ec3de455531f8fa5b08b098d57df8b6645c93da52b972884f923e
   .github/workflows/pull-request-deliver.yml:
     source: common/workflows/pull-request-deliver.yml.njk
-    sha256: f5168a4969468ec0d5b26e0a9dc0b25b5c901cdc272aa77fddc31c40a340f7c0
+    sha256: bec599c07a78d432533798ea76481b6dd636ce474d6d1c56e9316412d029043e
   .github/workflows/pull-request.yml:
     source: node/workflows/pull-request.yml.njk
     sha256: 29ab9801ffe31f9213b531a38b4dd445a171a0d87a2cbd031ae054d150a603a7
   .github/workflows/workflow.yml:
     source: node/workflows/workflow.yml.njk
-    sha256: dbcca814ac13c7ec2a8c82195bc23d26521d29a1ceb6c0c9ddd4fca41015ee7c
+    sha256: c0d138568a8612330ea854d202ec3507fa2307e82b523ee1fcfa28f6d530a407
