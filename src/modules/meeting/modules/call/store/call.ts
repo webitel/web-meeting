@@ -385,11 +385,17 @@ export const useCallStore = defineStore('meeting/call', () => {
 					closeSession();
 					clearCallMediaStream();
 				},
-				ended: () => {
+				ended: (event: { originator: string }) => {
 					console.log('Call ended');
+					/**
+					 * [Claude]
+					 * [WTEL-10562](https://webitel.atlassian.net/browse/WTEL-10562)
+					 * Call ended by the operator (remote) must be COMPLETED too,
+					 * otherwise "join again" is shown for an already finished meeting.
+					 */
 					if (
 						sessionState.value === SessionState.ACTIVE &&
-						wasManuallyHungUp.value
+						(wasManuallyHungUp.value || event.originator === 'remote')
 					) {
 						sessionState.value = SessionState.COMPLETED;
 					} else sessionState.value = SessionState.CANCELED;
