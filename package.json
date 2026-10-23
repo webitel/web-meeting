@@ -1,6 +1,6 @@
 {
 	"name": "web-meeting",
-	"version": "26.10.0",
+	"version": "26.12.0",
 	"type": "module",
 	"scripts": {
 		"check:libs-train": "node scripts/check-webitel-train.mjs",
